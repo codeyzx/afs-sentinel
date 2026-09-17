@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+{% from "_macros.html" import severity_badge, low_confidence_badge, rule_dots, rule_legend %}
+{% block title %}Backtest{% endblock %}
+{% block content %}
+<h1 class="font-display text-2xl font-semibold">Backtest</h1>
+<p class="muted text-sm max-w-3xl">
+  Keenam Forensic Rule dijalankan ulang untuk tiap kuartal sejak 2021-Q1, seolah-olah hari itu adalah tanggal laporannya,
+  lalu dibandingkan dengan kejadian nyata. Backtest tidak membuat Incident dan tidak mengirim notifikasi.
+</p>
+
+{% if not views %}
+  <div class="panel mt-4 px-4 py-6">
+    <p class="font-semibold">Backtest belum dijalankan</p>
+    <p class="muted text-sm mt-1">Daftar kasus di <code>config/backtest_cases.json</code> belum tersedia. Setelah diisi, jalankan <code>python -m afs backtest</code>.</p>
+  </div>
+{% else %}
+<div x-data="{ tab: '{{ views[0].case.case_id }}' }" class="mt-5">
+  <div class="flex flex-wrap gap-2" role="tablist" aria-label="Kasus backtest">
+    {% for v in views %}
+      <button type="button" class="tab" role="tab" id="tab-{{ v.case.case_id }}" aria-controls="panel-{{ v.case.case_id }}"
+        :aria-selected="tab === '{{ v.case.case_id }}'" @click="tab = '{{ v.case.case_id }}'">
+        <span class="font-semibold">{{ v.case.symbol | ticker }}</span>
+        {% if v.case.company_name %}<span class="hidden sm:inline"> · {{ v.case.company_name }}</span>{% endif %}
+      </button>
+    {% endfor %}
+  </div>
+
+  {% for v in views %}
+  {% set cid = v.case.case_id %}
+  <section id="panel-{{ cid }}" role="tabpanel" aria-labelledby="tab-{{ cid }}" class="mt-5"
+    x-show="tab === '{{ cid }}'" {% if not loop.first %}x-cloak{% endif %}>
+
+    {% if not v.results %}
+      <div class="panel px-4 py-6">
+        <p class="font-semibold">Backtest belum dijalankan</p>
+        <p class="muted text-sm mt-1">Jalankan <code>python -m afs backtest</code> untuk menghitung skor {{ v.case.symbol | ticker }} per kuartal.</p>
+      </div>
+    {% else %}
+      {# Automatic claims (§8) #}
+      <div class="space-y-2">
+        {% for c in v.claims %}
+          <p class="font-display text-xl sm:text-2xl leading-snug">{{ c.sentence }}.</p>
+          <p class="text-sm muted">
+            Kejadian: {{ c.event.label }}, {{ c.event.date | date_id }}.
+            {% if c.event.source_url %}<a href="{{ c.event.source_url }}" target="_blank" rel="noopener">Sumber berita</a>{% endif %}
+          </p>
+        {% endfor %}
+      </div>
+
+      <div class="panel mt-4 p-4">
+        <div class="relative h-80"><canvas id="bt-chart-{{ cid }}" role="img"
+          aria-label="Grafik skor per kuartal {{ v.case.symbol | ticker }} dengan pita severity dan garis kejadian nyata"></canvas></div>
+        <p class="text-xs muted mt-2">Pita latar: hijau Rendah (0–30), kuning Sedang (30–60), merah Kritis (60–100). Garis putus-putus: kejadian nyata.</p>
+      </div>
+      <script type="application/json" class="bt-chart-data" data-canvas="bt-chart-{{ cid }}">{{ v.chart | tojson }}</script>
+
+      <h2 class="font-display text-xl font-semibold mt-8">Rule Finding per kuartal</h2>
+      <div class="mt-2">{{ rule_legend() }}</div>
+      <div class="panel mt-3 overflow-x-auto">
+        <table class="ledger">
+          <thead><tr><th>Kuartal</th><th class="num">Skor</th><th>Severity</th><th>Status rule</th></tr></thead>
+          <tbody>
+            {% for row in v.rows %}
+              <tr>
+                <td class="whitespace-nowrap">{{ row.result.report_date | period }}</td>
+                <td class="num font-semibold">{{ row.result.score | score }}</td>
+                <td>
+                  {% if row.result.severity %}{{ severity_badge(row.result.severity) }}{% else %}<span class="badge tone-gray">Tak bisa dinilai</span>{% endif %}
+                  {% if row.result.low_confidence %}{{ low_confidence_badge() }}{% endif %}
+                </td>
+                <td>{{ rule_dots(row.dots) }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
+
+    <p class="mt-4 text-sm panel stripe tone-gray px-4 py-2"><span style="color: var(--text)">Penjualan Orang Dalam tidak dinilai — data sebelum 2025 tidak tersedia. Data kuartalan API hanya tersedia sejak 2020-Q1.</span></p>
+
+    {% if v.case.events %}
+      <h2 class="font-display text-lg font-semibold mt-6">Sumber kejadian</h2>
+      <ul class="mt-2 text-sm space-y-1">
+        {% for e in v.case.events %}
+          <li>
+            {{ e.date | date_id }}: {{ e.label }}
+            {% if e.source_url %}(<a href="{{ e.source_url }}" target="_blank" rel="noopener">{{ e.source_url }}</a>){% endif %}
+            {% if e.verified is false %}<span class="badge tone-yellow ml-1">Sumber belum diverifikasi</span>{% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </section>
+  {% endfor %}
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+{% if views %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script>
+  (function () {
+    const css = getComputedStyle(document.documentElement);
+    const c = (n) => css.getPropertyValue(n).trim();
+    const nf = new Intl.NumberFormat("id-ID", { maximumFractionDigits: 1 });
+
+    // Severity bands behind the line and dashed vertical markers for real-world events.
+    const bandsAndEvents = {
+      id: "bandsAndEvents",
+      beforeDatasetsDraw(chart, _args, opts) {
+        const { ctx, chartArea: a, scales: { x, y } } = chart;
+        ctx.save();
+        for (const b of opts.bands) {
+          const top = y.getPixelForValue(b.to), bottom = y.getPixelForValue(b.from);
+          ctx.fillStyle = b.color;
+          ctx.fillRect(a.left, top, a.right - a.left, bottom - top);
+        }
+        ctx.restore();
+      },
+      afterDatasetsDraw(chart, _args, opts) {
+        const { ctx, chartArea: a, scales: { x } } = chart;
+        ctx.save();
+        ctx.font = "600 12px 'Instrument Sans', sans-serif";
+        opts.events.forEach((e, i) => {
+          const px = x.getPixelForValue(e.x);
+          if (px < a.left || px > a.right) return;
+          ctx.strokeStyle = c("--text");
+          ctx.setLineDash([5, 4]);
+          ctx.lineWidth = 1.5;
+          ctx.beginPath(); ctx.moveTo(px, a.top); ctx.lineTo(px, a.bottom); ctx.stroke();
+          ctx.setLineDash([]);
+          ctx.fillStyle = c("--text");
+          const w = ctx.measureText(e.label).width;
+          const tx = px + 6 + w > a.right ? px - 6 - w : px + 6;
+          ctx.fillText(e.label, tx, a.top + 14 + i * 16);
+        });
+        ctx.restore();
+      },
+    };
+
+    document.querySelectorAll("script.bt-chart-data").forEach((el) => {
+      const d = JSON.parse(el.textContent);
+      const maxX = Math.max(d.labels.length - 1, ...d.events.map((e) => e.x));
+      const minX = Math.min(0, ...d.events.map((e) => e.x));
+      new Chart(document.getElementById(el.dataset.canvas), {
+        type: "line",
+        data: {
+          datasets: [{
+            label: "Skor",
+            data: d.scores.map((s, i) => ({ x: i, y: s })),
+            borderColor: c("--accent"), backgroundColor: c("--accent"),
+            pointRadius: 3, spanGaps: false, tension: 0,
+          }],
+        },
+        plugins: [bandsAndEvents],
+        options: {
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: { callbacks: {
+              title: (items) => d.labels[items[0].parsed.x],
+              label: (ctx) => `Skor ${nf.format(ctx.parsed.y)}/100`,
+            } },
+            bandsAndEvents: {
+              bands: [
+                { from: 0, to: 30, color: "rgba(95, 214, 142, 0.10)" },
+                { from: 30, to: 60, color: "rgba(242, 201, 76, 0.12)" },
+                { from: 60, to: 100, color: "rgba(255, 122, 112, 0.13)" },
+              ],
+              events: d.events,
+            },
+          },
+          scales: {
+            x: {
+              type: "linear", min: minX - 0.3, max: maxX + 0.3,
+              afterBuildTicks: (axis) => { axis.ticks = d.labels.map((_, i) => ({ value: i })); },
+              ticks: { stepSize: 1, color: c("--muted"), autoSkip: true, maxRotation: 60,
+                       callback: (v) => Number.isInteger(v) && d.labels[v] ? d.labels[v] : "" },
+              grid: { color: c("--line") },
+            },
+            y: { min: 0, max: 100, ticks: { color: c("--muted"), stepSize: 10 }, grid: { color: c("--line") } },
+          },
+        },
+      });
+    });
+  })();
+</script>
+{% endif %}
+{% endblock %}
