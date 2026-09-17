@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AFS Sentinel — Incident Report #AFS-2026-Q3-0089 (EMTK.JK)</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0fdf4',
+              500: '#10b981',
+              600: '#059669',
+            },
+            dark: {
+              900: '#0B0F17',
+              800: '#111827',
+              700: '#1F2937',
+              600: '#374151',
+              500: '#4B5563'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #080C14;
+    }
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .glass-card {
+      background: rgba(17, 24, 39, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(55, 65, 81, 0.6);
+    }
+    .badge-critical {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #F87171;
+    }
+    .badge-warning {
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      color: #FBBF24;
+    }
+    .badge-safe {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #34D399;
+    }
+  </style>
+</head>
+<body class="text-slate-200 min-h-screen flex flex-col">
+
+  <!-- Top Navigation Header -->
+  <header class="border-b border-gray-800 bg-[#0B0F17]/90 sticky top-0 z-50 backdrop-blur-md px-6 py-3">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <!-- Brand Logo -->
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-emerald-500/20">
+          <i data-lucide="shield-alert" class="w-5 h-5 text-gray-950 font-bold"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-extrabold text-lg tracking-tight text-white">AFS SENTINEL</span>
+            <span class="text-xs px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-mono font-medium">v2.0 OTONOM</span>
+          </div>
+          <p class="text-[10px] text-gray-400">Autonomous Financial Risk Intelligence for IDX</p>
+        </div>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-gray-400">
+        <a href="#" class="hover:text-white transition flex items-center gap-1.5"><i data-lucide="layout-dashboard" class="w-4 h-4"></i> Dashboard</a>
+        <a href="#" class="text-emerald-400 flex items-center gap-1.5"><i data-lucide="alert-octagon" class="w-4 h-4"></i> Incidents <span class="bg-red-500 text-white text-[10px] px-1.5 py-0.2 rounded-full font-bold">3</span></a>
+        <a href="#" class="hover:text-white transition flex items-center gap-1.5"><i data-lucide="sliders" class="w-4 h-4"></i> Watchlist (58)</a>
+        <a href="#" class="hover:text-white transition flex items-center gap-1.5"><i data-lucide="history" class="w-4 h-4"></i> Audit Logs</a>
+      </nav>
+
+      <!-- System Status Indicators -->
+      <div class="flex items-center gap-4 text-xs font-mono">
+        <div class="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-900/80 border border-gray-800">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span class="text-gray-400">Sectors API: <strong class="text-white">840 / 1.000 Cr</strong></span>
+        </div>
+        <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-900/80 border border-gray-800">
+          <i data-lucide="clock" class="w-3.5 h-3.5 text-cyan-400"></i>
+          <span class="text-gray-300">Cron: <strong class="text-cyan-400">Sabtu 08:00</strong></span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Telegram Inbound Banner Notification -->
+  <div class="bg-gradient-to-r from-blue-900/40 via-cyan-900/20 to-blue-900/40 border-b border-cyan-500/20 px-6 py-2.5">
+    <div class="max-w-7xl mx-auto flex items-center justify-between text-xs">
+      <div class="flex items-center gap-2 text-cyan-200">
+        <i data-lucide="send" class="w-4 h-4 text-cyan-400"></i>
+        <span><strong>Inbound Referral:</strong> Anda membuka halaman ini melalui tautan Telegram Alert <code>#AFS-2026-Q3-0089</code> pada 08:00:15 WIB.</span>
+      </div>
+      <button onclick="toggleTelegramSimulation()" class="text-cyan-400 hover:text-cyan-300 underline font-medium flex items-center gap-1">
+        Lihat Preview Pesan Telegram <i data-lucide="external-link" class="w-3 h-3"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-6 py-6 space-y-6">
+
+    <!-- Breadcrumb & Quick Actions -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div class="flex items-center gap-2 text-xs text-gray-400 font-mono">
+        <a href="#" class="hover:text-white">DASHBOARD</a>
+        <i data-lucide="chevron-right" class="w-3 h-3"></i>
+        <a href="#" class="hover:text-white">INCIDENTS</a>
+        <i data-lucide="chevron-right" class="w-3 h-3"></i>
+        <span class="text-emerald-400 font-semibold">AFS-2026-Q3-0089</span>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button class="px-3 py-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 border border-gray-700 text-xs font-medium flex items-center gap-1.5 text-gray-300">
+          <i data-lucide="file-down" class="w-3.5 h-3.5"></i> Export Audit PDF
+        </button>
+        <button class="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-emerald-600/20">
+          <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i> Submit Triage Resolution
+        </button>
+      </div>
+    </div>
+
+    <!-- Incident Primary Header Card -->
+    <div class="glass-card rounded-2xl p-6 relative overflow-hidden">
+      <div class="absolute -right-16 -top-16 w-64 h-64 bg-red-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+        <div class="space-y-2">
+          <div class="flex flex-wrap items-center gap-3">
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">EMTK.JK</h1>
+            <span class="text-lg text-gray-400 font-normal">PT Elang Mahkota Teknologi Tbk</span>
+            <span class="badge-critical text-xs px-2.5 py-1 rounded-full font-bold flex items-center gap-1">
+              <i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i> CRITICAL RED FLAG
+            </span>
+          </div>
+          
+          <div class="flex flex-wrap items-center gap-4 text-xs text-gray-400 pt-1">
+            <span class="flex items-center gap-1"><i data-lucide="building-2" class="w-3.5 h-3.5 text-gray-500"></i> Sektor: <strong class="text-gray-300">Technology / Internet</strong></span>
+            <span class="flex items-center gap-1"><i data-lucide="calendar" class="w-3.5 h-3.5 text-gray-500"></i> Laporan: <strong class="text-gray-300">2025-Q3 (Ended Sep 2025)</strong></span>
+            <span class="flex items-center gap-1"><i data-lucide="clock" class="w-3.5 h-3.5 text-gray-500"></i> Terdeteksi: <strong class="text-gray-300">06 Sep 2026, 08:00 WIB</strong></span>
+            <span class="px-2 py-0.5 rounded bg-gray-800 text-gray-300 font-mono text-[11px] border border-gray-700">Tier 1: Konglomerasi</span>
+          </div>
+        </div>
+
+        <!-- Composite Score Card -->
+        <div class="flex items-center gap-4 bg-gray-950/60 border border-gray-800 p-4 rounded-xl">
+          <div class="text-center">
+            <div class="text-[10px] font-mono text-gray-400 uppercase tracking-wider">Composite Risk Score</div>
+            <div class="text-4xl font-extrabold text-red-500 font-mono mt-0.5">84.5<span class="text-sm font-normal text-gray-500">/100</span></div>
+            <div class="text-[11px] text-red-400 font-semibold mt-0.5">High Forensic Risk</div>
+          </div>
+          <div class="w-16 h-16 relative flex items-center justify-center">
+            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+              <path class="text-gray-800" stroke-width="3.5" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+              <path class="text-red-500" stroke-dasharray="84.5, 100" stroke-width="3.5" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+            </svg>
+            <i data-lucide="flame" class="w-6 h-6 text-red-500 absolute"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 Key Anomaly Metric Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      
+      <!-- Card 1: Sloan Accrual -->
+      <div class="glass-card rounded-xl p-4 border-l-4 border-l-red-500 space-y-2">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-semibold text-gray-400 uppercase tracking-wide">Sloan Accrual Ratio</span>
+          <span class="badge-critical text-[10px] font-mono px-2 py-0.5 rounded font-bold">RED FLAG</span>
+        </div>
+        <div class="text-2xl font-bold font-mono text-white">+13.8%</div>
+        <div class="text-[11px] text-gray-400">
+          Ambang Batas Maks: <strong class="text-gray-300 font-mono">+10.0%</strong>
+        </div>
+        <p class="text-[11px] text-red-400/90 leading-tight">
+          Laba bersih didominasi pencatatan akrual di atas kertas, bukan kas riil.
+        </p>
+      </div>
+
+      <!-- Card 2: Cash vs Earnings -->
+      <div class="glass-card rounded-xl p-4 border-l-4 border-l-red-500 space-y-2">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-semibold text-gray-400 uppercase tracking-wide">Divergensi Laba-Kas</span>
+          <span class="badge-critical text-[10px] font-mono px-2 py-0.5 rounded font-bold">SEVERE</span>
+        </div>
+        <div class="flex items-baseline gap-2">
+          <span class="text-emerald-400 font-mono font-bold text-lg">Net +52.4%</span>
+          <span class="text-gray-500">vs</span>
+          <span class="text-red-400 font-mono font-bold text-lg">OCF -28.1%</span>
+        </div>
+        <div class="text-[11px] text-gray-400">
+          Pertumbuhan Tahunan: <strong class="text-gray-300 font-mono">YoY Divergent</strong>
+        </div>
+        <p class="text-[11px] text-red-400/90 leading-tight">
+          Laba bersih naik drastis namun kas operasional justru terbakar negatif.
+        </p>
+      </div>
+
+      <!-- Card 3: Beneish DSRI -->
+      <div class="glass-card rounded-xl p-4 border-l-4 border-l-amber-500 space-y-2">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-semibold text-gray-400 uppercase tracking-wide">Beneish DSRI (Piutang)</span>
+          <span class="badge-warning text-[10px] font-mono px-2 py-0.5 rounded font-bold">WARNING</span>
+        </div>
+        <div class="text-2xl font-bold font-mono text-amber-400">1.42x</div>
+        <div class="text-[11px] text-gray-400">
+          Ambang Batas Waspada: <strong class="text-gray-300 font-mono">1.30x</strong>
+        </div>
+        <p class="text-[11px] text-amber-300/90 leading-tight">
+          Hari penagihan piutang (DSO) melonjak 55 hari dibanding kuartal tahun lalu.
+        </p>
+      </div>
+
+      <!-- Card 4: Insider Transactions -->
+      <div class="glass-card rounded-xl p-4 border-l-4 border-l-purple-500 space-y-2">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-semibold text-gray-400 uppercase tracking-wide">Insider Selling</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30">FLAGGED</span>
+        </div>
+        <div class="text-2xl font-bold font-mono text-purple-300">20M Saham</div>
+        <div class="text-[11px] text-gray-400">
+          Pelaku: <strong class="text-gray-300">C-Suite (Direksi)</strong>
+        </div>
+        <p class="text-[11px] text-purple-300/90 leading-tight">
+          Aksi jual bersih senilai Rp 7,0 M terdeteksi 3 minggu sebelum rilis laporan.
+        </p>
+      </div>
+
+    </div>
+
+    <!-- Visual Charts & Analytical Deep-Dive -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      
+      <!-- Chart Column (2 Cols) -->
+      <div class="lg:col-span-2 glass-card rounded-2xl p-6 space-y-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="font-bold text-white text-base">Visualisasi Divergensi: Laba Bersih vs Arus Kas Operasi (OCF)</h3>
+            <p class="text-xs text-gray-400">Perbandingan 4 Kuartal Terakhir (Dalam Miliar IDR) — Sumber: Sectors REST API</p>
+          </div>
+          <span class="text-xs font-mono text-gray-400 bg-gray-900 px-2.5 py-1 rounded border border-gray-800">4 Quarters Trailing</span>
+        </div>
+
+        <div class="h-64 w-full">
+          <canvas id="divergenceChart"></canvas>
+        </div>
+
+        <div class="p-3 bg-red-950/30 border border-red-800/40 rounded-xl flex items-start gap-3 text-xs text-red-200">
+          <i data-lucide="alert-circle" class="w-4 h-4 text-red-400 shrink-0 mt-0.5"></i>
+          <div>
+            <strong>Analisis Anomali Grafis:</strong> Terjadi pembesaran gap (*widening scissors pattern*) pada Q3-2025 di mana Net Profit menyentuh rekor Rp 233 M sementara Cash Flow anjlok ke minus Rp 185 M. Pola ini 92% identik dengan fase awal krisis likuiditas emiten.
+          </div>
+        </div>
+      </div>
+
+      <!-- Triage & Action Hub Column (1 Col) -->
+      <div class="glass-card rounded-2xl p-6 space-y-4 flex flex-col justify-between">
+        <div class="space-y-4">
+          <div class="flex items-center justify-between border-b border-gray-800 pb-3">
+            <h3 class="font-bold text-white text-base">Panel Tata Kelola (Triage)</h3>
+            <span class="text-[11px] font-mono text-cyan-400 bg-cyan-950/50 px-2 py-0.5 rounded border border-cyan-800">Auto-Generated</span>
+          </div>
+
+          <!-- Status Dropdown -->
+          <div class="space-y-1.5">
+            <label class="text-xs font-semibold text-gray-400">Status Investigasi:</label>
+            <select class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-xs font-medium text-white focus:outline-none focus:border-emerald-500">
+              <option value="UNTRIAGED" selected>🟡 UNTRIAGED (Menunggu Review)</option>
+              <option value="INVESTIGATING">🔵 INVESTIGATING (Sedang Diperiksa)</option>
+              <option value="RESOLVED">🟢 RESOLVED (Sudah Ditindaklanjuti)</option>
+              <option value="DISMISSED">⚪ DISMISSED (False Alarm)</option>
+            </select>
+          </div>
+
+          <!-- Assigned Analyst -->
+          <div class="space-y-1.5">
+            <label class="text-xs font-semibold text-gray-400">Analis Penanggung Jawab:</label>
+            <div class="flex items-center gap-2 bg-gray-900/90 border border-gray-800 rounded-lg p-2">
+              <div class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-xs">F</div>
+              <span class="text-xs font-medium text-white">Fathan R. (Senior Equity Analyst)</span>
+            </div>
+          </div>
+
+          <!-- Recommended Governance Action -->
+          <div class="space-y-1.5">
+            <label class="text-xs font-semibold text-gray-400">Rekomendasi Aksi Sistem:</label>
+            <div class="bg-gray-950 p-3 rounded-lg border border-gray-800 text-xs text-gray-300 space-y-1">
+              <div class="flex items-center gap-1.5 text-amber-400 font-semibold">
+                <i data-lucide="shield-alert" class="w-3.5 h-3.5"></i> Tindakan Komite Portofolio:
+              </div>
+              <p class="text-[11px] text-gray-400">
+                1. Tahan penambahan alokasi baru pada EMTK.JK.<br>
+                2. Audit umur piutang usaha pada CALK catatan 14.<br>
+                3. Pantau klarifikasi BEI terkait transaksi afiliasi.
+              </p>
+            </div>
+          </div>
+
+          <!-- Analyst Notes -->
+          <div class="space-y-1.5">
+            <label class="text-xs font-semibold text-gray-400">Catatan Investigasi Tim:</label>
+            <textarea rows="3" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2.5 text-xs text-gray-200 focus:outline-none focus:border-emerald-500" placeholder="Ketik hasil verifikasi data atau catatan rapat komite di sini..."></textarea>
+          </div>
+        </div>
+
+        <button class="w-full py-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 text-white rounded-lg text-xs font-semibold transition">
+          Simpan Pembaruan Tiket
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Forensic Rules Breakdown Table -->
+    <div class="glass-card rounded-2xl p-6 space-y-4">
+      <div class="flex items-center justify-between border-b border-gray-800 pb-3">
+        <div>
+          <h3 class="font-bold text-white text-base">Evaluasi Lengkap Modul Forensik (Pluggable Rules Engine)</h3>
+          <p class="text-xs text-gray-400">Hasil audit deterministik dari 6 modul aturan forensik yang aktif</p>
+        </div>
+        <span class="text-xs font-mono text-emerald-400">6 Rules Evaluated</span>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs">
+          <thead class="bg-gray-900/60 text-gray-400 uppercase font-mono text-[10px] border-b border-gray-800">
+            <tr>
+              <th class="py-3 px-4">ID Aturan</th>
+              <th class="py-3 px-4">Nama Indikator</th>
+              <th class="py-3 px-4">Nilai Terhitung</th>
+              <th class="py-3 px-4">Ambang Batas (Benchmark)</th>
+              <th class="py-3 px-4">Status & Bobot</th>
+              <th class="py-3 px-4">Keterangan Diagnostik</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-800/60 font-medium text-gray-300">
+            <tr class="hover:bg-gray-900/40 transition">
+              <td class="py-3 px-4 font-mono text-cyan-400">RULE-01</td>
+              <td class="py-3 px-4 font-bold text-white">Sloan Accrual Ratio</td>
+              <td class="py-3 px-4 font-mono text-red-400 font-bold">+13.8%</td>
+              <td class="py-3 px-4 font-mono text-gray-400">&le; +10.0%</td>
+              <td class="py-3 px-4"><span class="badge-critical px-2 py-0.5 rounded text-[10px] font-bold">RED FLAG (30%)</span></td>
+              <td class="py-3 px-4 text-gray-400">Laba bersih tidak sejalan dengan uang kas operasional riil.</td>
+            </tr>
+            <tr class="hover:bg-gray-900/40 transition">
+              <td class="py-3 px-4 font-mono text-cyan-400">RULE-02</td>
+              <td class="py-3 px-4 font-bold text-white">Cash vs Earnings Divergence</td>
+              <td class="py-3 px-4 font-mono text-red-400 font-bold">Divergen (52% vs -28%)</td>
+              <td class="py-3 px-4 font-mono text-gray-400">Arah Selaras</td>
+              <td class="py-3 px-4"><span class="badge-critical px-2 py-0.5 rounded text-[10px] font-bold">RED FLAG (25%)</span></td>
+              <td class="py-3 px-4 text-gray-400">Laba melonjak 52%, OCF anjlok 28% secara tahunan.</td>
+            </tr>
+            <tr class="hover:bg-gray-900/40 transition">
+              <td class="py-3 px-4 font-mono text-cyan-400">RULE-03</td>
+              <td class="py-3 px-4 font-bold text-white">Beneish DSRI (Receivables Index)</td>
+              <td class="py-3 px-4 font-mono text-amber-400 font-bold">1.42x</td>
+              <td class="py-3 px-4 font-mono text-gray-400">&le; 1.30x</td>
+              <td class="py-3 px-4"><span class="badge-warning px-2 py-0.5 rounded text-[10px] font-bold">WARNING (15%)</span></td>
+              <td class="py-3 px-4 text-gray-400">Pertumbuhan piutang melampaui pertumbuhan pendapatan usaha.</td>
+            </tr>
+            <tr class="hover:bg-gray-900/40 transition">
+              <td class="py-3 px-4 font-mono text-cyan-400">RULE-04</td>
+              <td class="py-3 px-4 font-bold text-white">Beneish GMI (Gross Margin Decay)</td>
+              <td class="py-3 px-4 font-mono text-amber-400 font-bold">1.25x</td>
+              <td class="py-3 px-4 font-mono text-gray-400">&le; 1.20x</td>
+              <td class="py-3 px-4"><span class="badge-warning px-2 py-0.5 rounded text-[10px] font-bold">WARNING (10%)</span></td>
+              <td class="py-3 px-4 text-gray-400">Margin laba kotor mengalami degradasi dibanding periode lalu.</td>
+            </tr>
+            <tr class="hover:bg-gray-900/40 transition">
+              <td class="py-3 px-4 font-mono text-cyan-400">RULE-05</td>
+              <td class="py-3 px-4 font-bold text-white">Insider Dumping Monitor</td>
+              <td class="py-3 px-4 font-mono text-purple-300 font-bold">Sell 20M Lembar</td>
+              <td class="py-3 px-4 font-mono text-gray-400">Net Neutral/Buy</td>
+              <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-500/20 text-purple-300">ALERT (10%)</span></td>
+              <td class="py-3 px-4 text-gray-400">Direktur Utama melepas 4.2% porsi saham sebelum publikasi.</td>
+            </tr>
+            <tr class="hover:bg-gray-900/40 transition">
+              <td class="py-3 px-4 font-mono text-cyan-400">RULE-06</td>
+              <td class="py-3 px-4 font-bold text-white">Dividend Inconsistency Check</td>
+              <td class="py-3 px-4 font-mono text-gray-400">Payout: 1.2%</td>
+              <td class="py-3 px-4 font-mono text-gray-400">&gt; 15.0%</td>
+              <td class="py-3 px-4"><span class="badge-warning px-2 py-0.5 rounded text-[10px] font-bold">WARNING (10%)</span></td>
+              <td class="py-3 px-4 text-gray-400">Kas tinggi di neraca namun dividen sangat minim (Kas semu).</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Telegram Simulation Modal -->
+  <div id="telegramModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-[#17212B] border border-gray-700 rounded-2xl max-w-md w-full shadow-2xl overflow-hidden font-sans">
+      <!-- Telegram App Header -->
+      <div class="bg-[#242F3D] px-4 py-3 flex items-center justify-between border-b border-gray-700">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center font-bold text-white text-xs">
+            AFS
+          </div>
+          <div>
+            <h4 class="text-sm font-bold text-white">AFS Sentinel Bot</h4>
+            <p class="text-[10px] text-emerald-400">bot • automated risk alert</p>
+          </div>
+        </div>
+        <button onclick="toggleTelegramSimulation()" class="text-gray-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Telegram Message Body -->
+      <div class="p-4 space-y-3 text-xs text-gray-200">
+        <div class="bg-[#202B36] p-3.5 rounded-xl border border-gray-700/60 space-y-2.5 shadow-md">
+          <div class="flex items-center justify-between">
+            <span class="text-red-400 font-bold font-mono">🚨 [CRITICAL FORENSIC ALERT] EMTK.JK</span>
+            <span class="text-[10px] text-gray-400">08:00 WIB</span>
+          </div>
+
+          <p class="text-gray-300">
+            🏢 <strong>PT Elang Mahkota Teknologi Tbk</strong><br>
+            📅 Periode: <strong>2025-Q3</strong> | Severity: <strong class="text-red-400">CRITICAL (84.5/100)</strong>
+          </p>
+
+          <div class="bg-[#18222D] p-2.5 rounded-lg border border-gray-700/40 text-[11px] space-y-1 font-mono text-gray-300">
+            <div>⚠️ <strong>Temuan Anomali:</strong></div>
+            <div>• Sloan Accrual: <span class="text-red-400 font-bold">+13.8%</span> (Maks +10.0%)</div>
+            <div>• Divergensi: Net <span class="text-emerald-400">+52.4%</span>, OCF <span class="text-red-400">-28.1%</span></div>
+            <div>• Beneish DSRI: <span class="text-amber-400">1.42x</span> (Piutang melonjak)</div>
+            <div>• Insider Sell: <span class="text-purple-300">20M Lembar</span> (Direksi)</div>
+          </div>
+
+          <div class="pt-1">
+            <a href="#" onclick="toggleTelegramSimulation()" class="block w-full py-2 text-center bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg font-semibold text-xs transition shadow-lg shadow-cyan-600/20">
+              🔗 Buka Halaman Detail Insiden (Web App)
+            </a>
+          </div>
+        </div>
+
+        <p class="text-[10px] text-center text-gray-500">
+          ⚙️ AFS Sentinel • Automated After-Market Audit Pipeline
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="border-t border-gray-900 bg-[#080C14] px-6 py-4 text-center text-xs text-gray-500">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+      <span>Sectors Hackathon 2026 — Track 2: Automation & Workflows</span>
+      <span class="font-mono text-gray-400">Autonomous Forensic Sentinel (AFS) © 2026</span>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // Toggle Telegram Simulation Modal
+    function toggleTelegramSimulation() {
+      const modal = document.getElementById('telegramModal');
+      modal.classList.toggle('hidden');
+    }
+
+    // Initialize Chart.js
+    const ctx = document.getElementById('divergenceChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['2024-Q4', '2025-Q1', '2025-Q2', '2025-Q3 (Flagged)'],
+        datasets: [
+          {
+            label: 'Net Income (Laba Bersih)',
+            data: [150, 165, 190, 233],
+            backgroundColor: '#10b981',
+            borderRadius: 6,
+          },
+          {
+            label: 'Operating Cash Flow (Kas Operasi)',
+            data: [140, 110, 45, -185],
+            backgroundColor: '#ef4444',
+            borderRadius: 6,
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'top',
+            labels: {
+              color: '#9ca3af',
+              font: { family: 'Plus Jakarta Sans', size: 11 }
+            }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return context.dataset.label + ': Rp ' + context.parsed.y + ' Miliar';
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: { color: 'rgba(55, 65, 81, 0.3)' },
+            ticks: { color: '#9ca3af', font: { family: 'JetBrains Mono', size: 10 } }
+          },
+          y: {
+            grid: { color: 'rgba(55, 65, 81, 0.3)' },
+            ticks: {
+              color: '#9ca3af',
+              font: { family: 'JetBrains Mono', size: 10 },
+              callback: function(value) { return 'Rp ' + value + ' M'; }
+            }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
