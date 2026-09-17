@@ -1,0 +1,65 @@
+{% macro severity_badge(severity) -%}
+<span class="badge tone-{{ severity | severity_tone }}">{{ severity | severity_label }}</span>
+{%- endmacro %}
+
+{% macro finding_badge(status) -%}
+<span class="badge tone-{{ status | finding_tone }}">{{ status | finding_label }}</span>
+{%- endmacro %}
+
+{% macro low_confidence_badge() -%}
+<span class="badge tone-gray" title="Rule yang bisa dinilai berbobot kurang dari 50 dari 100">Keyakinan rendah</span>
+{%- endmacro %}
+
+{% macro triage_badge(status) -%}
+<span class="badge tone-gray">{{ status | triage_label }}</span>
+{%- endmacro %}
+
+{# dots: list of {name, subtitle, label, tone} in RULE_META order #}
+{% macro rule_dots(dots) -%}
+<span class="inline-flex items-center gap-1.5">
+  {% for d in dots %}
+    <span class="dot tone-{{ d.tone }}" title="{{ d.name }} ({{ d.subtitle }}): {{ d.label }}" aria-label="{{ d.name }}: {{ d.label }}" role="img"></span>
+  {% endfor %}
+</span>
+{%- endmacro %}
+
+{% macro rule_legend() -%}
+<ol class="text-xs muted flex flex-wrap gap-x-4 gap-y-1">
+  {% for meta in RULE_META.values() %}
+    <li><span style="color: var(--text)">{{ loop.index }}. {{ meta.name }}</span>: {{ meta.subtitle }}</li>
+  {% endfor %}
+</ol>
+{%- endmacro %}
+
+{# Generic renderer for rule-specific extras: scalars, dicts, lists of dicts, lists of scalars #}
+{% macro render_value(v) -%}
+{% if v is mapping %}
+  <dl class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">
+    {% for k, item in v.items() %}
+      <dt class="muted">{{ k }}</dt><dd>{{ render_value(item) }}</dd>
+    {% endfor %}
+  </dl>
+{% elif v is iterable and v is not string %}
+  {% set items = v | list %}
+  {% if items and items[0] is mapping %}
+    {% set ns = namespace(keys=[]) %}
+    {% for row in items %}{% for k in row.keys() %}{% if k not in ns.keys %}{% set ns.keys = ns.keys + [k] %}{% endif %}{% endfor %}{% endfor %}
+    <div class="overflow-x-auto">
+      <table class="ledger">
+        <thead><tr>{% for k in ns.keys %}<th>{{ k }}</th>{% endfor %}</tr></thead>
+        <tbody>
+          {% for row in items %}
+            <tr>{% for k in ns.keys %}<td>{{ render_value(row.get(k)) }}</td>{% endfor %}</tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% elif items %}
+    {{ items | map('value') | join(', ') }}
+  {% else %}
+    <span class="muted">(kosong)</span>
+  {% endif %}
+{% else %}
+  {{ v | value }}
+{% endif %}
+{%- endmacro %}

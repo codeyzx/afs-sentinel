@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}AFS Sentinel{% endblock %} · AFS Sentinel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Spectral:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.4/dist/htmx.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
+  {% block head %}{% endblock %}
+  <link rel="stylesheet" href="{{ url_for('static', path='app.css') }}">
+</head>
+<body class="min-h-screen flex flex-col">
+  <header class="border-b hairline">
+    <div class="mx-auto max-w-6xl px-4 py-3 flex flex-wrap items-center gap-x-6 gap-y-2">
+      <a href="/" class="flex items-baseline gap-2 hover:no-underline" style="color: var(--text)">
+        <span class="font-display text-xl font-semibold">AFS Sentinel</span>
+        <span class="muted text-sm hidden sm:inline">pengawas dini laporan keuangan emiten</span>
+      </a>
+      <nav class="flex items-center gap-5 text-sm order-3 sm:order-none w-full sm:w-auto" aria-label="Navigasi utama">
+        {% set nav = [("/", "Dashboard"), ("/backtest", "Backtest"), ("/logs", "Log Audit")] %}
+        {% for href, label in nav %}
+          <a class="nav-link" href="{{ href }}" {% if current_path == href %}aria-current="page"{% endif %}>{{ label }}</a>
+        {% endfor %}
+      </nav>
+      <div class="ml-auto text-sm">
+        {% if logged_in %}
+          <form method="post" action="/logout" class="inline">
+            <button type="submit" class="btn btn-ghost btn-sm">Keluar</button>
+          </form>
+        {% else %}
+          <a href="/login?next={{ current_path | urlencode }}" class="btn btn-ghost btn-sm">Masuk</a>
+        {% endif %}
+      </div>
+    </div>
+  </header>
+
+  {% if flashes %}
+  <div class="mx-auto max-w-6xl w-full px-4 pt-4 space-y-2" role="status">
+    {% for f in flashes %}
+      <p class="panel stripe tone-{{ f.tone }} px-4 py-2"><span style="color: var(--text)">{{ f.message }}</span></p>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <main class="mx-auto max-w-6xl w-full px-4 py-6 flex-1">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="border-t hairline">
+    <p class="mx-auto max-w-6xl px-4 py-4 text-xs muted">Sectors Hackathon 2026 · AFS Sentinel</p>
+  </footer>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

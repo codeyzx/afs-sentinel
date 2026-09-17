@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Log Audit{% endblock %}
+{% block content %}
+<h1 class="font-display text-2xl font-semibold">Log Audit Run</h1>
+<p class="muted text-sm">Setiap Audit Run tercatat, termasuk yang tidak menemukan apa pun. Klik baris untuk membaca log teks.</p>
+
+{% if runs %}
+<div class="panel mt-4 overflow-x-auto">
+  <table class="ledger">
+    <thead>
+      <tr>
+        <th>Mulai</th>
+        <th>Selesai</th>
+        <th class="num">Durasi</th>
+        <th>Pemicu</th>
+        <th class="num">Dipindai / gagal</th>
+        <th class="num">Incident baru</th>
+        <th class="num">Escalation</th>
+        <th class="num">Kredit API</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    {% for run in runs %}
+      {% set tone = {"SUCCESS": "green", "FAILED": "red"}.get(run.status, "yellow") %}
+      {% set status_label = {"SUCCESS": "Berhasil", "FAILED": "Gagal", "RUNNING": "Sedang berjalan"}.get(run.status, run.status) %}
+      <tbody class="row-group" x-data="{ open: false }">
+        <tr class="cursor-pointer" @click="open = !open" @keydown.enter="open = !open" tabindex="0" :aria-expanded="open">
+          <td class="whitespace-nowrap">{{ run.started_at | wib }}</td>
+          <td class="whitespace-nowrap">{{ run.finished_at | wib }}</td>
+          <td class="num whitespace-nowrap">{{ fmt_duration(run.started_at, run.finished_at) }}</td>
+          <td>{{ "Terjadwal" if run.trigger == "SCHEDULER" else "Manual" }}</td>
+          <td class="num">{{ run.emiten_scanned | num }} / {{ run.emiten_failed | num }}</td>
+          <td class="num">{{ run.incidents_new | num }}</td>
+          <td class="num">{{ run.escalations | num }}</td>
+          <td class="num">{{ run.credits_used | num }}</td>
+          <td><span class="badge tone-{{ tone }}">{{ status_label }}</span></td>
+        </tr>
+        <tr x-show="open" x-cloak>
+          <td colspan="9" style="background: var(--panel-2)">
+            {% if run.error %}<p class="tone-red text-sm mb-2">Alasan gagal: {{ run.error }}</p>{% endif %}
+            {% if run.log_text %}
+              <pre class="log">{{ run.log_text }}</pre>
+            {% else %}
+              <p class="muted text-sm">Log teks kosong.</p>
+            {% endif %}
+          </td>
+        </tr>
+      </tbody>
+    {% endfor %}
+  </table>
+</div>
+{% else %}
+  <p class="panel mt-4 px-4 py-6 muted">Belum ada Audit Run. Audit Run terjadwal berjalan setiap Sabtu 08:00 WIB, atau jalankan manual dari Dashboard.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+{% from "_macros.html" import severity_badge, finding_badge, low_confidence_badge, triage_badge, render_value %}
+{% block title %}{{ incident.event_id }}{% endblock %}
+{% block content %}
+{% set tk = incident.symbol | ticker %}
+
+{# 1. Verdict #}
+<section aria-labelledby="verdict" class="stripe tone-{{ incident.severity | severity_tone }} pl-4 sm:pl-6">
+  <p class="text-sm muted">Incident {{ incident.event_id }}{% if company_name %} · {{ company_name }}{% endif %}</p>
+  <h1 id="verdict" class="font-display text-2xl sm:text-3xl leading-snug mt-1 max-w-4xl" style="color: var(--text)">
+    {{ tk }} — <strong class="tone-{{ incident.severity | severity_tone }}">{{ incident.severity | severity_label }}</strong> ({{ incident.score | score }}/100).
+    {{ top_headline }}
+  </h1>
+  <dl class="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-3 text-sm" style="color: var(--text)">
+    <div><dt class="muted">Report Period</dt><dd class="font-semibold">{{ incident.report_date | period }}</dd></div>
+    <div><dt class="muted">Terdeteksi</dt><dd>{{ incident.created_at | wib }}</dd></div>
+    <div><dt class="muted">Diperbarui</dt><dd>{{ incident.updated_at | wib }}</dd></div>
+    <div><dt class="muted">Status triage</dt><dd>{{ triage_badge(incident.triage_status) }}</dd></div>
+  </dl>
+  {% if incident.low_confidence or incident.severity_reason %}
+    <p class="mt-3 flex flex-wrap gap-2" style="color: var(--text)">
+      {% if incident.low_confidence %}{{ low_confidence_badge() }}{% endif %}
+      {% if incident.severity_reason %}<span class="badge tone-yellow">{{ incident.severity_reason }}</span>{% endif %}
+    </p>
+  {% endif %}
+</section>
+
+{# 2. Why flagged #}
+<section class="mt-10" aria-labelledby="why-heading">
+  <h2 id="why-heading" class="font-display text-xl font-semibold">Kenapa ditandai</h2>
+  <p class="muted text-sm">Satu kartu per Forensic Rule, urut Bahaya, Waspada, Aman, lalu Tak bisa dinilai. Buka rinciannya untuk melihat angka mentah dan sumbernya.</p>
+  {% if findings %}
+  <div class="mt-4 grid gap-3 md:grid-cols-2">
+    {% for f in findings %}
+      {% set inputs = f.inputs or {} %}
+      {% set extras = inputs.items() | rejectattr('0', 'in', ['values', 'formula', 'endpoint', 'note']) | list %}
+      <article class="panel stripe tone-{{ f.status | finding_tone }} p-4" x-data="{ open: false }" style="color: var(--text)">
+        <header class="flex items-start justify-between gap-3">
+          <div>
+            <h3 class="font-semibold">{{ f.rule_id | rule_name }}</h3>
+            <p class="text-sm muted">{{ f.rule_id | rule_subtitle }}</p>
+          </div>
+          {{ finding_badge(f.status) }}
+        </header>
+        <p class="mt-3 text-2xl font-semibold tone-{{ f.status | finding_tone }}">{{ f.rule_id | finding_value(f.value) }}</p>
+        <p class="mt-1">{{ f.headline }}</p>
+        {% if f.missing %}<p class="mt-1 text-sm muted">Data tidak tersedia: {{ f.missing }}</p>{% endif %}
+
+        <button type="button" class="mt-3 text-sm" style="color: var(--accent)" @click="open = !open" :aria-expanded="open">
+          <span x-text="open ? 'Tutup rincian' : 'Lihat rincian perhitungan'">Lihat rincian perhitungan</span>
+        </button>
+        <div x-show="open" x-cloak class="mt-3 space-y-3 text-sm border-t hairline pt-3">
+          {% if inputs.formula %}
+            <div><p class="muted">Formula</p><p class="font-medium break-words">{{ inputs.formula }}</p></div>
+          {% endif %}
+          {% if inputs["values"] %}
+            <div>
+              <p class="muted">Input dari laporan</p>
+              <div class="overflow-x-auto">
+                <table class="ledger">
+                  <thead><tr><th>Field</th><th>Tanggal laporan</th><th class="num">Nilai</th></tr></thead>
+                  <tbody>
+                    {% for v in inputs["values"] %}
+                      <tr><td>{{ v.field }}</td><td>{{ v.report_date }}</td><td class="num">{{ v.value | value }}</td></tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          {% endif %}
+          {% if f.thresholds %}
+            <div><p class="muted">Ambang</p>{{ render_value(f.thresholds) }}</div>
+          {% endif %}
+          {% if inputs.endpoint %}
+            <div><p class="muted">Endpoint sumber</p><p class="break-all">{{ inputs.endpoint }}</p></div>
+          {% endif %}
+          {% if inputs.note %}
+            <div><p class="muted">Catatan</p><p>{{ inputs.note }}</p></div>
+          {% endif %}
+          {% if f.rule_id | rule_limitation %}
+            <div><p class="muted">Keterbatasan metode</p><p>{{ f.rule_id | rule_limitation }}</p></div>
+          {% endif %}
+          {% for key, val in extras %}
+            <div><p class="muted">{{ key }}</p>{{ render_value(val) }}</div>
+          {% endfor %}
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+  {% else %}
+    <p class="mt-3 panel px-4 py-6 muted">Incident ini belum memiliki Rule Finding.</p>
+  {% endif %}
+</section>
+
+{# 3. Chart #}
+{% if chart %}
+<section class="mt-10" aria-labelledby="chart-heading">
+  <h2 id="chart-heading" class="font-display text-xl font-semibold">Laba bersih vs arus kas operasi</h2>
+  <p class="muted text-sm">Per kuartal, dalam miliar rupiah. Sumber: /v2/financials/quarterly/</p>
+  <div class="panel mt-3 p-4">
+    <div class="relative h-72"><canvas id="cash-chart" aria-label="Grafik laba bersih dan arus kas operasi per kuartal" role="img"></canvas></div>
+  </div>
+  <script type="application/json" id="chart-data">{{ chart | tojson }}</script>
+</section>
+{% endif %}
+
+{# 4. Triage panel #}
+<section id="triage" class="mt-10" aria-labelledby="triage-heading">
+  <h2 id="triage-heading" class="font-display text-xl font-semibold">Triage</h2>
+  <div class="panel mt-3 p-4">
+    {% if logged_in %}
+      <form method="post" action="/incidents/{{ incident.event_id }}/triage" class="grid gap-3 md:grid-cols-[16rem_1fr] md:items-start">
+        <label class="block text-sm">
+          <span class="muted">Status</span>
+          <select name="status" class="field mt-1">
+            {% for opt in triage_options %}
+              <option value="{{ opt.value }}" {% if opt.value == incident.triage_status %}selected{% endif %}>{{ TRIAGE_LABEL[opt] }}</option>
+            {% endfor %}
+          </select>
+        </label>
+        <label class="block text-sm">
+          <span class="muted">Catatan analis</span>
+          <textarea name="notes" rows="4" class="field mt-1">{{ incident.analyst_notes }}</textarea>
+        </label>
+        <div class="md:col-start-2"><button type="submit" class="btn">Simpan triage</button></div>
+      </form>
+    {% else %}
+      <p style="color: var(--text)">Status: {{ triage_badge(incident.triage_status) }}</p>
+      {% if incident.analyst_notes %}<p class="mt-2 whitespace-pre-line">{{ incident.analyst_notes }}</p>{% endif %}
+      <p class="mt-3"><a class="btn btn-ghost" href="/login?next=/incidents/{{ incident.event_id }}">Masuk untuk mengubah status</a></p>
+    {% endif %}
+  </div>
+</section>
+
+{# 5. History #}
+<section class="mt-10" aria-labelledby="history-heading">
+  <h2 id="history-heading" class="font-display text-xl font-semibold">Riwayat</h2>
+  {% if events %}
+    <ol class="mt-3 border-l hairline ml-2 space-y-4">
+      {% for e in events %}
+        <li class="pl-4 relative">
+          <span class="dot tone-{{ {'ESCALATED': 'red', 'DOWNGRADED': 'green', 'CREATED': 'yellow'}.get(e.kind, 'gray') }} absolute -left-[0.45rem] top-1.5"></span>
+          <p>{{ e.text }}</p>
+          <p class="text-sm muted">{{ e.at | wib(true) }}</p>
+        </li>
+      {% endfor %}
+    </ol>
+  {% else %}
+    <p class="mt-3 muted">Belum ada riwayat.</p>
+  {% endif %}
+</section>
+{% endblock %}
+
+{% block scripts %}
+{% if chart %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script>
+  (function () {
+    const rows = JSON.parse(document.getElementById("chart-data").textContent);
+    const css = getComputedStyle(document.documentElement);
+    const c = (n) => css.getPropertyValue(n).trim();
+    const nf = new Intl.NumberFormat("id-ID", { maximumFractionDigits: 1 });
+    new Chart(document.getElementById("cash-chart"), {
+      type: "bar",
+      data: {
+        labels: rows.map((r) => r.label),
+        datasets: [
+          { label: "Laba bersih", data: rows.map((r) => r.earnings), backgroundColor: c("--accent"), borderRadius: 3 },
+          { label: "Arus kas operasi", data: rows.map((r) => r.ocf), backgroundColor: c("--yellow"), borderRadius: 3 },
+        ],
+      },
+      options: {
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { labels: { color: c("--text") } },
+          tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: Rp${nf.format(ctx.parsed.y)} miliar` } },
+        },
+        scales: {
+          x: { ticks: { color: c("--muted") }, grid: { color: c("--line") } },
+          y: { ticks: { color: c("--muted"), callback: (v) => nf.format(v) }, grid: { color: c("--line") },
+               title: { display: true, text: "miliar Rp", color: c("--muted") } },
+        },
+      },
+    });
+  })();
+</script>
+{% endif %}
+{% endblock %}

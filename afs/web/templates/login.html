@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Masuk{% endblock %}
+{% block content %}
+<section class="max-w-sm mx-auto mt-6">
+  <h1 class="font-display text-2xl font-semibold">Masuk sebagai analis</h1>
+  <p class="mt-1 muted text-sm">Semua halaman bisa dibaca tanpa masuk. Password dibutuhkan untuk mengubah triage dan menjalankan Audit Run.</p>
+  <form method="post" action="/login" class="panel mt-4 p-4 space-y-3">
+    <input type="hidden" name="next" value="{{ next }}">
+    <label class="block text-sm">
+      <span class="muted">Password</span>
+      <input type="password" name="password" class="field mt-1" autocomplete="current-password" required autofocus
+        {% if error %}aria-invalid="true" aria-describedby="login-error"{% endif %}>
+    </label>
+    {% if error %}<p id="login-error" class="text-sm tone-red">{{ error }} Coba lagi.</p>{% endif %}
+    <button type="submit" class="btn w-full">Masuk</button>
+  </form>
+</section>
+{% endblock %}
