@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import importlib
 import logging
 import sys
 from datetime import datetime, timezone
@@ -55,7 +56,7 @@ def cmd_run(scheduled: bool) -> int:
 
 def cmd_backtest(argv: list[str]) -> int:
     try:
-        from afs import backtest
+        backtest = importlib.import_module("afs.backtest")
     except ImportError as exc:
         print(f"Modul backtest belum tersedia: {exc}", file=sys.stderr)
         return 1
