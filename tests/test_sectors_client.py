@@ -107,3 +107,39 @@ def test_quarterly_dates_and_overview_parse():
     assert client.quarterly_dates("WSKT.JK")["2026"][-1] == ["2026-06-30", "q2"]
     assert client.company_overview("ASII.JK")["overview"]["sector"] == "Industrials"
     assert client.credits_used == 1
+
+
+def test_rate_limit_waits_long_and_honours_retry_after():
+    calls = iter([
+        httpx.Response(429, json={"error": "RATE_LIMIT_EXCEEDED"}),
+        httpx.Response(429, headers={"retry-after": "7"}),
+        httpx.Response(200, json={"symbol": "ASII.JK"}),
+    ])
+    waits = []
+    http = httpx.Client(transport=httpx.MockTransport(lambda req: next(calls)))
+    client = SectorsClient("k", base_url="https://api.test", http=http, sleep=waits.append, min_interval=0)
+    assert client.corporate_actions("ASII.JK") == {"symbol": "ASII.JK"}
+    assert waits == [20.0, 7.0]
+
+
+def test_rate_limit_gives_up_after_budget():
+    http = httpx.Client(transport=httpx.MockTransport(lambda req: httpx.Response(429)))
+    client = SectorsClient("k", base_url="https://api.test", http=http, sleep=lambda _: None, rate_limit_retries=2)
+    with pytest.raises(SectorsApiError):
+        client.corporate_actions("ASII.JK")
+
+
+def test_requests_are_spaced_by_min_interval():
+    now = [100.0]
+    waits = []
+
+    def sleep(s):
+        waits.append(round(s, 2))
+        now[0] += s
+
+    http = httpx.Client(transport=httpx.MockTransport(lambda req: httpx.Response(200, json={})))
+    client = SectorsClient("k", base_url="https://api.test", http=http, sleep=sleep, clock=lambda: now[0], min_interval=1.5)
+    client.corporate_actions("A.JK")
+    now[0] += 0.5
+    client.corporate_actions("B.JK")
+    assert waits == [1.0]

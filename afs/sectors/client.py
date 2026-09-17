@@ -13,7 +13,8 @@ from afs.config import get_settings
 
 log = logging.getLogger(__name__)
 
-RETRY_STATUSES = frozenset({429, 500, 502, 503, 504})
+RETRY_STATUSES = frozenset({500, 502, 503, 504})
+RATE_LIMITED = 429
 MAX_FILING_PAGES = 10
 
 
@@ -31,6 +32,10 @@ class SectorsClient:
         retries: int = 2,
         backoff: float = 1.0,
         sleep: Callable[[float], None] = time.sleep,
+        min_interval: float = 1.5,
+        rate_limit_retries: int = 5,
+        rate_limit_wait: float = 20.0,
+        clock: Callable[[], float] = time.monotonic,
     ) -> None:
         settings = get_settings()
         key = settings.sectors_api_key if api_key is None else api_key
@@ -40,6 +45,13 @@ class SectorsClient:
         self._retries = retries
         self._backoff = backoff
         self._sleep = sleep
+        # The API enforces a short burst limit (HTTP 429 RATE_LIMIT_EXCEEDED that clears within a minute),
+        # so requests are spaced out and 429s wait much longer than ordinary transient errors.
+        self._min_interval = min_interval
+        self._rate_limit_retries = rate_limit_retries
+        self._rate_limit_wait = rate_limit_wait
+        self._clock = clock
+        self._last_request: float | None = None
         self.credits_used = 0
 
     # ------------------------------------------------------------ transport
@@ -47,7 +59,9 @@ class SectorsClient:
     def _get(self, path: str, params: dict[str, Any] | None = None) -> Any:
         url = f"{self._base_url}{path}"
         attempt = 0
+        limited = 0
         while True:
+            self._throttle()
             try:
                 resp = self._http.get(url, params=params, headers=self._headers, timeout=30.0)
             except httpx.TransportError as exc:
@@ -57,6 +71,12 @@ class SectorsClient:
                     continue
                 raise SectorsApiError(f"GET {path} gagal: {exc}") from exc
             self._count_credits(resp)
+            if resp.status_code == RATE_LIMITED and limited < self._rate_limit_retries:
+                limited += 1
+                wait = self._retry_after(resp) or min(self._rate_limit_wait * limited, 60.0)
+                log.warning("Sectors API %s -> 429, tunggu %.0f dtk (percobaan %d)", path, wait, limited)
+                self._sleep(wait)
+                continue
             if resp.status_code in RETRY_STATUSES and attempt < self._retries:
                 attempt += 1
                 log.warning("Sectors API %s -> %s, retry %d", path, resp.status_code, attempt)
@@ -68,6 +88,22 @@ class SectorsClient:
                 return resp.json()
             except ValueError as exc:
                 raise SectorsApiError(f"GET {path}: respons bukan JSON") from exc
+
+    def _throttle(self) -> None:
+        now = self._clock()
+        if self._last_request is not None:
+            wait = self._min_interval - (now - self._last_request)
+            if wait > 0:
+                self._sleep(wait)
+                now = self._clock()
+        self._last_request = now
+
+    @staticmethod
+    def _retry_after(resp: httpx.Response) -> float | None:
+        try:
+            return float(resp.headers["retry-after"])
+        except (KeyError, ValueError):
+            return None
 
     def _count_credits(self, resp: httpx.Response) -> None:
         raw = resp.headers.get("limit-consumption")
