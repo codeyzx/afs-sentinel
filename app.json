@@ -1,0 +1,43 @@
+{
+  "name": "AFS Sentinel",
+  "description": "Autonomous Forensic Sentinel: early-warning forensic screening of IDX Emiten with Telegram alerts.",
+  "keywords": ["python", "fastapi", "forensic-accounting", "idx", "sectors"],
+  "buildpacks": [{ "url": "heroku/python" }],
+  "formation": {
+    "web": { "quantity": 1, "size": "basic" }
+  },
+  "addons": [
+    { "plan": "heroku-postgresql:essential-0", "as": "DATABASE" },
+    { "plan": "scheduler:standard" }
+  ],
+  "env": {
+    "DATABASE_URL": {
+      "description": "Postgres connection string. Set automatically by the heroku-postgresql add-on; do not set manually.",
+      "required": false
+    },
+    "SECTORS_API_KEY": {
+      "description": "Sectors API key (https://sectors.app).",
+      "required": true
+    },
+    "TELEGRAM_BOT_TOKEN": {
+      "description": "Telegram bot token from @BotFather.",
+      "required": true
+    },
+    "TELEGRAM_CHAT_ID": {
+      "description": "Chat id of the Analyst that receives alerts (see README: getUpdates).",
+      "required": true
+    },
+    "BASE_WEB_URL": {
+      "description": "Public URL of this app without trailing slash, e.g. https://afs-sentinel.herokuapp.com. Used in Telegram deep links.",
+      "required": true
+    },
+    "ADMIN_PASSWORD": {
+      "description": "Password for write actions (triage, notes, Run now).",
+      "required": true
+    },
+    "SESSION_SECRET": {
+      "description": "Secret used to sign session cookies.",
+      "generator": "secret"
+    }
+  }
+}
