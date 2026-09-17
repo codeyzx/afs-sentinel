@@ -1,0 +1,22 @@
+HTTP 200
+date: Thu, 17 Sep 2026 17:41:36 GMT
+content-type: application/json
+transfer-encoding: chunked
+connection: keep-alive
+server: cloudflare
+x-robots-tag: noindex, nofollow
+limit-consumption: 1
+allow: GET, HEAD, OPTIONS
+x-frame-options: DENY
+nel: {"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}
+vary: origin, accept-encoding
+x-content-type-options: nosniff
+referrer-policy: same-origin
+cross-origin-opener-policy: same-origin
+via: 1.1 fly.io
+fly-request-id: 01M2R7BAVG4K22YVQMWBBNEM73-sin
+cf-cache-status: DYNAMIC
+report-to: {"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=j7Ze%2BPliilMczq3RCtKOcPKHT%2BhCumUOckra%2Fe9ef7RlwgrMELQRm1gRZq5fFv6Clc9HtTeg4qV1%2FNte1xW0b5Ggz5iVG2%2BnXrz6ng5O%2BRDZi6%2FaUPriBtf%2FwZ9oBojVY8ht0GWATns6498PRM8%3D"}]}
+content-encoding: gzip
+cf-ray: a3c9e718aeeb895f-SIN
+alt-svc: h3=":443"; ma=86400
