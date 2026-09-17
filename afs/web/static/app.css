@@ -72,7 +72,7 @@ table.ledger th {
 }
 table.ledger td { padding: .6rem .75rem; border-bottom: 1px solid var(--line); vertical-align: top; }
 table.ledger tbody.row-group:hover td { background: rgb(27 45 56 / .6); }
-.num { text-align: right; }
+table.ledger .num { text-align: right; }
 
 pre.log {
   background: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: .8rem;

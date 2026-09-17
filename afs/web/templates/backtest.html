@@ -174,6 +174,7 @@
           scales: {
             x: {
               type: "linear", min: minX - 0.3, max: maxX + 0.3,
+              afterBuildTicks: (axis) => { axis.ticks = d.labels.map((_, i) => ({ value: i })); },
               ticks: { stepSize: 1, color: c("--muted"), autoSkip: true, maxRotation: 60,
                        callback: (v) => Number.isInteger(v) && d.labels[v] ? d.labels[v] : "" },
               grid: { color: c("--line") },
