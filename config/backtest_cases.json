@@ -1,0 +1,36 @@
+{
+  "cases": [
+    {
+      "case_id": "WSKT",
+      "symbol": "WSKT.JK",
+      "company_name": "Waskita Karya (Persero) Tbk",
+      "events": [
+        {
+          "date": "2023-05-08",
+          "label": "BEI menghentikan sementara perdagangan saham WSKT karena penundaan bunga obligasi",
+          "source_url": "https://investasi.kontan.co.id/news/perdagangan-saham-waskita-karya-wskt-dihentikan-sementara-oleh-bei",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "case_id": "SRIL",
+      "symbol": "SRIL.JK",
+      "company_name": "Sri Rejeki Isman Tbk",
+      "events": [
+        {
+          "date": "2021-05-18",
+          "label": "BEI menyuspensi saham SRIL karena penundaan pembayaran pokok dan bunga MTN",
+          "source_url": "https://market.bisnis.com/read/20210518/192/1394902/sritex-sril-tunda-bayar-mtn-sahamnya-kena-suspensi-bei",
+          "verified": true
+        },
+        {
+          "date": "2024-10-21",
+          "label": "Pengadilan Niaga Semarang menyatakan Sritex pailit",
+          "source_url": "https://kabar24.bisnis.com/read/20241024/16/1810395/fakta-terkait-pn-semarang-putus-pailit-sritex-sril",
+          "verified": true
+        }
+      ]
+    }
+  ]
+}
