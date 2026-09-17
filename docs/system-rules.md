@@ -35,6 +35,8 @@ Bukti mentah di `.scratch/api-verification/`.
 
 - `GET /v2/financials/quarterly/{symbol}/` — angka arus (revenue, earnings, OCF) **diskrit per kuartal**, bukan akumulasi YTD. Tanpa parameter mengembalikan 5 kuartal terakhir; `report_date=YYYY-MM-DD` mengembalikan tepat satu kuartal.
 - Kredit dipotong **per kuartal yang dikembalikan** (header `limit-consumption`). Key utama berisi 500 kredit.
+- `GET /v2/company/get_quarterly_financial_dates/{symbol}/` — daftar Report Period yang tersedia; tanpa potongan kredit. `GET /v2/company/report/{symbol}/?sections=overview` (nama & sektor) memotong 1 kredit, diambil sekali per Emiten.
+- Ada batas laju jangka pendek: burst beberapa request per detik dibalas `429 RATE_LIMIT_EXCEEDED` dan pulih dalam ±1 menit. Client memberi jeda 1,5 detik antar-request dan menunggu 20–60 detik saat 429.
 - Data kuartalan hanya tersedia **sejak 2020-Q1**.
 - Tidak ada field piutang usaha; `retained_earnings` tidak ada di data kuartalan; `ebit` kadang `null`.
 - `GET /v2/filings/?symbol=` — paginasi 20 baris; `holder_type` = `"insider"` mencakup direksi/komisaris **dan** pemegang saham ≥5%. Persentase dalam satuan persen (4.9 = 4,9%). Riwayat hanya ±1 tahun.
