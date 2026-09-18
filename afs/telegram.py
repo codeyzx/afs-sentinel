@@ -15,6 +15,12 @@ from afs.labels import SEVERITY_EMOJI, SEVERITY_LABEL, finding_sort_key
 
 log = logging.getLogger(__name__)
 
+
+def quiet_http_logging() -> None:
+    """httpx logs every request URL at INFO, and the Telegram URL embeds the bot token.
+    Entry points call this so the token never reaches Heroku's log drain."""
+    logging.getLogger("httpx").setLevel(logging.WARNING)
+
 MAX_FINDINGS = 3
 OPEN_INCIDENT_BUTTON = "Buka Incident"
 # Marks the one line an LLM wrote, so it can never be mistaken for a rule output (§7.1).

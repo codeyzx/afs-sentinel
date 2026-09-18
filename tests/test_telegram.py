@@ -155,3 +155,14 @@ def test_send_message_failure_returns_false(tg_settings):
     assert telegram.send_message("x", client=httpx.Client(transport=httpx.MockTransport(handler))) is False
     bad = httpx.Client(transport=httpx.MockTransport(lambda r: httpx.Response(400)))
     assert telegram.send_message("x", client=bad) is False
+
+
+def test_quiet_http_logging_hides_the_url_that_carries_the_bot_token():
+    """httpx logs request URLs at INFO, and the Telegram URL embeds the bot token."""
+    import logging
+
+    from afs.telegram import quiet_http_logging
+
+    logging.getLogger("httpx").setLevel(logging.INFO)
+    quiet_http_logging()
+    assert not logging.getLogger("httpx").isEnabledFor(logging.INFO)

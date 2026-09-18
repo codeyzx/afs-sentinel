@@ -85,6 +85,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     args_list = list(sys.argv[1:] if argv is None else argv)
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 
+    from afs.telegram import quiet_http_logging
+
+    quiet_http_logging()
+
     # backtest owns its own options (--case, --dry-run, ...): pass everything after the command through.
     if args_list and args_list[0] == "backtest":
         return cmd_backtest(args_list[1:])

@@ -14,7 +14,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
 
-from afs import labels, schedule
+from afs import labels, schedule, telegram
 from afs.config import Settings, get_settings
 from afs.db import session_scope
 from afs.domain import IncidentEventKind, RunTrigger, TriageStatus
@@ -121,6 +121,7 @@ def _backtest_chart(results: list[Any], events: list[Any]) -> dict[str, Any]:
 
 def create_app(settings: Settings | None = None) -> FastAPI:
     settings = settings or get_settings()
+    telegram.quiet_http_logging()  # a manual Audit Run sends Telegram from this process
     app = FastAPI(title="AFS Sentinel", docs_url=None, redoc_url=None, openapi_url=None)
     app.state.settings = settings
     app.add_middleware(SessionMiddleware, secret_key=settings.session_secret, same_site="lax")
