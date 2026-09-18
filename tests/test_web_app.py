@@ -188,3 +188,13 @@ def test_runs_starts_background_run(client, monkeypatch):
             break
         time.sleep(0.01)
     assert calls == ["MANUAL"]
+
+
+def test_rule_markers_never_rely_on_colour_alone(client):
+    """Each marker carries its rule number, and the page states what the colours mean."""
+    body = client.get("/").text
+    assert "dot-num" in body
+    # The colour key must be present, or a red marker means nothing to a first-time reader.
+    for label in ["Aman", "Waspada", "Bahaya", "Tak bisa dinilai"]:
+        assert label in body
+    assert "status-key" in body

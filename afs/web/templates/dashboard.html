@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% from "_macros.html" import severity_badge, low_confidence_badge, triage_badge, rule_legend %}
+{% from "_macros.html" import severity_badge, low_confidence_badge, triage_badge, rule_legend, status_key %}
 {% block title %}Dashboard{% endblock %}
 {% block content %}
 
@@ -89,7 +89,10 @@
     Semua emiten dipantau
     <span class="muted font-sans text-base font-normal">· {{ rows | length }}</span>
   </h2>
-  <div class="mt-2 panel px-4 py-3">
+  <div class="mt-2 panel px-4 py-4">
+    <p class="text-xs uppercase tracking-wide muted mb-2">Warna penanda = status rule</p>
+    {{ status_key() }}
+    <p class="text-xs uppercase tracking-wide muted mt-4 mb-2">Angka penanda = rule ke-berapa</p>
     {{ rule_legend() }}
   </div>
   {% if rows %}
@@ -120,9 +123,9 @@
               <template x-if="r.low_confidence"><span class="badge tone-gray mt-1" title="Rule yang bisa dinilai berbobot kurang dari 50 dari 100">Keyakinan rendah</span></template>
             </td>
             <td>
-              <span class="inline-flex items-center gap-1">
+              <span class="dot-row">
                 <template x-for="d in r.dots" :key="d.rule_id">
-                  <span class="dot-num" :class="'tone-' + d.tone" :title="d.number + '. ' + d.name + ' \u2014 ' + d.label" role="img" :aria-label="d.number + '. ' + d.name + ': ' + d.label"><span x-text="d.number"></span></span>
+                  <span class="dot-num" :class="'tone-' + d.tone" :title="d.number + '. ' + d.name + ' \u2014 ' + d.label" role="img" :aria-label="d.number + '. ' + d.name + ': ' + d.label" x-text="d.number"></span>
                 </template>
               </span>
               <template x-if="!r.evaluated"><span class="text-xs muted">Belum dinilai</span></template>

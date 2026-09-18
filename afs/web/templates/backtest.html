@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% from "_macros.html" import severity_badge, low_confidence_badge, rule_dots, rule_legend %}
+{% from "_macros.html" import severity_badge, low_confidence_badge, rule_dots, rule_legend, status_key %}
 {% block title %}Backtest{% endblock %}
 {% block content %}
 <h1 class="font-display text-2xl font-semibold">Backtest</h1>
@@ -55,7 +55,12 @@
       <script type="application/json" class="bt-chart-data" data-canvas="bt-chart-{{ cid }}">{{ v.chart | tojson }}</script>
 
       <h2 class="font-display text-xl font-semibold mt-8">Rule Finding per kuartal</h2>
-      <div class="mt-2">{{ rule_legend() }}</div>
+      <div class="mt-2 panel px-4 py-4">
+        <p class="text-xs uppercase tracking-wide muted mb-2">Warna penanda = status rule</p>
+        {{ status_key() }}
+        <p class="text-xs uppercase tracking-wide muted mt-4 mb-2">Angka penanda = rule ke-berapa</p>
+        {{ rule_legend() }}
+      </div>
       <div class="panel mt-3 overflow-x-auto">
         <table class="ledger">
           <thead><tr><th>Kuartal</th><th class="num">Skor</th><th>Severity</th><th>Status rule</th></tr></thead>
