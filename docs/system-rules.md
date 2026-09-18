@@ -45,7 +45,7 @@ Bukti mentah di `.scratch/api-verification/`.
 ### 2.2 Aturan pengambilan data
 1. Setiap respons API disimpan di Postgres (cache permanen). **Kuartal yang sudah tersimpan tidak pernah diambil ulang.**
 2. Tiap Audit Run, untuk tiap Emiten: tentukan kuartal yang dibutuhkan (lihat 2.3); ambil hanya yang belum ada di cache, satu per satu dengan `report_date=`.
-3. Filings dan corporate actions diambil ulang setiap Audit Run (murah/tanpa potongan kredit per kuartal — **verifikasi saat implementasi** dengan membaca header).
+3. Filings dan corporate actions diambil ulang setiap Audit Run. **Terverifikasi:** respons kedua endpoint tidak membawa header `limit-consumption` sama sekali, jadi keduanya tidak memotong kredit (`.scratch/api-verification/filings_BUMI.json.headers`, `corporate_actions_ASII.json.headers`). Karena kuartal yang sudah di-cache tidak pernah diambil ulang, Audit Run kedua dan seterusnya dalam satu kuartal hampir tidak memakai kredit.
 4. Setiap kredit yang terpakai dicatat per Audit Run (dari header `limit-consumption`).
 5. Saat development & test, gunakan fixture JSON, bukan API live.
 
@@ -322,13 +322,14 @@ Filing baru mengubah `INSIDER_SELLING` → skor dihitung ulang pada Report Perio
 ### 6.1 Pemicu
 | Pemicu | Mekanisme |
 |---|---|
-| `SCHEDULER` | Heroku Scheduler menjalankan `python -m afs run` **setiap hari 01:00 UTC (08:00 WIB)**. Perintah langsung keluar tanpa mencatat apa pun jika hari itu (WIB) bukan **Sabtu**. |
+| `SCHEDULER` | Heroku Scheduler menjalankan `python -m afs run --scheduled` **setiap hari 01:00 UTC (08:00 WIB)**. Perintah langsung keluar tanpa mencatat apa pun jika Audit Run **belum jatuh tempo**: jatuh tempo bila `Audit Run SUCCESS terakhir` sudah lebih dari `RUN_INTERVAL_DAYS` (default **3 hari**) yang lalu, atau belum pernah ada satu pun run sukses. Anchor-nya run sukses terakhir, bukan kalender, supaya hari yang terlewat dikejar pada tick berikutnya. Run `FAILED` bukan anchor. |
 | `MANUAL` | Tombol "Run now" (butuh password) memanggil entry point yang sama, tanpa cek hari. |
 
 ### 6.2 Aturan eksekusi
 1. Hanya satu Audit Run boleh berjalan; permintaan kedua ditolak dengan pesan "Audit Run sedang berjalan" (lock di Postgres).
-2. Urutan: muat Universe → ambil data (§2.2) → evaluasi 6 rule per Emiten → skor & severity → proses Incident (§5.2) → kirim Telegram → tulis ringkasan run.
+2. Urutan: muat Universe → ambil data (§2.2) → evaluasi 6 rule per Emiten → skor & severity → proses Incident (§5.2) → **buat Incident Insight** (§7.3) → kirim Telegram → tulis ringkasan run.
 3. Kegagalan satu Emiten (API error, data rusak) **tidak menghentikan run**: Emiten dicatat sebagai gagal di log dan dilewati.
+3b. Kegagalan pembuatan Incident Insight **tidak pernah menggagalkan run**: Insight dibiarkan kosong dan alasannya dicatat di log run.
 4. `execution_status`:
    - `SUCCESS` — run selesai (walau ada Emiten yang gagal; jumlahnya dicatat);
    - `FAILED` — run berhenti total (misal DB tidak bisa diakses, semua request API gagal).
@@ -358,6 +359,9 @@ Skor 75/100 · Laporan 2025-Q3
 ```
 
 Emoji severity: 🔴 Kritis, 🟡 Sedang.
+
+### 7.3 Incident Insight di pesan
+Bila Incident Insight tersedia, satu baris `apa_yang_terjadi` disisipkan setelah baris skor, dicetak miring dan diawali 🤖 supaya tidak tertukar dengan keluaran rule. Bila tidak tersedia (Gemini gagal atau `GEMINI_API_KEY` kosong), baris itu hilang dan pesan tetap dikirim apa adanya.
 
 ### 7.2 Ringkasan Audit Run
 Dikirim **setiap** run selesai, termasuk jika hasilnya nol:
@@ -408,26 +412,29 @@ Nilai enum di kode/DB mengikuti glossary; UI memakai label berikut secara konsis
 Nama metode tetap (Sloan, Beneish, Altman) dan **selalu** disertai subjudul awam (§3 Ringkasan). Tema gelap, kontras teks minimal WCAG AA.
 
 ### 9.2 Prinsip
-**Setiap angka dan kalimat di layar harus bisa dilacak ke data API atau ke aturan di dokumen ini.** Karena itu dibuang dari mockup: Export PDF, "Analis Penanggung Jawab", "Rekomendasi Aksi Sistem", klaim "92% identik", banner Inbound Referral, penghitung kredit sisa (API tidak menyediakannya), menu Watchlist, warna ungu khusus insider, DSRI.
+**Setiap angka dan kalimat di layar harus bisa dilacak ke data API atau ke aturan di dokumen ini.**
+
+_Pengecualian tunggal:_ blok **Ringkasan AI** (Incident Insight, ADR-0003) berisi kalimat yang ditulis LLM. Blok itu wajib diberi label AI, wajib menyatakan bahwa angka resmi ada di Rule Finding di bawahnya, dan tidak pernah mempengaruhi Composite Risk Score maupun Incident Severity. Di luar blok berlabel itu, aturan di atas berlaku penuh. Karena itu dibuang dari mockup: Export PDF, "Analis Penanggung Jawab", "Rekomendasi Aksi Sistem", klaim "92% identik", banner Inbound Referral, penghitung kredit sisa (API tidak menyediakannya), menu Watchlist, warna ungu khusus insider, DSRI.
 
 ### 9.3 Halaman
 
 **`/` — Dashboard**
-1. Status Audit Run terakhir (berhasil/gagal, waktu, jumlah Emiten) + jadwal run berikutnya + tombol "Run now" (password).
+1. Status sistem: hasil Audit Run terakhir (status, waktu, jumlah Emiten, Incident baru), **pemicu ditulis "Otomatis · sistem" / "Manual · analis"**, jadwal run berikutnya (= run sukses terakhir + `RUN_INTERVAL_DAYS`; "belum diketahui" bila belum pernah sukses), tombol "Jalankan sekarang" (password).
 2. Tiga angka: jumlah Emiten Kritis / Sedang / Rendah.
 3. Antrean triage: Incident `UNTRIAGED` di atas, lalu status lain; urut skor tertinggi.
-4. Tabel Universe: semua Emiten — skor, severity, badge status per rule, label Low Confidence; bisa diurutkan; baris bisa dibuka untuk melihat Rule Finding.
+4. Tabel Universe: semua Emiten — skor, severity, **enam penanda rule bernomor 1–6 sesuai urutan §3 Ringkasan** (nomor = posisi tetap, bukan peringkat; warna = status), label Low Confidence; bisa diurutkan; baris bisa dibuka untuk melihat Rule Finding. Legenda bernomor memakai penanda yang sama persis agar pemetaan nomor → rule terbaca tanpa keterangan tambahan.
 
 **`/incidents/{event_id}` — Detail Incident** (tujuan link Telegram), urutan dari atas:
 1. **Vonis:** satu kalimat ("EMTK — **Kritis** (75/100). Laba tumbuh tapi kas operasi tidak ikut."), Report Period, waktu terdeteksi, Triage Status, label Low Confidence / alasan lantai severity.
-2. **Kenapa ditandai:** satu kartu per rule, urut Bahaya → Waspada → Aman → Tak bisa dinilai. Kartu: nama + subjudul awam, angka utama, headline. **Bisa dibuka:** formula, input mentah + tanggal laporan, ambang, endpoint sumber, catatan keterbatasan.
-3. **Grafik:** laba bersih vs arus kas operasi, 5 kuartal.
-4. **Panel triage:** ubah status + catatan (password).
-5. **Riwayat:** dibuat, Escalation, severity turun, perubahan status.
+2. **Ringkasan AI** (Incident Insight, §9.2 & ADR-0003): apa yang terjadi, kenapa penting, yang perlu dicek. Bergaya visual berbeda dari kartu rule, menyebut model dan waktu pembuatan, dan punya tombol buat/buat ulang (password). Kosong bila belum pernah berhasil dibuat.
+3. **Bukti perhitungan:** satu kartu per rule, urut Bahaya → Waspada → Aman → Tak bisa dinilai. Kartu: nama + subjudul awam, angka utama, headline. **Bisa dibuka:** formula, input mentah + tanggal laporan, ambang, endpoint sumber, catatan keterbatasan.
+4. **Grafik:** laba bersih vs arus kas operasi, 5 kuartal.
+5. **Panel triage:** ubah status + catatan (password).
+6. **Riwayat:** dibuat, Escalation, severity turun, perubahan status.
 
 **`/backtest`** — satu tab per kasus: grafik garis skor per kuartal dengan pita Rendah/Sedang/Kritis + garis vertikal kejadian nyata; kalimat klaim otomatis (§8); tabel Rule Finding per kuartal; catatan "Penjualan Orang Dalam tidak dinilai — data sebelum 2025 tidak tersedia".
 
-**`/logs`** — tabel Audit Run: mulai/selesai, durasi, pemicu (Terjadwal/Manual), Emiten dipindai/gagal, Incident baru, Escalation, kredit terpakai, status. Baris bisa dibuka untuk log teks.
+**`/logs`** — tabel Audit Run: mulai, durasi, pemicu (Otomatis · sistem / Manual · analis), Emiten dipindai/gagal, Incident baru, Escalation, kredit terpakai, status. Baris bisa dibuka menjadi **tabel hasil per Emiten** (dari `EmitenEvaluation`: skor, severity, Incident yang dihasilkan); log teks mentah tetap tersimpan dan bisa dibuka di balik toggle.
 
 ---
 

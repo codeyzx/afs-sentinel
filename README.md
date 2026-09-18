@@ -6,7 +6,7 @@ Dokumen acuan:
 
 - [`docs/system-rules.md`](docs/system-rules.md): spesifikasi aturan sistem. Jika ada yang bertentangan, dokumen ini yang berlaku.
 - [`CONTEXT.md`](CONTEXT.md): glosarium domain (Emiten, Forensic Rule, Incident, Audit Run, dan lainnya).
-- [`docs/adr/`](docs/adr/): keputusan arsitektur ([0001 Heroku + Postgres + Scheduler](docs/adr/0001-heroku-postgres-and-scheduler.md), [0002 Forensic Rule yang disesuaikan dengan API](docs/adr/0002-forensic-rules-adapted-to-api-gaps.md)).
+- [`docs/adr/`](docs/adr/): keputusan arsitektur ([0001 Heroku + Postgres + Scheduler](docs/adr/0001-heroku-postgres-and-scheduler.md), [0002 Forensic Rule yang disesuaikan dengan API](docs/adr/0002-forensic-rules-adapted-to-api-gaps.md), [0003 LLM menarasikan, tidak pernah menilai](docs/adr/0003-llm-narrates-never-scores.md)).
 
 ## Arsitektur
 
@@ -14,7 +14,7 @@ Dokumen acuan:
 Heroku Scheduler (harian 01:00 UTC)        Tombol "Run now" (web, password)
             │                                        │
             └──────────► python -m afs run ◄─────────┘
-                               │  (keluar jika bukan Sabtu WIB, kecuali manual)
+                               │  (keluar jika belum jatuh tempo — 3 hari sejak run sukses terakhir)
                                ▼
    config/universe.json ─► Audit Run ─► afs/sectors (client + repository)
                                │              │  cache permanen di Postgres:
@@ -23,7 +23,9 @@ Heroku Scheduler (harian 01:00 UTC)        Tombol "Run now" (web, password)
                  afs/rules (6 Forensic Rule) ─► afs/scoring (Composite Risk Score,
                                │                             Incident Severity)
                                ▼
-                 Incident baru / Escalation ─► afs/telegram (pesan + tombol "Buka Incident")
+                 Incident baru / Escalation ─► afs/insight (Ringkasan AI via Gemini,
+                               │                            gagal = kosong, run tetap SUCCESS)
+                               │              └─► afs/telegram (pesan + tombol "Buka Incident")
                                │
                                ▼
                          Heroku Postgres ◄──── afs/web (FastAPI + Jinja)
@@ -55,7 +57,7 @@ Perintah CLI lain:
 |---|---|
 | `python -m afs sync-universe` | Sinkronkan daftar Universe dari `config/universe.json` (mengecualikan sektor Financials). |
 | `python -m afs run` | Audit Run manual (tanpa cek hari). |
-| `python -m afs run --scheduled` | Audit Run terjadwal: langsung keluar jika hari ini (WIB) bukan Sabtu. |
+| `python -m afs run --scheduled` | Audit Run terjadwal: langsung keluar jika belum jatuh tempo (default 3 hari sejak Audit Run `SUCCESS` terakhir; atur lewat `RUN_INTERVAL_DAYS`). |
 | `python -m afs backtest [--case WSKT] [--dry-run]` | Backtest; `--dry-run` hanya memperkirakan kuartal/kredit yang akan diambil. |
 
 ## Anggaran kredit Sectors API
@@ -109,7 +111,9 @@ heroku run python -m afs backtest --dry-run
 heroku run python -m afs backtest
 ```
 
-6. **Heroku Scheduler**: `heroku addons:open scheduler` → *Add Job* → perintah `python -m afs run --scheduled`, frekuensi **Every day at 01:00 UTC** (08:00 WIB). Scheduler tidak punya jadwal mingguan; perintah itu sendiri yang keluar jika bukan Sabtu.
+6. **Heroku Scheduler**: `heroku addons:open scheduler` → *Add Job* → perintah `python -m afs run --scheduled`, frekuensi **Every day at 01:00 UTC** (08:00 WIB). Scheduler hanya punya jadwal harian; perintah itu sendiri yang keluar jika belum jatuh tempo. Jarak antar-run dihitung dari Audit Run `SUCCESS` terakhir (default 3 hari), sehingga hari yang terlewat dikejar pada tick berikutnya, bukan ditunda 3 hari lagi.
+6b. **Ringkasan AI (opsional)**: `heroku config:set GEMINI_API_KEY=...`. Tanpa key, pipeline tetap berjalan penuh dan blok "Ringkasan AI" hanya kosong.
+   Model default `gemini-flash-lite-latest` (ubah lewat `GEMINI_MODEL`). `gemini-flash-latest` sempat dicoba tapi konsisten membalas `503 UNAVAILABLE`/timeout; versi lite membalas ~1 detik. Model `gemini-2.5-flash`, `gemini-2.5-flash-lite` dan `gemini-2.0-flash` menolak key baru dengan 404 "no longer available to new users".
 7. Cek: `heroku open`, `heroku logs --tail`.
 
 `app.json` juga tersedia untuk tombol/alur "Deploy to Heroku" (add-on, formation, dan env var sudah dideklarasikan; `SESSION_SECRET` dibuat otomatis).

@@ -1,14 +1,32 @@
 {
   "name": "AFS Sentinel",
   "description": "Autonomous Forensic Sentinel: early-warning forensic screening of IDX Emiten with Telegram alerts.",
-  "keywords": ["python", "fastapi", "forensic-accounting", "idx", "sectors"],
-  "buildpacks": [{ "url": "heroku/python" }],
+  "keywords": [
+    "python",
+    "fastapi",
+    "forensic-accounting",
+    "idx",
+    "sectors"
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/python"
+    }
+  ],
   "formation": {
-    "web": { "quantity": 1, "size": "basic" }
+    "web": {
+      "quantity": 1,
+      "size": "basic"
+    }
   },
   "addons": [
-    { "plan": "heroku-postgresql:essential-0", "as": "DATABASE" },
-    { "plan": "scheduler:standard" }
+    {
+      "plan": "heroku-postgresql:essential-0",
+      "as": "DATABASE"
+    },
+    {
+      "plan": "scheduler:standard"
+    }
   ],
   "env": {
     "DATABASE_URL": {
@@ -38,6 +56,20 @@
     "SESSION_SECRET": {
       "description": "Secret used to sign session cookies.",
       "generator": "secret"
+    },
+    "GEMINI_API_KEY": {
+      "description": "Google Gemini API key for the AI summary (Incident Insight). Leave empty to disable the feature; the pipeline runs without it.",
+      "required": false
+    },
+    "RUN_INTERVAL_DAYS": {
+      "description": "Days between scheduled Audit Runs, counted from the last successful run. Default 3.",
+      "value": "3",
+      "required": false
+    },
+    "GEMINI_MODEL": {
+      "description": "Gemini model for the AI summary. Default gemini-flash-lite-latest; gemini-flash-latest is frequently overloaded (503).",
+      "value": "gemini-flash-lite-latest",
+      "required": false
     }
   }
 }
