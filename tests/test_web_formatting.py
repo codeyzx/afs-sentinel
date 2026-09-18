@@ -18,11 +18,13 @@ def test_number_formatting():
     assert fmt.fmt_finding_value("SLOAN_ACCRUAL", None) == "—"
 
 
-def test_next_scheduled_run_is_saturday_0800_wib():
-    friday = datetime(2026, 9, 18, 10, 0, tzinfo=timezone.utc)
-    assert fmt.fmt_wib(fmt.next_scheduled_run(friday), with_day=True) == "Sabtu, 19 Sep 2026, 08:00 WIB"
-    saturday_after = datetime(2026, 9, 19, 2, 0, tzinfo=timezone.utc)  # 09:00 WIB
-    assert fmt.fmt_wib(fmt.next_scheduled_run(saturday_after)) == "26 Sep 2026, 08:00 WIB"
+def test_next_scheduled_run_is_three_days_after_the_last_success():
+    last_success = datetime(2026, 9, 15, 1, 0, tzinfo=timezone.utc)  # 08:00 WIB
+    assert fmt.fmt_wib(fmt.next_scheduled_run(last_success, 3), with_day=True) == "Jumat, 18 Sep 2026, 08:00 WIB"
+
+
+def test_next_scheduled_run_is_unknown_before_the_first_success():
+    assert fmt.next_scheduled_run(None) is None
 
 
 def test_months_between():

@@ -15,7 +15,7 @@ def _build_parser() -> argparse.ArgumentParser:
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("initdb", help="Buat tabel database")
     run = sub.add_parser("run", help="Jalankan Audit Run")
-    run.add_argument("--scheduled", action="store_true", help="Dipanggil Heroku Scheduler: hanya berjalan hari Sabtu (WIB)")
+    run.add_argument("--scheduled", action="store_true", help="Dipanggil Heroku Scheduler: hanya berjalan jika sudah jatuh tempo")
     sub.add_parser("backtest", help="Jalankan Backtest (argumen diteruskan ke afs.backtest)", add_help=False)
     sub.add_parser("sync-universe", help="Sinkronkan Universe dan tampilkan Emiten")
     return parser
@@ -35,11 +35,12 @@ def cmd_run(scheduled: bool) -> int:
     from afs.domain import RunStatus, RunTrigger
     from afs.models import AuditRun
 
+    init_db()  # the due-check reads audit_runs, so the schema must exist first
+
     if scheduled and not runner.should_run_scheduled(datetime.now(timezone.utc)):
-        print("Bukan hari Sabtu (WIB); Audit Run terjadwal dilewati")
+        print("Belum jatuh tempo; Audit Run terjadwal dilewati")
         return 0
 
-    init_db()
     trigger = RunTrigger.SCHEDULER if scheduled else RunTrigger.MANUAL
     try:
         run_id = runner.run_audit(trigger)

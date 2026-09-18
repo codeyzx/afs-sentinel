@@ -102,13 +102,12 @@ def fmt_value(value: Any) -> str:
     return str(value)
 
 
-def next_scheduled_run(now: datetime) -> datetime:
-    """Next Saturday 08:00 WIB strictly after `now` (§6.1)."""
-    w = to_wib(now)
-    candidate = w.replace(hour=8, minute=0, second=0, microsecond=0) + timedelta(days=(5 - w.weekday()) % 7)
-    if candidate <= w:
-        candidate += timedelta(days=7)
-    return candidate
+def next_scheduled_run(last_success: datetime | None, interval_days: int | None = None) -> datetime | None:
+    """Display wrapper over afs.schedule.next_due, in WIB. None = no successful run to count from."""
+    from afs.schedule import next_due
+
+    upcoming = next_due(last_success, interval_days)
+    return None if upcoming is None else to_wib(upcoming)
 
 
 def _enum_or_none(cls, value):
@@ -170,3 +169,27 @@ RULE_LIMITATIONS: dict[str, str] = {
 def rule_limitation(rule_id: str) -> str:
     """Mandatory limitation disclosure per rule (docs/system-rules.md §10)."""
     return RULE_LIMITATIONS.get(rule_id, "")
+
+
+TRIGGER_LABEL = {"SCHEDULER": "Otomatis · sistem", "MANUAL": "Manual · analis"}
+TRIGGER_ICON = {"SCHEDULER": "\u2699", "MANUAL": "\u261b"}
+
+
+def trigger_label(trigger: str | None) -> str:
+    return TRIGGER_LABEL.get(trigger or "", trigger or "—")
+
+
+def trigger_icon(trigger: str | None) -> str:
+    return TRIGGER_ICON.get(trigger or "", "")
+
+
+RUN_STATUS_LABEL = {"SUCCESS": "Berhasil", "FAILED": "Gagal", "RUNNING": "Sedang berjalan"}
+RUN_STATUS_TONE = {"SUCCESS": "green", "FAILED": "red", "RUNNING": "yellow"}
+
+
+def run_status_label(status: str | None) -> str:
+    return RUN_STATUS_LABEL.get(status or "", status or "—")
+
+
+def run_status_tone(status: str | None) -> str:
+    return RUN_STATUS_TONE.get(status or "", "yellow")

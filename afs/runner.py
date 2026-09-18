@@ -15,7 +15,8 @@ from typing import Any, Callable
 from sqlalchemy import delete, update
 from sqlalchemy.exc import IntegrityError
 
-from afs import telegram
+from afs import insight, telegram
+from afs import schedule
 from afs.config import WIB
 from afs.db import session_scope
 from afs.domain import RunStatus, RunTrigger, Severity
@@ -30,7 +31,6 @@ log = logging.getLogger(__name__)
 
 LOCK_NAME = "audit_run"
 LOCK_STALE_AFTER = timedelta(hours=2)
-SATURDAY = 5
 
 
 class RunInProgressError(RuntimeError):
@@ -88,8 +88,9 @@ def release_lock() -> None:
 
 
 def should_run_scheduled(now: datetime) -> bool:
-    """Heroku Scheduler fires daily; only Saturdays (WIB) run. Naive datetimes are taken as UTC."""
-    return _aware(now).astimezone(WIB).weekday() == SATURDAY
+    """Heroku Scheduler fires daily; a run happens only once per `run_interval_days` (§6.1)."""
+    with session_scope() as session:
+        return schedule.is_due(now, schedule.last_successful_start(session))
 
 
 # ---------------------------------------------------------------- run
@@ -167,6 +168,20 @@ def run_audit(
             log.exception("Gagal melepas lock Audit Run")
 
 
+def _narrate(run_id: int, pending: list[dict[str, Any]], runlog: _RunLog) -> dict[str, str]:
+    """Incident Insight phase: runs between the Emiten loop and the Telegram dispatch, on its own
+    session. Every failure is contained in afs.insight, so this can only return fewer narrations —
+    never fail the Audit Run (§6.2, docs/adr/0003-*)."""
+    if not pending:
+        return {}
+    event_ids = [item["event_id"] for item in pending]
+    names = {item["event_id"]: item["company_name"] for item in pending}
+    runlog(f"Ringkasan AI: {len(event_ids)} Incident")
+    with session_scope() as session:
+        made = insight.generate_for_run(session, run_id, event_ids, names=names, log_line=runlog)
+        return {event_id: ins.what_happened for event_id, ins in made.items()}
+
+
 def _finish_failed(run_id: int, reason: str, runlog: _RunLog, client: SectorsClient, stats: _Stats) -> None:
     try:
         with session_scope() as session:
@@ -202,7 +217,7 @@ def _execute(
     stats: _Stats,
 ) -> None:
     as_of = today or datetime.now(WIB).date()
-    notifications: list[tuple[str, str]] = []
+    pending: list[dict[str, Any]] = []
 
     with session_scope() as session:
         repo = DataRepository(session, client, today=lambda: as_of)
@@ -224,10 +239,11 @@ def _execute(
                 outcome = apply_evaluation(
                     session, run_id=run_id, symbol=symbol, report_date=inp.report_date, score=score, findings=findings
                 )
-                message = None
+                pending_message = None
                 if outcome.notify and outcome.incident is not None and score.score is not None:
                     assert score.severity is not None and outcome.event_id is not None
-                    message = telegram.format_incident_message(
+                    # Built after the loop: the Incident Insight does not exist yet (§7.1).
+                    pending_message = dict(
                         event_id=outcome.event_id,
                         symbol=symbol,
                         company_name=company_name or symbol,
@@ -252,13 +268,17 @@ def _execute(
                 stats.escalations += 1
             severity = Severity(score.severity).value if score.severity else "tak bisa dinilai"
             runlog(f"{symbol}: {severity} skor={score.score} → {outcome.kind} {outcome.event_id or ''}".rstrip())
-            if message is not None and outcome.event_id is not None:
-                notifications.append((message, outcome.event_id))
+            if pending_message is not None:
+                pending.append(pending_message)
 
         if universe and stats.failed == stats.scanned:
             raise RuntimeError(f"Semua {stats.scanned} emiten gagal diproses")
 
-    for message, event_id in notifications:
+    insights = _narrate(run_id, pending, runlog)
+
+    for item in pending:
+        event_id = item["event_id"]
+        message = telegram.format_incident_message(insight_line=insights.get(event_id), **item)
         _safe_send(send, runlog, message, (telegram.OPEN_INCIDENT_BUTTON, telegram.incident_url(event_id)))
 
     runlog(

@@ -6,7 +6,7 @@ from datetime import date, datetime, timedelta, timezone
 import pytest
 from sqlalchemy import select
 
-from afs import runner
+from afs import runner, schedule
 from afs.db import session_scope
 from afs.domain import EvaluationInput, FindingStatus, RuleFinding, RunTrigger
 from afs.models import AuditRun, Emiten, EmitenEvaluation, Incident, Lock
@@ -151,7 +151,7 @@ def test_success_run_records_counts_creates_incidents_and_notifies(world):
     assert "AAAA — Alpha Tbk" in alpha and "Kritis" in alpha
     assert alpha_btn == (OPEN_INCIDENT_BUTTON, incident_url("AFS-2025-Q3-0001"))
     assert beta_btn[1].endswith("AFS-2025-Q3-0002")
-    assert summary.startswith("✅ Audit Run") and "(Terjadwal)" in summary
+    assert summary.startswith("✅ Audit Run") and "(Otomatis · sistem)" in summary
     assert "3 emiten dipindai · 2 Incident baru · 0 Escalation · 0 gagal" in summary
     assert "Kredit API terpakai: 12" in summary
     assert summary_btn is None
@@ -285,17 +285,45 @@ def test_lock_released_after_success(world):
 
 
 @pytest.mark.parametrize(
-    "moment,expected",
+    "last_success, expected",
     [
-        (datetime(2026, 9, 19, 1, 0, tzinfo=timezone.utc), True),  # Sat 08:00 WIB
-        (datetime(2026, 9, 18, 20, 0, tzinfo=timezone.utc), True),  # Sat 03:00 WIB, still Fri in UTC
-        (datetime(2026, 9, 19, 18, 0, tzinfo=timezone.utc), False),  # Sun 01:00 WIB
-        (datetime(2026, 9, 18, 1, 0, tzinfo=timezone.utc), False),  # Fri
-        (datetime(2026, 9, 19, 1, 0), True),  # naive = UTC
+        (None, True),  # never run: the first tick starts the system
+        (datetime(2026, 9, 15, 1, 0, tzinfo=timezone.utc), True),  # exactly 3 days ago
+        (datetime(2026, 9, 14, 1, 0, tzinfo=timezone.utc), True),  # overdue (a tick was missed)
+        (datetime(2026, 9, 16, 1, 0, tzinfo=timezone.utc), False),  # 2 days ago
+        (datetime(2026, 9, 15, 1, 0), True),  # naive = UTC (SQLite drops tzinfo)
     ],
 )
-def test_should_run_scheduled_only_on_saturday_wib(moment, expected):
-    assert runner.should_run_scheduled(moment) is expected
+def test_is_due_counts_from_last_success(last_success, expected):
+    now = datetime(2026, 9, 18, 1, 0, tzinfo=timezone.utc)
+    assert schedule.is_due(now, last_success, days=3) is expected
+
+
+def test_is_due_catches_up_instead_of_skipping_a_whole_interval():
+    """A missed tick must not push the schedule out by another interval (§6.1)."""
+    last_success = datetime(2026, 9, 1, 8, 0, tzinfo=timezone.utc)
+    for day in (4, 5, 6, 7):  # due on the 4th, and still due every day after until one succeeds
+        assert schedule.is_due(datetime(2026, 9, day, 8, 0, tzinfo=timezone.utc), last_success, days=3) is True
+
+
+def test_should_run_scheduled_reads_last_successful_run(engine):
+    now = datetime(2026, 9, 18, 1, 0, tzinfo=timezone.utc)
+    assert runner.should_run_scheduled(now) is True  # no runs at all
+
+    with session_scope() as s:
+        s.add(AuditRun(trigger="SCHEDULER", status="SUCCESS", started_at=now - timedelta(days=4)))
+    assert runner.should_run_scheduled(now) is True
+
+    with session_scope() as s:
+        s.add(AuditRun(trigger="SCHEDULER", status="SUCCESS", started_at=now - timedelta(days=1)))
+    assert runner.should_run_scheduled(now) is False  # the latest success wins, not the oldest
+
+
+def test_failed_runs_do_not_count_as_an_anchor(engine):
+    now = datetime(2026, 9, 18, 1, 0, tzinfo=timezone.utc)
+    with session_scope() as s:
+        s.add(AuditRun(trigger="SCHEDULER", status="FAILED", started_at=now - timedelta(hours=1)))
+    assert runner.should_run_scheduled(now) is True
 
 
 def test_web_app_lazy_import_contract():
