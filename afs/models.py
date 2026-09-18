@@ -114,6 +114,27 @@ class IncidentEvent(Base):
     incident: Mapped[Incident] = relationship(back_populates="events")
 
 
+class IncidentInsight(Base):
+    """One Incident Insight (CONTEXT.md): an LLM narration of an Incident's Rule Findings.
+
+    Versioned, never overwritten — Escalation adds a row, so an Analyst can see what the
+    narration said at the time they read it. Records model and prompt_version for traceability.
+    """
+
+    __tablename__ = "incident_insights"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    event_id: Mapped[str] = mapped_column(ForeignKey("incidents.event_id"), index=True)
+    run_id: Mapped[int | None] = mapped_column(ForeignKey("audit_runs.id"), nullable=True)  # null = made by hand
+    severity: Mapped[str | None] = mapped_column(String(16), nullable=True)  # severity it narrated
+    model: Mapped[str] = mapped_column(String(64), default="")
+    prompt_version: Mapped[str] = mapped_column(String(16), default="")
+    what_happened: Mapped[str] = mapped_column(Text, default="")
+    why_it_matters: Mapped[str] = mapped_column(Text, default="")
+    what_to_check: Mapped[list[str]] = mapped_column(JSON, default=list)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
 class BacktestResult(Base):
     __tablename__ = "backtest_results"
     __table_args__ = (UniqueConstraint("case_id", "report_date"),)

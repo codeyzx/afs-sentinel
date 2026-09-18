@@ -21,6 +21,10 @@ class Settings(BaseSettings):
     base_web_url: str = "http://localhost:8000"
     admin_password: str = "admin"
     session_secret: str = "dev-secret-change-me"
+    gemini_api_key: str = ""
+    gemini_model: str = "gemini-flash-lite-latest"
+    gemini_timeout_seconds: float = 20.0
+    run_interval_days: int = 3
     universe_path: Path = ROOT / "config" / "universe.json"
     backtest_cases_path: Path = ROOT / "config" / "backtest_cases.json"
 

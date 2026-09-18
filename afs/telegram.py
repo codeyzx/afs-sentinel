@@ -17,9 +17,11 @@ log = logging.getLogger(__name__)
 
 MAX_FINDINGS = 3
 OPEN_INCIDENT_BUTTON = "Buka Incident"
+# Marks the one line an LLM wrote, so it can never be mistaken for a rule output (§7.1).
+INSIGHT_PREFIX = "\U0001f916"
 LOW_CONFIDENCE_LINE = "⚠️ Low Confidence: rule yang bisa dinilai kurang dari separuh bobot."
 
-TRIGGER_LABEL = {RunTrigger.SCHEDULER: "Terjadwal", RunTrigger.MANUAL: "Manual"}
+TRIGGER_LABEL = {RunTrigger.SCHEDULER: "Otomatis · sistem", RunTrigger.MANUAL: "Manual · analis"}
 DAY_NAMES = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"]
 MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"]
 
@@ -61,6 +63,7 @@ def format_incident_message(
     severity_reason: str | None,
     findings: Sequence[RuleFinding],
     escalated_from: Severity | None,
+    insight_line: str | None = None,
 ) -> str:
     """event_id is part of the signature for symmetry with the button URL; it is not shown in the text."""
     ticker = symbol.removesuffix(".JK")
@@ -74,6 +77,10 @@ def format_incident_message(
         lines.append(LOW_CONFIDENCE_LINE)
     if severity_reason:
         lines.append(f"ℹ️ {_esc(severity_reason)}")
+
+    if insight_line:
+        lines.append("")
+        lines.append(f"{INSIGHT_PREFIX} <i>{_esc(insight_line)}</i>")
 
     flagged = sorted(
         (f for f in findings if f.status in (FindingStatus.RED_FLAG, FindingStatus.WARNING) and f.headline),

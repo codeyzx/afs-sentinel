@@ -95,7 +95,7 @@ def test_run_summary():
         emiten_failed=0,
         credits_used=12,
     ) == (
-        "✅ Audit Run Sabtu 19 Sep 2026, 08:00 WIB (Terjadwal)\n"
+        "✅ Audit Run Sabtu 19 Sep 2026, 08:00 WIB (Otomatis · sistem)\n"
         "30 emiten dipindai · 2 Incident baru · 1 Escalation · 0 gagal\n"
         "Kredit API terpakai: 12"
     )
