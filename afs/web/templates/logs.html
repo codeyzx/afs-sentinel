@@ -1,8 +1,9 @@
 {% extends "base.html" %}
+{% from "_macros.html" import severity_badge %}
 {% block title %}Log Audit{% endblock %}
 {% block content %}
-<h1 class="font-display text-2xl font-semibold">Log Audit Run</h1>
-<p class="muted text-sm">Setiap Audit Run tercatat, termasuk yang tidak menemukan apa pun. Klik baris untuk membaca log teks.</p>
+<h1 class="font-display text-2xl font-semibold">Jejak audit</h1>
+<p class="muted text-sm">Setiap pemindaian tercatat, termasuk yang tidak menemukan apa pun. Klik baris untuk melihat hasil per emiten.</p>
 
 {% if runs %}
 <div class="panel mt-4 overflow-x-auto">
@@ -10,38 +11,78 @@
     <thead>
       <tr>
         <th>Mulai</th>
-        <th>Selesai</th>
         <th class="num">Durasi</th>
         <th>Pemicu</th>
         <th class="num">Dipindai / gagal</th>
         <th class="num">Incident baru</th>
         <th class="num">Escalation</th>
-        <th class="num">Kredit API</th>
+        <th class="num">Kredit</th>
         <th>Status</th>
       </tr>
     </thead>
-    {% for run in runs %}
-      {% set tone = {"SUCCESS": "green", "FAILED": "red"}.get(run.status, "yellow") %}
-      {% set status_label = {"SUCCESS": "Berhasil", "FAILED": "Gagal", "RUNNING": "Sedang berjalan"}.get(run.status, run.status) %}
-      <tbody class="row-group" x-data="{ open: false }">
+    {% for item in runs %}
+      {% set run = item.run %}
+      <tbody class="row-group" x-data="{ open: false, raw: false }">
         <tr class="cursor-pointer" @click="open = !open" @keydown.enter="open = !open" tabindex="0" :aria-expanded="open">
-          <td class="whitespace-nowrap">{{ run.started_at | wib }}</td>
-          <td class="whitespace-nowrap">{{ run.finished_at | wib }}</td>
+          <td class="whitespace-nowrap">
+            <span class="muted text-xs" x-text="open ? '▾' : '▸'" aria-hidden="true"></span>
+            {{ run.started_at | wib }}
+          </td>
           <td class="num whitespace-nowrap">{{ fmt_duration(run.started_at, run.finished_at) }}</td>
-          <td>{{ "Terjadwal" if run.trigger == "SCHEDULER" else "Manual" }}</td>
+          <td class="whitespace-nowrap">{{ run.trigger | trigger_icon }} {{ run.trigger | trigger_label }}</td>
           <td class="num">{{ run.emiten_scanned | num }} / {{ run.emiten_failed | num }}</td>
           <td class="num">{{ run.incidents_new | num }}</td>
           <td class="num">{{ run.escalations | num }}</td>
           <td class="num">{{ run.credits_used | num }}</td>
-          <td><span class="badge tone-{{ tone }}">{{ status_label }}</span></td>
+          <td><span class="badge tone-{{ run.status | run_status_tone }}">{{ run.status | run_status_label }}</span></td>
         </tr>
         <tr x-show="open" x-cloak>
-          <td colspan="9" style="background: var(--panel-2)">
-            {% if run.error %}<p class="tone-red text-sm mb-2">Alasan gagal: {{ run.error }}</p>{% endif %}
-            {% if run.log_text %}
-              <pre class="log">{{ run.log_text }}</pre>
+          <td colspan="8" style="background: var(--panel-2)">
+            {% if run.error %}<p class="tone-red text-sm mb-3">Alasan gagal: {{ run.error }}</p>{% endif %}
+
+            {% if item.evaluations %}
+              <table class="ledger">
+                <thead>
+                  <tr>
+                    <th>Emiten</th>
+                    <th>Laporan</th>
+                    <th class="num">Skor</th>
+                    <th>Risiko</th>
+                    <th>Hasil</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for e in item.evaluations %}
+                    <tr>
+                      <td>
+                        <span class="font-semibold">{{ e.ticker }}</span>
+                        <span class="block text-xs muted">{{ e.name }}</span>
+                      </td>
+                      <td class="muted whitespace-nowrap">{{ e.period }}</td>
+                      <td class="num">{{ e.score_text }}</td>
+                      <td><span class="badge tone-{{ e.severity_tone }}">{{ e.severity_label }}</span></td>
+                      <td>
+                        {% if e.event_id %}
+                          <a href="/incidents/{{ e.event_id }}">{{ e.outcome }}</a>
+                        {% else %}
+                          <span class="muted">{{ e.outcome }}</span>
+                        {% endif %}
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
             {% else %}
-              <p class="muted text-sm">Log teks kosong.</p>
+              <p class="muted text-sm">Tidak ada emiten yang berhasil dievaluasi pada run ini.</p>
+            {% endif %}
+
+            {% if run.log_text %}
+              <p class="mt-3">
+                <button type="button" class="text-xs muted underline decoration-dotted underline-offset-2"
+                        @click="raw = !raw" :aria-expanded="raw"
+                        x-text="raw ? 'Sembunyikan log teks mentah' : 'Log teks mentah'">Log teks mentah</button>
+              </p>
+              <pre class="log mt-2" x-show="raw" x-cloak>{{ run.log_text }}</pre>
             {% endif %}
           </td>
         </tr>
@@ -50,6 +91,6 @@
   </table>
 </div>
 {% else %}
-  <p class="panel mt-4 px-4 py-6 muted">Belum ada Audit Run. Audit Run terjadwal berjalan setiap Sabtu 08:00 WIB, atau jalankan manual dari Dashboard.</p>
+  <p class="panel mt-4 px-4 py-6 muted">Belum ada Audit Run. Pemindaian otomatis berjalan tiap 3 hari, atau jalankan manual dari Dashboard.</p>
 {% endif %}
 {% endblock %}

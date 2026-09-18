@@ -32,12 +32,13 @@ def rule_dots(findings: list[dict[str, Any]]) -> list[dict[str, str]]:
     """One entry per Forensic Rule in RULE_META order; rules absent from the findings show as gray."""
     by_rule = {f.get("rule_id"): f for f in findings or []}
     dots = []
-    for rule_id, meta in RULE_META.items():
+    for number, (rule_id, meta) in enumerate(RULE_META.items(), start=1):
         f = by_rule.get(rule_id)
         status = f.get("status", "") if f else FindingStatus.INSUFFICIENT_DATA.value
         dots.append(
             {
                 "rule_id": rule_id,
+                "number": number,  # fixed position, not a rank: dot 3 is always Altman
                 "name": meta.name,
                 "subtitle": meta.subtitle,
                 "label": fmt.finding_label(status) if f else "Belum dinilai",
@@ -46,6 +47,14 @@ def rule_dots(findings: list[dict[str, Any]]) -> list[dict[str, str]]:
             }
         )
     return dots
+
+
+def rule_legend() -> list[dict[str, Any]]:
+    """The numbered legend beside the Universe table; numbers match `rule_dots`."""
+    return [
+        {"number": n, "rule_id": rule_id, "name": meta.name, "subtitle": meta.subtitle}
+        for n, (rule_id, meta) in enumerate(RULE_META.items(), start=1)
+    ]
 
 
 def last_run(session: Session) -> AuditRun | None:
@@ -130,6 +139,25 @@ def universe_rows(session: Session, evals: dict[str, EmitenEvaluation]) -> list[
     return rows
 
 
+def incident_insight(session: Session, event_id: str) -> dict[str, Any] | None:
+    """The newest Incident Insight, as plain data. None means none has been produced yet."""
+    from afs import insight as insight_mod
+
+    rows = insight_mod.history_for(session, event_id)
+    if not rows:
+        return None
+    latest = rows[0]
+    return {
+        "what_happened": latest.what_happened,
+        "why_it_matters": latest.why_it_matters,
+        "what_to_check": list(latest.what_to_check or []),
+        "created_at": latest.created_at,
+        "model": latest.model,
+        "prompt_version": latest.prompt_version,
+        "older_count": len(rows) - 1,
+    }
+
+
 def incident_events(session: Session, event_id: str) -> list[IncidentEvent]:
     return list(
         session.scalars(
@@ -173,6 +201,29 @@ def chart_quarters(session: Session, symbol: str, report_date: date) -> list[dic
 
 def audit_runs(session: Session, limit: int = 100) -> list[AuditRun]:
     return list(session.scalars(select(AuditRun).order_by(AuditRun.started_at.desc(), AuditRun.id.desc()).limit(limit)))
+
+
+def run_evaluations(session: Session, run_id: int) -> list[dict[str, Any]]:
+    """What one Audit Run did to each Emiten — the structured form of log_text."""
+    names = {e.symbol: e.company_name for e in session.scalars(select(Emiten))}
+    rows = session.scalars(
+        select(EmitenEvaluation).where(EmitenEvaluation.run_id == run_id).order_by(EmitenEvaluation.id)
+    )
+    out = []
+    for ev in rows:
+        out.append(
+            {
+                "ticker": fmt.ticker(ev.symbol),
+                "name": names.get(ev.symbol, ""),
+                "period": fmt.fmt_period(ev.report_date),
+                "score_text": fmt.fmt_score(ev.score),
+                "severity_label": fmt.severity_label(ev.severity),
+                "severity_tone": fmt.severity_tone(ev.severity),
+                "event_id": ev.event_id,
+                "outcome": "Incident " + ev.event_id if ev.event_id else "Tidak ada Incident",
+            }
+        )
+    return out
 
 
 def backtest_results(session: Session, case_id: str) -> list[BacktestResult]:

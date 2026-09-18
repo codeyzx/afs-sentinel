@@ -49,6 +49,33 @@ a:hover { text-decoration: underline; }
 .dot { display: inline-block; width: .8rem; height: .8rem; border-radius: 999px; background: currentColor; }
 .dot.tone-gray { background: transparent; border: 2px solid currentColor; }
 
+/* Numbered rule marker: the number is the rule's fixed position 1-6, so status is carried by
+   two channels (number + color) and does not depend on color vision alone. */
+.dot-num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 1.15rem; height: 1.15rem; border-radius: 999px;
+  font-size: .7rem; font-weight: 700; line-height: 1;
+  font-variant-numeric: tabular-nums;
+  background: currentColor; color: var(--ink);
+  border: 1px solid transparent;
+}
+.dot-num.tone-gray { background: transparent; color: var(--gray); border-color: currentColor; }
+.dot-num > span { color: var(--ink); }
+.dot-num.tone-gray > span { color: var(--gray); }
+
+/* Legend chip reuses .dot-num so the mapping number -> rule is read without a caption. */
+.legend { display: grid; gap: .35rem .9rem; grid-template-columns: 1fr; }
+@media (min-width: 640px) { .legend { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 1024px) { .legend { grid-template-columns: 1fr 1fr 1fr; } }
+.legend li { display: flex; align-items: baseline; gap: .5rem; font-size: .8rem; }
+.legend .dot-num { background: var(--panel-2); color: var(--muted); border-color: var(--line); flex: none; }
+.legend .dot-num > span { color: var(--muted); }
+
+.ai-panel {
+  background: linear-gradient(180deg, rgb(156 199 222 / .07), transparent 70%);
+  border: 1px dashed var(--line); border-radius: 10px;
+}
+
 .stripe { border-left: 4px solid currentColor; }
 
 .btn {

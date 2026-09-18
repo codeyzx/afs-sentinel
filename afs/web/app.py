@@ -14,7 +14,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
 
-from afs import labels
+from afs import labels, schedule
 from afs.config import Settings, get_settings
 from afs.db import session_scope
 from afs.domain import IncidentEventKind, RunTrigger, TriageStatus
@@ -48,8 +48,18 @@ def _templates() -> Jinja2Templates:
         rule_name=fmt.rule_name,
         rule_subtitle=fmt.rule_subtitle,
         rule_limitation=fmt.rule_limitation,
+        trigger_label=fmt.trigger_label,
+        trigger_icon=fmt.trigger_icon,
+        run_status_label=fmt.run_status_label,
+        run_status_tone=fmt.run_status_tone,
     )
-    env.globals.update(RULE_META=RULE_META, TRIAGE_LABEL=TRIAGE_LABEL, labels=labels, fmt_duration=fmt.fmt_duration)
+    env.globals.update(
+        RULE_META=RULE_META,
+        TRIAGE_LABEL=TRIAGE_LABEL,
+        labels=labels,
+        fmt_duration=fmt.fmt_duration,
+        RULE_LEGEND=queries.rule_legend(),
+    )
     return templates
 
 
@@ -127,15 +137,16 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @app.get("/", response_class=HTMLResponse)
     def dashboard(request: Request) -> Response:
-        now = datetime.now(timezone.utc)
         with session_scope() as s:
             evals = queries.latest_evaluations(s)
+            last_success = schedule.last_successful_start(s)
             return render(
                 request,
                 "dashboard.html",
                 {
                     "last_run": queries.last_run(s),
-                    "next_run": fmt.next_scheduled_run(now),
+                    "interval_days": settings.run_interval_days,
+                    "next_run": fmt.next_scheduled_run(last_success, settings.run_interval_days),
                     "counts": queries.severity_counts(evals),
                     "queue": queries.triage_queue(s),
                     "rows": queries.universe_rows(s, evals),
@@ -168,11 +179,31 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                     "company_name": queries.emiten_name(s, incident.symbol),
                     "findings": findings,
                     "top_headline": findings[0].get("headline", "") if findings else "",
+                    "insight": queries.incident_insight(s, event_id),
                     "chart": queries.chart_quarters(s, incident.symbol, incident.report_date),
                     "events": events,
                     "triage_options": list(TriageStatus),
                 },
             )
+
+    @app.post("/incidents/{event_id}/insight")
+    def incident_insight(request: Request, event_id: str) -> Response:
+        """Make an Incident Insight by hand — the way out when Gemini was down during the run."""
+        if not auth.is_logged_in(request):
+            return auth.login_redirect(f"/incidents/{event_id}")
+        from afs import insight as insight_mod
+
+        with session_scope() as s:
+            incident = s.get(Incident, event_id)
+            if incident is None:
+                return render(request, "not_found.html", {"event_id": event_id}, status_code=404)
+            try:
+                insight_mod.generate_one(s, event_id, company_name=queries.emiten_name(s, incident.symbol))
+            except insight_mod.InsightUnavailable as exc:
+                auth.flash(request, f"Ringkasan AI gagal dibuat: {exc}", "red")
+            else:
+                auth.flash(request, "Ringkasan AI dibuat", "green")
+        return RedirectResponse(f"/incidents/{event_id}#insight", status_code=303)
 
     @app.post("/incidents/{event_id}/triage")
     def incident_triage(
@@ -222,7 +253,12 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @app.get("/logs", response_class=HTMLResponse)
     def logs(request: Request) -> Response:
         with session_scope() as s:
-            return render(request, "logs.html", {"runs": queries.audit_runs(s)})
+            runs = queries.audit_runs(s)
+            return render(
+                request,
+                "logs.html",
+                {"runs": [{"run": r, "evaluations": queries.run_evaluations(s, r.id)} for r in runs]},
+            )
 
     @app.get("/login", response_class=HTMLResponse)
     def login_page(request: Request, next: str = "/") -> Response:

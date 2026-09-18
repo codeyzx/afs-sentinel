@@ -25,10 +25,48 @@
   {% endif %}
 </section>
 
-{# 2. Why flagged #}
+{# 2. Incident Insight — LLM narration. Deliberately styled unlike the rule cards below, and
+   it never carries a number the rules did not compute (docs/adr/0003-*). #}
+<section id="insight" class="mt-8" aria-labelledby="insight-heading">
+  <div class="ai-panel p-5">
+    <div class="flex items-start justify-between gap-3 flex-wrap">
+      <h2 id="insight-heading" class="font-display text-lg font-semibold">
+        🤖 Ringkasan AI
+      </h2>
+      {% if logged_in %}
+        <form method="post" action="/incidents/{{ incident.event_id }}/insight">
+          <button type="submit" class="btn btn-ghost btn-sm">{{ "Buat ulang" if insight else "Buat ringkasan" }}</button>
+        </form>
+      {% endif %}
+    </div>
+
+    {% if insight %}
+      <p class="mt-3 text-lg leading-relaxed" style="color: var(--text)">{{ insight.what_happened }}</p>
+      {% if insight.why_it_matters %}
+        <p class="mt-2" style="color: var(--text)">{{ insight.why_it_matters }}</p>
+      {% endif %}
+      {% if insight.what_to_check %}
+        <p class="mt-4 text-sm muted">Yang perlu Anda cek</p>
+        <ul class="mt-1 space-y-1">
+          {% for item in insight.what_to_check %}
+            <li class="flex gap-2" style="color: var(--text)"><span class="muted">•</span><span>{{ item }}</span></li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+      <p class="mt-4 text-xs muted">
+        Ditulis AI dari {{ findings | length }} Rule Finding di bawah — angka resminya ada di sana.
+        {{ insight.model }} · {{ insight.created_at | wib }}{% if insight.older_count %} · {{ insight.older_count }} versi sebelumnya tersimpan{% endif %}
+      </p>
+    {% else %}
+      <p class="mt-3 muted">Belum ada ringkasan. Temuan lengkapnya ada di bawah.</p>
+    {% endif %}
+  </div>
+</section>
+
+{# 3. Why flagged #}
 <section class="mt-10" aria-labelledby="why-heading">
-  <h2 id="why-heading" class="font-display text-xl font-semibold">Kenapa ditandai</h2>
-  <p class="muted text-sm">Satu kartu per Forensic Rule, urut Bahaya, Waspada, Aman, lalu Tak bisa dinilai. Buka rinciannya untuk melihat angka mentah dan sumbernya.</p>
+  <h2 id="why-heading" class="font-display text-xl font-semibold">Bukti perhitungan</h2>
+  <p class="muted text-sm">Satu kartu per rule, yang paling berat di atas.</p>
   {% if findings %}
   <div class="mt-4 grid gap-3 md:grid-cols-2">
     {% for f in findings %}
@@ -92,7 +130,7 @@
   {% endif %}
 </section>
 
-{# 3. Chart #}
+{# 4. Chart #}
 {% if chart %}
 <section class="mt-10" aria-labelledby="chart-heading">
   <h2 id="chart-heading" class="font-display text-xl font-semibold">Laba bersih vs arus kas operasi</h2>
@@ -104,7 +142,7 @@
 </section>
 {% endif %}
 
-{# 4. Triage panel #}
+{# 5. Triage panel #}
 <section id="triage" class="mt-10" aria-labelledby="triage-heading">
   <h2 id="triage-heading" class="font-display text-xl font-semibold">Triage</h2>
   <div class="panel mt-3 p-4">
@@ -132,7 +170,7 @@
   </div>
 </section>
 
-{# 5. History #}
+{# 6. History #}
 <section class="mt-10" aria-labelledby="history-heading">
   <h2 id="history-heading" class="font-display text-xl font-semibold">Riwayat</h2>
   {% if events %}

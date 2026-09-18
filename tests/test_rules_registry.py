@@ -86,3 +86,22 @@ def test_realism_asii_sample():
         assert not (f.missing or "").startswith("Kesalahan internal"), f.missing
         assert f.status != FindingStatus.INSUFFICIENT_DATA, (f.rule_id, f.missing)
         json.dumps(f.to_dict())
+
+
+def test_rule_dots_keep_six_fixed_numbered_positions():
+    """Dot N is always rule N, whatever the findings contain — the number is a position, not a rank."""
+    from afs.web.queries import rule_dots, rule_legend
+
+    partial = [{"rule_id": "ALTMAN_Z_ADAPTED", "status": "RED_FLAG", "headline": "x"}]
+    dots = rule_dots(partial)
+
+    assert [d["number"] for d in dots] == [1, 2, 3, 4, 5, 6]
+    assert [d["rule_id"] for d in dots] == list(RULE_META)
+    third = dots[2]
+    assert third["rule_id"] == "ALTMAN_Z_ADAPTED" and third["tone"] == "red"
+    # Rules with no finding keep their slot rather than collapsing the row.
+    assert dots[0]["tone"] == "gray" and dots[0]["label"] == "Belum dinilai"
+
+    # The legend numbers must agree with the dot numbers, or the legend lies.
+    assert [m["number"] for m in rule_legend()] == [d["number"] for d in dots]
+    assert [m["rule_id"] for m in rule_legend()] == [d["rule_id"] for d in dots]

@@ -14,21 +14,33 @@
 <span class="badge tone-gray">{{ status | triage_label }}</span>
 {%- endmacro %}
 
-{# dots: list of {name, subtitle, label, tone} in RULE_META order #}
+{# dots: list of {number, name, subtitle, label, tone} in RULE_META order #}
 {% macro rule_dots(dots) -%}
-<span class="inline-flex items-center gap-1.5">
+<span class="inline-flex items-center gap-1">
   {% for d in dots %}
-    <span class="dot tone-{{ d.tone }}" title="{{ d.name }} ({{ d.subtitle }}): {{ d.label }}" aria-label="{{ d.name }}: {{ d.label }}" role="img"></span>
+    <span class="dot-num tone-{{ d.tone }}" title="{{ d.number }}. {{ d.name }} — {{ d.label }}" aria-label="{{ d.number }}. {{ d.name }}: {{ d.label }}" role="img"><span>{{ d.number }}</span></span>
   {% endfor %}
 </span>
 {%- endmacro %}
 
 {% macro rule_legend() -%}
-<ol class="text-xs muted flex flex-wrap gap-x-4 gap-y-1">
-  {% for meta in RULE_META.values() %}
-    <li><span style="color: var(--text)">{{ loop.index }}. {{ meta.name }}</span>: {{ meta.subtitle }}</li>
+<ol class="legend muted">
+  {% for meta in RULE_LEGEND %}
+    <li>
+      <span class="dot-num" aria-hidden="true"><span>{{ meta.number }}</span></span>
+      <span><span style="color: var(--text)">{{ meta.name }}</span> — {{ meta.subtitle }}</span>
+    </li>
   {% endfor %}
 </ol>
+{%- endmacro %}
+
+{# Progressive-disclosure helper: explanation that need not be on screen at all times (Q15b) #}
+{% macro explainer(label) -%}
+<span x-data="{ open: false }" class="inline-block">
+  <button type="button" @click="open = !open" :aria-expanded="open"
+          class="text-xs muted underline decoration-dotted underline-offset-2">{{ label }}</button>
+  <span x-show="open" x-cloak class="block mt-1 text-xs muted max-w-prose">{{ caller() }}</span>
+</span>
 {%- endmacro %}
 
 {# Generic renderer for rule-specific extras: scalars, dicts, lists of dicts, lists of scalars #}

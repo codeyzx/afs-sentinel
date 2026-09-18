@@ -91,7 +91,7 @@ def test_incident_detail_content(client, seeded):
     assert "EMTK — <strong" in text
     assert "(75,0/100)" in text
     assert "2026-Q2" in text
-    assert "Kenapa ditandai" in text
+    assert "Bukti perhitungan" in text
     assert "cash-chart" in text
     assert "Masuk untuk mengubah status" in text
     assert "Escalation: Sedang → Kritis" in text
