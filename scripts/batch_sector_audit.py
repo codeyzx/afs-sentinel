@@ -27,24 +27,30 @@ log = logging.getLogger("batch_sector_audit")
 def reset_data() -> None:
     log.info("Membersihkan data cache dan audit logs...")
     tables = [
-        "triage_records",
         "incident_insights",
-        "audit_findings",
         "incident_events",
-        "incidents",
         "emiten_evaluations",
+        "incidents",
         "audit_runs",
         "api_cache",
         "locks",
     ]
     with session_scope() as session:
-        for t in tables:
-            try:
-                session.execute(text(f"DELETE FROM {t};"))
-                log.info(f"Tabel {t} dikosongkan.")
-            except Exception as e:
-                log.warning(f"Gagal menghapus {t}: {e}")
-        session.commit()
+        try:
+            session.execute(text("TRUNCATE TABLE incident_insights, incident_events, emiten_evaluations, incidents, audit_runs, api_cache, locks RESTART IDENTITY CASCADE;"))
+            session.commit()
+            log.info("Semua tabel cache dan audit logs berhasil dikosongkan.")
+        except Exception as e:
+            log.warning(f"TRUNCATE gagal, mencoba DELETE: {e}")
+            session.rollback()
+            for t in tables:
+                try:
+                    session.execute(text(f"DELETE FROM {t};"))
+                    session.commit()
+                    log.info(f"Tabel {t} dikosongkan.")
+                except Exception as inner_e:
+                    session.rollback()
+                    log.warning(f"Gagal menghapus {t}: {inner_e}")
     log.info("Reset data selesai.")
 
 
