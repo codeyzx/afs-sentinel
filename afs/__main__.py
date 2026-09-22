@@ -16,6 +16,8 @@ def _build_parser() -> argparse.ArgumentParser:
     sub.add_parser("initdb", help="Buat tabel database")
     run = sub.add_parser("run", help="Jalankan Audit Run")
     run.add_argument("--scheduled", action="store_true", help="Dipanggil Heroku Scheduler: hanya berjalan jika sudah jatuh tempo")
+    run.add_argument("--sector", type=str, default=None, help="Jalankan batch untuk sektor tertentu")
+    run.add_argument("--all-sectors", action="store_true", help="Jalankan batch sektor demi sektor secara berurutan")
     sub.add_parser("backtest", help="Jalankan Backtest (argumen diteruskan ke afs.backtest)", add_help=False)
     sub.add_parser("sync-universe", help="Sinkronkan Universe dan tampilkan Emiten")
     return parser
@@ -29,11 +31,13 @@ def cmd_initdb() -> int:
     return 0
 
 
-def cmd_run(scheduled: bool) -> int:
+def cmd_run(scheduled: bool, sector: str | None = None, all_sectors: bool = False) -> int:
     from afs import runner
     from afs.db import init_db, session_scope
     from afs.domain import RunStatus, RunTrigger
     from afs.models import AuditRun
+    from afs.sectors.client import SectorsClient
+    from afs.sectors.repository import DataRepository
 
     init_db()  # the due-check reads audit_runs, so the schema must exist first
 
@@ -42,8 +46,32 @@ def cmd_run(scheduled: bool) -> int:
         return 0
 
     trigger = RunTrigger.SCHEDULER if scheduled else RunTrigger.MANUAL
+
+    if all_sectors:
+        with session_scope() as session:
+            repo = DataRepository(session, SectorsClient())
+            active = repo.sync_universe()
+            sectors = sorted({e.sector for e in active if e.sector})
+        print(f"Menjalankan batch audit untuk {len(sectors)} sektor...")
+        has_failed = False
+        for sec in sectors:
+            print(f"\n--- Batch Sektor: {sec} ---")
+            try:
+                run_id = runner.run_audit(trigger, sector=sec)
+                with session_scope() as session:
+                    run = session.get(AuditRun, run_id)
+                    st = run.status if run is not None else RunStatus.FAILED.value
+                print(f"Audit Run #{run_id} ({sec}): {st}")
+                if st == RunStatus.FAILED.value:
+                    has_failed = True
+            except runner.RunInProgressError as exc:
+                print(f"{sec}: {exc}")
+                has_failed = True
+        return 1 if has_failed else 0
+
+    kwargs = {"sector": sector} if sector else {}
     try:
-        run_id = runner.run_audit(trigger)
+        run_id = runner.run_audit(trigger, **kwargs)
     except runner.RunInProgressError as exc:
         print(str(exc))
         return 1
@@ -98,7 +126,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         case "initdb":
             return cmd_initdb()
         case "run":
-            return cmd_run(args.scheduled)
+            return cmd_run(args.scheduled, sector=args.sector, all_sectors=args.all_sectors)
         case "sync-universe":
             return cmd_sync_universe()
     return 2

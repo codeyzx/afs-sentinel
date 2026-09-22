@@ -120,6 +120,10 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "id": "Masuk untuk menjalankan",
         "en": "Log in to run",
     },
+    "dash.autonomous_mode": {
+        "id": "Sistem Otonom Aktif",
+        "en": "Autonomous Sentinel Active",
+    },
 
     # Severity Counts (Dashboard)
     "dash.counts_aria": {
@@ -573,8 +577,8 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "en": "Hide raw text log",
     },
     "logs.empty": {
-        "id": "Belum ada Audit Run. Pemindaian otomatis berjalan tiap 3 hari, atau jalankan manual dari Dashboard.",
-        "en": "No Audit Runs yet. Automatic scans run every 3 days, or start one manually from the Dashboard.",
+        "id": "Belum ada Audit Run. Pemindaian otomatis berjalan terjadwal tiap 3 hari secara otonom.",
+        "en": "No Audit Runs yet. Autonomous scans run automatically on schedule every 3 days.",
     },
     "logs.no_incident": {
         "id": "Tidak ada Incident",

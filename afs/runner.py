@@ -129,6 +129,8 @@ def _safe_send(send: Callable[..., Any], runlog: _RunLog, text: str, button: tup
 def run_audit(
     trigger: RunTrigger,
     *,
+    sector: str | None = None,
+    symbols: list[str] | None = None,
     client: SectorsClient | None = None,
     today: date | None = None,
     send: Callable[..., Any] = telegram.send_message,
@@ -149,11 +151,14 @@ def run_audit(
             session.add(run)
             session.flush()
             run_id = run.id
-        runlog(f"Audit Run #{run_id} dimulai ({trigger.value})")
+        sector_note = f" [Sektor: {sector}]" if sector else ""
+        runlog(f"Audit Run #{run_id} dimulai ({trigger.value}){sector_note}")
         _execute(
             run_id,
             started_at,
             trigger,
+            sector=sector,
+            symbols=symbols,
             client=client,
             today=today,
             send=send,
@@ -220,6 +225,8 @@ def _execute(
     started_at: datetime,
     trigger: RunTrigger,
     *,
+    sector: str | None = None,
+    symbols: list[str] | None = None,
     client: SectorsClient,
     today: date | None,
     send: Callable[..., Any],
@@ -232,9 +239,20 @@ def _execute(
 
     with session_scope() as session:
         repo = DataRepository(session, client, today=lambda: as_of)
-        universe = [(e.symbol, e.company_name) for e in repo.sync_universe()]
+        all_active = repo.sync_universe()
+        if sector:
+            active_filtered = [e for e in all_active if (e.sector or "").strip().lower() == sector.strip().lower()]
+            runlog(f"Batch Sektor: {sector} ({len(active_filtered)} emiten aktif)")
+        elif symbols:
+            target_symbols = {s.upper() for s in symbols}
+            active_filtered = [e for e in all_active if e.symbol.upper() in target_symbols]
+            runlog(f"Batch Emiten: {len(active_filtered)} emiten aktif")
+        else:
+            active_filtered = all_active
+            runlog(f"Universe: {len(active_filtered)} emiten aktif")
+
+        universe = [(e.symbol, e.company_name) for e in active_filtered]
         session.commit()
-        runlog(f"Universe: {len(universe)} emiten aktif")
 
         for symbol, company_name in universe:
             stats.scanned += 1
