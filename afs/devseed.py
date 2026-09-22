@@ -25,7 +25,7 @@ from afs.domain import (
     quarter_label,
 )
 from afs.labels import RULE_META
-from afs.models import ApiCache, AuditRun, BacktestResult, Emiten, EmitenEvaluation, Incident, IncidentEvent
+from afs.models import ApiCache, AuditRun, BacktestResult, Emiten, EmitenEvaluation, Incident, IncidentEvent, IncidentInsight
 
 NOTE = "DATA DEMO (devseed) — bukan data asli."
 REPORT_T = date(2026, 6, 30)
@@ -264,6 +264,43 @@ def seed(session: Session, now: datetime | None = None) -> None:
         for ev_kind, frm, to, ev_run, at in events:
             session.add(IncidentEvent(event_id=event_id, kind=ev_kind.value, from_value=frm, to_value=to,
                                       run_id=ev_run.id if ev_run else None, created_at=at))
+
+    demo_insights = [
+        IncidentInsight(
+            event_id="AFS-2026-Q2-0001",
+            run_id=run2.id,
+            severity="CRITICAL",
+            model="gemini-flash-lite (demo)",
+            prompt_version="v2",
+            what_happened="Laba bersih tercatat naik namun arus kas operasi berbalik negatif signifikan menjadi minus 96 miliar rupiah.",
+            why_it_matters="Kenaikan laba tanpa dukungan kas riil memperbesar risiko manipulasi akrual dan tekanan likuiditas.",
+            what_to_check=["Periksa akun piutang usaha dan penagihan kas", "Verifikasi kenaikan kewajiban jangka pendek"],
+            created_at=manual_start,
+        ),
+        IncidentInsight(
+            event_id="AFS-2026-Q2-0002",
+            run_id=run1.id,
+            severity="CRITICAL",
+            model="gemini-flash-lite (demo)",
+            prompt_version="v2",
+            what_happened="Terjadi lonjakan rasio akrual Sloan dan skor Altman Z jatuh ke zona distress keuangan.",
+            why_it_matters="Arus kas operasional terus merosot sementara beban utang konstruksi jatuh tempo dalam waktu dekat.",
+            what_to_check=["Cek catatan kaki piutang retensi proyek BUMN", "Evaluasi jadwal restrukturisasi obligasi"],
+            created_at=sched_start,
+        ),
+        IncidentInsight(
+            event_id="AFS-2026-Q2-0003",
+            run_id=run2.id,
+            severity="MODERATE",
+            model="gemini-flash-lite (demo)",
+            prompt_version="v2",
+            what_happened="Laba operasional membaik tipis tetapi kas keluar masih tinggi dan tidak ada pembagian dividen.",
+            why_it_matters="Ketidakmampuan menghasilkan kas organik menuntut efisiensi lanjutan pada beban penjualan.",
+            what_to_check=["Bandingkan EBITDA dengan kas operasional", "Periksa arus kas investasi dan bakar uang promosi"],
+            created_at=manual_start,
+        ),
+    ]
+    session.add_all(demo_insights)
 
     quarter_data = {
         "EMTK.JK": [(310, 205), (295, 180), (362, 120), (388, 41), (471, -96)],

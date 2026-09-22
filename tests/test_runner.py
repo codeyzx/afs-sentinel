@@ -360,3 +360,31 @@ def test_real_rules_end_to_end(engine, monkeypatch):
     [inc] = incidents()
     assert inc.severity in ("MODERATE", "CRITICAL") and len(inc.findings) == 6
     assert "WSKT — Waskita Karya" in outbox.messages[0][0]
+
+
+def test_audio_voice_sent_on_incident(world, monkeypatch, tmp_path):
+    from afs.config import get_settings
+
+    monkeypatch.setattr(get_settings(), "audio_dir", tmp_path)
+    monkeypatch.setattr("afs.audio.synthesize_speech", lambda text, voice=None: b"VOICE_BYTES_BRIEFING")
+    world.add("AAAA.JK", CRITICAL, name="Alpha Tbk")
+    outbox = Outbox()
+    voice_calls = []
+
+    def fake_send_voice(voice_bytes, caption=None, button=None, client=None, filename="briefing.mp3"):
+        voice_calls.append((voice_bytes, caption, button))
+        return True
+
+    run_id = runner.run_audit(
+        RunTrigger.MANUAL,
+        client=FakeClient(),
+        today=TODAY,
+        send=outbox,
+        send_voice=fake_send_voice,
+    )
+    r = get_run(run_id)
+    assert r.status == "SUCCESS"
+    assert len(voice_calls) == 1
+    assert voice_calls[0][0] == b"VOICE_BYTES_BRIEFING"
+    assert "Audio Briefing" in voice_calls[0][1]
+    assert voice_calls[0][2][0] == "Buka Incident"

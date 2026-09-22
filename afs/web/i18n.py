@@ -246,6 +246,42 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "id": "Status triage",
         "en": "Triage status",
     },
+    "incident.audio_heading": {
+        "id": "🎧 Audio Briefing Forensik (~2 Menit)",
+        "en": "🎧 Forensic Audio Briefing (~2 Mins)",
+    },
+    "incident.audio_subtitle": {
+        "id": "Dengarkan intisari penting langsung dari suara narator, sembari menelaah tabel detail dan bukti di bawah.",
+        "en": "Listen to key insights from the narrator while reviewing detailed tables and evidence below.",
+    },
+    "incident.audio_play": {
+        "id": "Putar Audio",
+        "en": "Play Audio",
+    },
+    "incident.audio_pause": {
+        "id": "Jeda",
+        "en": "Pause",
+    },
+    "incident.audio_speed": {
+        "id": "Kecepatan",
+        "en": "Speed",
+    },
+    "incident.audio_download": {
+        "id": "Unduh MP3",
+        "en": "Download MP3",
+    },
+    "incident.audio_show_transcript": {
+        "id": "Lihat Naskah Audio",
+        "en": "View Audio Transcript",
+    },
+    "incident.audio_hide_transcript": {
+        "id": "Sembunyikan Naskah",
+        "en": "Hide Transcript",
+    },
+    "incident.audio_loading": {
+        "id": "Memuat audio...",
+        "en": "Loading audio...",
+    },
     "incident.ai_summary": {
         "id": "🤖 Ringkasan AI",
         "en": "🤖 AI Summary",

@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 import html
+import json
 import logging
 from datetime import date, datetime
-from typing import Sequence
+from typing import Any, Sequence
 
 import httpx
 
@@ -155,6 +156,46 @@ def send_message(
         return True
     except httpx.HTTPError as exc:
         log.warning("Telegram sendMessage gagal: %s", type(exc).__name__)  # never log the URL (contains token)
+        return False
+    finally:
+        if own_client:
+            http.close()
+
+
+def send_voice(
+    voice_bytes: bytes,
+    caption: str | None = None,
+    button: tuple[str, str] | None = None,
+    client: httpx.Client | None = None,
+    filename: str = "briefing.mp3",
+) -> bool:
+    """Send an audio voice note to the Analyst's Telegram chat. Never raises."""
+    settings = get_settings()
+    if not settings.telegram_bot_token or not settings.telegram_chat_id:
+        log.warning("Telegram tidak dikonfigurasi; voice note tidak dikirim")
+        return False
+
+    data: dict[str, Any] = {"chat_id": settings.telegram_chat_id}
+    if caption:
+        data["caption"] = caption
+        data["parse_mode"] = "HTML"
+    if button is not None:
+        label, url = button
+        data["reply_markup"] = json.dumps({"inline_keyboard": [[{"text": label, "url": url}]]})
+
+    files = {"voice": (filename, voice_bytes, "audio/mpeg")}
+
+    url = f"https://api.telegram.org/bot{settings.telegram_bot_token}/sendVoice"
+    own_client = client is None
+    http = client or httpx.Client(timeout=30.0)
+    try:
+        resp = http.post(url, data=data, files=files)
+        if resp.status_code != 200:
+            log.warning("Telegram sendVoice gagal: HTTP %s", resp.status_code)
+            return False
+        return True
+    except httpx.HTTPError as exc:
+        log.warning("Telegram sendVoice gagal: %s", type(exc).__name__)
         return False
     finally:
         if own_client:

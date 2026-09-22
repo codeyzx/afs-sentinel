@@ -194,7 +194,22 @@ def test_rule_markers_never_rely_on_colour_alone(client):
     """Each marker carries its rule number, and the page states what the colours mean."""
     body = client.get("/").text
     assert "dot-num" in body
-    # The colour key must be present, or a red marker means nothing to a first-time reader.
     for label in ["Aman", "Waspada", "Bahaya", "Tak bisa dinilai"]:
         assert label in body
     assert "status-key" in body
+
+
+def test_incident_audio_endpoint(client, seeded, monkeypatch, tmp_path):
+    from afs.config import get_settings
+
+    monkeypatch.setattr(get_settings(), "audio_dir", tmp_path)
+    monkeypatch.setattr("afs.audio.synthesize_speech", lambda text, voice=None: b"FAKE_MP3_STREAM")
+    resp = client.get("/incidents/AFS-2026-Q2-0001/audio")
+    assert resp.status_code == 200
+    assert resp.headers["content-type"] == "audio/mpeg"
+    assert resp.content == b"FAKE_MP3_STREAM"
+
+
+def test_incident_audio_not_found(client, seeded):
+    resp = client.get("/incidents/AFS-NON-EXISTENT/audio")
+    assert resp.status_code == 404

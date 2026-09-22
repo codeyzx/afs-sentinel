@@ -15,7 +15,7 @@ from fastapi.templating import Jinja2Templates
 from jinja2 import pass_context
 from starlette.middleware.sessions import SessionMiddleware
 
-from afs import labels, schedule, telegram
+from afs import audio, labels, schedule, telegram
 from afs.config import Settings, get_settings
 from afs.db import session_scope
 from afs.domain import IncidentEventKind, RunTrigger, TriageStatus
@@ -334,20 +334,59 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 {"at": e.created_at, "kind": e.kind, "text": event_description(e.kind, e.from_value, e.to_value, lang=lang)}
                 for e in queries.incident_events(s, event_id)
             ]
+            company_name = queries.emiten_name(s, incident.symbol)
+            ins_row = queries.incident_insight(s, event_id)
+            audio_script = audio.build_audio_script(incident, company_name=company_name, insight_row=ins_row)
             return render(
                 request,
                 "incident.html",
                 {
                     "incident": incident,
-                    "company_name": queries.emiten_name(s, incident.symbol),
+                    "company_name": company_name,
                     "findings": findings,
                     "top_headline": localize_headline(raw_findings[0].get("headline", ""), lang=lang) if raw_findings else "",
-                    "insight": queries.incident_insight(s, event_id),
+                    "insight": ins_row,
+                    "audio_url": f"/incidents/{event_id}/audio",
+                    "audio_script": audio_script,
                     "chart": queries.chart_quarters(s, incident.symbol, incident.report_date),
                     "events": events,
                     "triage_options": list(TriageStatus),
                 },
             )
+
+    @app.get("/incidents/{event_id}/audio")
+    def incident_audio(request: Request, event_id: str) -> Response:
+        from afs import audio as audio_mod
+
+        with session_scope() as s:
+            incident = s.get(Incident, event_id)
+            if incident is None:
+                return render(request, "not_found.html", {"event_id": event_id}, status_code=404)
+            company_name = queries.emiten_name(s, incident.symbol)
+            ins_row = queries.incident_insight(s, event_id)
+            try:
+                audio_bytes, _script = audio_mod.get_or_create_incident_audio(
+                    session=s,
+                    incident=incident,
+                    company_name=company_name,
+                    insight_row=ins_row,
+                )
+            except audio_mod.AudioUnavailable as exc:
+                return Response(
+                    content=f"Audio generation unavailable: {exc}",
+                    status_code=503,
+                    media_type="text/plain",
+                )
+
+        return Response(
+            content=audio_bytes,
+            media_type="audio/mpeg",
+            headers={
+                "Content-Disposition": f'inline; filename="{event_id}.mp3"',
+                "Cache-Control": "public, max-age=86400",
+                "Accept-Ranges": "bytes",
+            },
+        )
 
     @app.post("/incidents/{event_id}/insight")
     def incident_insight(request: Request, event_id: str) -> Response:

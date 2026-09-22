@@ -15,13 +15,12 @@ from typing import Any, Callable
 from sqlalchemy import delete, update
 from sqlalchemy.exc import IntegrityError
 
-from afs import insight, telegram
-from afs import schedule
+from afs import audio, insight, schedule, telegram
 from afs.config import WIB
 from afs.db import session_scope
-from afs.domain import RunStatus, RunTrigger, Severity
+from afs.domain import RunStatus, RunTrigger, Severity, quarter_label
 from afs.incidents import apply_evaluation
-from afs.models import AuditRun, Lock, utcnow
+from afs.models import AuditRun, Incident, Lock, utcnow
 from afs.rules import evaluate_all
 from afs.scoring import compute_score
 from afs.sectors.client import SectorsClient
@@ -133,6 +132,7 @@ def run_audit(
     client: SectorsClient | None = None,
     today: date | None = None,
     send: Callable[..., Any] = telegram.send_message,
+    send_voice: Callable[..., Any] = telegram.send_voice,
 ) -> int:
     """Execute one Audit Run and return its id. Raises RunInProgressError when another run holds the lock."""
     trigger = RunTrigger(trigger)
@@ -150,7 +150,17 @@ def run_audit(
             session.flush()
             run_id = run.id
         runlog(f"Audit Run #{run_id} dimulai ({trigger.value})")
-        _execute(run_id, started_at, trigger, client=client, today=today, send=send, runlog=runlog, stats=stats)
+        _execute(
+            run_id,
+            started_at,
+            trigger,
+            client=client,
+            today=today,
+            send=send,
+            send_voice=send_voice,
+            runlog=runlog,
+            stats=stats,
+        )
         return run_id
     except Exception as exc:
         log.exception("Audit Run gagal")
@@ -213,6 +223,7 @@ def _execute(
     client: SectorsClient,
     today: date | None,
     send: Callable[..., Any],
+    send_voice: Callable[..., Any] = telegram.send_voice,
     runlog: _RunLog,
     stats: _Stats,
 ) -> None:
@@ -280,6 +291,40 @@ def _execute(
         event_id = item["event_id"]
         message = telegram.format_incident_message(insight_line=insights.get(event_id), **item)
         _safe_send(send, runlog, message, (telegram.OPEN_INCIDENT_BUTTON, telegram.incident_url(event_id)))
+
+        # Audio Briefing (~1.5–2.5 mins) sent as Telegram Voice Note
+        try:
+            with session_scope() as session:
+                inc = session.get(Incident, event_id)
+                ins_row = insight.latest_for(session, event_id)
+                if inc is not None:
+                    audio_bytes, _script = audio.get_or_create_incident_audio(
+                        session=session,
+                        incident=inc,
+                        company_name=item["company_name"],
+                        insight_row=ins_row,
+                    )
+                    if audio_bytes:
+                        ticker = item["symbol"].removesuffix(".JK")
+                        period = quarter_label(item["report_date"])
+                        caption = (
+                            f"🎧 <b>Audio Briefing · {ticker} ({period})</b>\n"
+                            "<i>Dengarkan intisari penting (~2 menit) sembari multitasking.</i>"
+                        )
+                        try:
+                            ok = send_voice(
+                                audio_bytes,
+                                caption=caption,
+                                button=(telegram.OPEN_INCIDENT_BUTTON, telegram.incident_url(event_id)),
+                            )
+                            if ok:
+                                runlog(f"{event_id}: Audio Briefing terkirim ke Telegram")
+                            else:
+                                runlog(f"{event_id}: Audio Briefing tidak terkirim ke Telegram", logging.WARNING)
+                        except Exception as exc:  # noqa: BLE001
+                            runlog(f"{event_id}: Telegram send_voice gagal — {exc}", logging.WARNING)
+        except Exception as exc:  # noqa: BLE001 - audio failure never breaks the run
+            runlog(f"{event_id}: Audio Briefing gagal dibuat — {exc}", logging.WARNING)
 
     runlog(
         f"Selesai: {stats.scanned} dipindai, {stats.failed} gagal, {stats.incidents_new} Incident baru, "

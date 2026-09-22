@@ -166,3 +166,39 @@ def test_quiet_http_logging_hides_the_url_that_carries_the_bot_token():
     logging.getLogger("httpx").setLevel(logging.INFO)
     quiet_http_logging()
     assert not logging.getLogger("httpx").isEnabledFor(logging.INFO)
+
+
+def test_send_voice_payload_with_button(tg_settings):
+    seen: list[httpx.Request] = []
+
+    def handler(req):
+        seen.append(req)
+        return httpx.Response(200, json={"ok": True})
+
+    client = httpx.Client(transport=httpx.MockTransport(handler))
+    ok = telegram.send_voice(
+        b"fake-audio-bytes",
+        caption="🎧 Audio Briefing",
+        button=("Buka Incident", "https://afs/i/1"),
+        client=client,
+    )
+    assert ok is True
+    assert str(seen[0].url) == "https://api.telegram.org/botTOKEN/sendVoice"
+    assert seen[0].headers["content-type"].startswith("multipart/form-data")
+    assert b"fake-audio-bytes" in seen[0].content
+
+
+def test_send_voice_not_configured(monkeypatch):
+    s = get_settings()
+    monkeypatch.setattr(s, "telegram_bot_token", "")
+    monkeypatch.setattr(s, "telegram_chat_id", "")
+    assert telegram.send_voice(b"data") is False
+
+
+def test_send_voice_failure_returns_false(tg_settings):
+    def handler(req):
+        raise httpx.ConnectError("network down")
+
+    assert telegram.send_voice(b"x", client=httpx.Client(transport=httpx.MockTransport(handler))) is False
+    bad = httpx.Client(transport=httpx.MockTransport(lambda r: httpx.Response(400)))
+    assert telegram.send_voice(b"x", client=bad) is False

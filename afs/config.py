@@ -27,6 +27,8 @@ class Settings(BaseSettings):
     run_interval_days: int = 3
     universe_path: Path = ROOT / "config" / "universe.json"
     backtest_cases_path: Path = ROOT / "config" / "backtest_cases.json"
+    tts_voice: str = "id-ID-ArdiNeural"
+    audio_dir: Path = ROOT / "data" / "audio"
 
     @property
     def sqlalchemy_url(self) -> str:
