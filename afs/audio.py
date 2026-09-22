@@ -17,10 +17,10 @@ import edge_tts
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from afs.config import get_settings
+from afs.config import WIB, get_settings
 from afs.domain import FindingStatus, Severity, quarter_label
 from afs.labels import RULE_META, SEVERITY_LABEL
-from afs.models import Incident, IncidentInsight
+from afs.models import AuditRun, Emiten, EmitenEvaluation, Incident, IncidentInsight
 
 log = logging.getLogger(__name__)
 
@@ -270,5 +270,189 @@ def get_or_create_incident_audio(
         cache_path.write_bytes(audio_bytes)
     except OSError as exc:
         log.warning("Could not cache audio file to %s: %s", cache_path, exc)
+
+    return audio_bytes, script
+
+
+# ---------------------------------------------------------------- Run summary audio
+
+
+def build_run_summary_audio_script(session: Session, run: AuditRun | None) -> str:
+    """Build a concise ~1 minute (~120–160 words) spoken overview of the latest Audit Run."""
+    if run is None or run.started_at is None:
+        return (
+            "Halo Analis, belum ada data pemindaian audit run di sistem Sentinel. "
+            "Silakan jalankan pemindaian terlebih dahulu melalui tombol Run Now di dashboard."
+        )
+
+    local_dt = run.started_at.astimezone(WIB)
+    month_names = [
+        "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+        "Juli", "Agustus", "September", "Oktober", "November", "Desember",
+    ]
+    date_str = f"{local_dt.day} {month_names[local_dt.month - 1]} {local_dt.year}"
+
+    scanned = run.emiten_scanned or 0
+    new_inc = run.incidents_new or 0
+    escalations = run.escalations or 0
+
+    critical_incidents = list(
+        session.scalars(
+            select(Incident)
+            .where(Incident.severity == Severity.CRITICAL.value)
+            .order_by(Incident.score.desc())
+        ).all()
+    )
+
+    paragraphs = [
+        f"Halo Analis, berikut ringkasan eksekutif Sentinel untuk pemindaian bursa pada tanggal {date_str}. "
+        f"Sistem telah selesai memindai {scanned} emiten aktif di Bursa Efek Indonesia."
+    ]
+
+    if new_inc > 0 or escalations > 0:
+        details = (
+            f"Hasil pemindaian mendeteksi {new_inc} insiden baru dan {escalations} kenaikan eskalasi risiko."
+        )
+        if critical_incidents:
+            top_symbols = [inc.symbol.removesuffix(".JK") for inc in critical_incidents[:3]]
+            details += f" Emiten yang memerlukan perhatian prioritas utama adalah {', '.join(top_symbols)}."
+        paragraphs.append(details)
+        paragraphs.append(
+            "Sebagian besar emiten lainnya terpantau berada dalam batas parameter risiko aman. "
+            "Analis disarankan segera meninjau dashboard web Sentinel untuk memulai triase pada antrean insiden teratas. "
+            "Selamat bertugas."
+        )
+    else:
+        paragraphs.append(
+            "Hasil pemindaian menunjukkan kondisi bursa relatif tenang tanpa ada temuan insiden baru maupun kenaikan eskalasi risiko."
+        )
+        paragraphs.append(
+            "Seluruh emiten yang dipindai berada dalam parameter normal dan wajar. "
+            "Anda dapat memantau status berkala di dashboard web Sentinel. Selamat beraktivitas."
+        )
+
+    return "\n\n".join(paragraphs)
+
+
+def get_or_create_run_audio(
+    session: Session,
+    run: AuditRun | None,
+    voice: str | None = None,
+    force_refresh: bool = False,
+) -> tuple[bytes, str]:
+    """Retrieve or synthesize the global run summary audio (~1 min)."""
+    run_key = f"run_{run.id}" if run and run.id else "run_latest"
+    cache_path = get_audio_cache_path(run_key)
+    script = build_run_summary_audio_script(session, run)
+
+    if not force_refresh and cache_path.is_file():
+        try:
+            audio_bytes = cache_path.read_bytes()
+            if audio_bytes:
+                return audio_bytes, script
+        except OSError:
+            pass
+
+    audio_bytes = synthesize_speech(script, voice=voice)
+    try:
+        cache_path.write_bytes(audio_bytes)
+    except OSError as exc:
+        log.warning("Could not cache run audio to %s: %s", cache_path, exc)
+
+    return audio_bytes, script
+
+
+# ---------------------------------------------------------------- Emiten profile audio
+
+
+def build_emiten_profile_audio_script(session: Session, symbol: str) -> str:
+    """Build a concise ~1 minute (~120–160 words) spoken company health profile."""
+    clean_sym = symbol.removesuffix(".JK") + ".JK"
+    ticker = symbol.removesuffix(".JK")
+    emiten = session.scalar(select(Emiten).where(Emiten.symbol == clean_sym))
+    company_name = emiten.company_name if emiten else ticker
+    sector_info = f", sektor {emiten.sector}" if emiten and emiten.sector else ""
+
+    evals = list(
+        session.scalars(
+            select(EmitenEvaluation)
+            .where(EmitenEvaluation.symbol == clean_sym)
+            .order_by(EmitenEvaluation.report_date.desc())
+        ).all()
+    )
+    incidents = list(
+        session.scalars(
+            select(Incident)
+            .where(Incident.symbol == clean_sym)
+            .order_by(Incident.report_date.desc())
+        ).all()
+    )
+
+    paragraphs = [
+        f"Halo Analis, berikut profil kesehatan forensik untuk {company_name}, kode saham {ticker}{sector_info}."
+    ]
+
+    if evals:
+        latest_ev = evals[0]
+        period = quarter_label(latest_ev.report_date)
+        score_int = int(round(latest_ev.score)) if latest_ev.score is not None else 0
+        sev_enum = Severity(latest_ev.severity) if latest_ev.severity in Severity.__members__.values() else Severity.LOW
+        sev_text = SEVERITY_LABEL.get(sev_enum, latest_ev.severity or "Aman")
+
+        narrative = (
+            f"Berdasarkan evaluasi laporan keuangan periode {period}, emiten ini memiliki skor risiko komposit {score_int} dari seratus, "
+            f"dengan tingkat keparahan {sev_text}."
+        )
+        if latest_ev.severity == Severity.CRITICAL.value:
+            narrative += " Terpantau kombinasi anomali akuntansi serius pada kualitas laba atau solvabilitas utang."
+        elif latest_ev.severity == Severity.MODERATE.value:
+            narrative += " Terdapat beberapa indikator peringatan yang memerlukan pengawasan berkala pada perputaran kas."
+        else:
+            narrative += " Indikator fundamental dan rasio akrual berada dalam batas wajar, tanpa ada sinyal manipulasi laba."
+        paragraphs.append(narrative)
+    else:
+        paragraphs.append(
+            "Emiten ini terdaftar dalam Universe pemantauan dan belum memiliki riwayat evaluasi kuartalan yang terdata."
+        )
+
+    if incidents:
+        cnt = len(incidents)
+        paragraphs.append(
+            f"Dalam catatan Sentinel, emiten ini memiliki riwayat {cnt} insiden forensik. "
+            "Rincian formula dan tabel perbandingan historis dapat Anda telusuri langsung di tabel universe dashboard Sentinel."
+        )
+    else:
+        paragraphs.append(
+            "Tidak ada catatan insiden aktif untuk emiten ini. "
+            "Anda dapat memantau pergerakan arus kas dan laba historis di dashboard Sentinel."
+        )
+
+    return "\n\n".join(paragraphs)
+
+
+def get_or_create_emiten_audio(
+    session: Session,
+    symbol: str,
+    voice: str | None = None,
+    force_refresh: bool = False,
+) -> tuple[bytes, str]:
+    """Retrieve or synthesize the emiten health overview audio (~1 min)."""
+    clean_sym = symbol.removesuffix(".JK")
+    cache_path = get_audio_cache_path(f"emiten_{clean_sym}")
+    script = build_emiten_profile_audio_script(session, symbol)
+
+    if not force_refresh and cache_path.is_file():
+        try:
+            audio_bytes = cache_path.read_bytes()
+            if audio_bytes:
+                return audio_bytes, script
+        except OSError:
+            pass
+
+    audio_bytes = synthesize_speech(script, voice=voice)
+    try:
+        cache_path.write_bytes(audio_bytes)
+    except OSError as exc:
+        log.warning("Could not cache emiten audio to %s: %s", cache_path, exc)
 
     return audio_bytes, script

@@ -298,11 +298,14 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         with session_scope() as s:
             evals = queries.latest_evaluations(s)
             last_success = schedule.last_successful_start(s)
+            last_run_row = queries.last_run(s)
+            run_audio_script = audio.build_run_summary_audio_script(s, last_run_row) if last_run_row else ""
             return render(
                 request,
                 "dashboard.html",
                 {
-                    "last_run": queries.last_run(s),
+                    "last_run": last_run_row,
+                    "run_audio_script": run_audio_script,
                     "interval_days": settings.run_interval_days,
                     "next_run": fmt.next_scheduled_run(last_success, settings.run_interval_days),
                     "counts": queries.severity_counts(evals),
@@ -310,6 +313,63 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                     "rows": queries.universe_rows(s, evals, lang=lang),
                 },
             )
+
+    @app.get("/dashboard/audio")
+    @app.get("/runs/{run_id}/audio")
+    def dashboard_run_audio(request: Request, run_id: int | None = None) -> Response:
+        from afs import audio as audio_mod
+        from afs.models import AuditRun
+
+        with session_scope() as s:
+            if run_id is not None:
+                run = s.get(AuditRun, run_id)
+            else:
+                from sqlalchemy import select
+                run = s.scalars(select(AuditRun).order_by(AuditRun.started_at.desc())).first()
+
+            try:
+                audio_bytes, _script = audio_mod.get_or_create_run_audio(s, run)
+            except audio_mod.AudioUnavailable as exc:
+                return Response(
+                    content=f"Audio generation unavailable: {exc}",
+                    status_code=503,
+                    media_type="text/plain",
+                )
+
+        return Response(
+            content=audio_bytes,
+            media_type="audio/mpeg",
+            headers={
+                "Content-Disposition": 'inline; filename="dashboard_briefing.mp3"',
+                "Cache-Control": "public, max-age=3600",
+                "Accept-Ranges": "bytes",
+            },
+        )
+
+    @app.get("/emiten/{symbol}/audio")
+    def emiten_audio(request: Request, symbol: str) -> Response:
+        from afs import audio as audio_mod
+
+        clean_sym = symbol.removesuffix(".JK")
+        with session_scope() as s:
+            try:
+                audio_bytes, _script = audio_mod.get_or_create_emiten_audio(s, clean_sym)
+            except audio_mod.AudioUnavailable as exc:
+                return Response(
+                    content=f"Audio generation unavailable: {exc}",
+                    status_code=503,
+                    media_type="text/plain",
+                )
+
+        return Response(
+            content=audio_bytes,
+            media_type="audio/mpeg",
+            headers={
+                "Content-Disposition": f'inline; filename="{clean_sym}_profile.mp3"',
+                "Cache-Control": "public, max-age=86400",
+                "Accept-Ranges": "bytes",
+            },
+        )
 
     @app.post("/runs")
     def start_run(request: Request) -> Response:

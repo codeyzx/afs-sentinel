@@ -16,7 +16,7 @@ from sqlalchemy import delete, update
 from sqlalchemy.exc import IntegrityError
 
 from afs import audio, insight, schedule, telegram
-from afs.config import WIB
+from afs.config import WIB, get_settings
 from afs.db import session_scope
 from afs.domain import RunStatus, RunTrigger, Severity, quarter_label
 from afs.incidents import apply_evaluation
@@ -350,3 +350,31 @@ def _execute(
             credits_used=client.credits_used,
         ),
     )
+
+    # Send Global Run Briefing Audio (~1 min) to Telegram
+    try:
+        with session_scope() as session:
+            run = session.get(AuditRun, run_id)
+            if run is not None:
+                run_audio_bytes, _script = audio.get_or_create_run_audio(session, run)
+                if run_audio_bytes:
+                    settings = get_settings()
+                    dash_url = settings.base_web_url.rstrip("/") + "/"
+                    caption = (
+                        f"🎧 <b>Ringkasan Audit Run (Bursa)</b>\n"
+                        f"<i>Ikhtisar pemindaian {stats.scanned} emiten hari ini (~1 menit).</i>"
+                    )
+                    try:
+                        ok = send_voice(
+                            run_audio_bytes,
+                            caption=caption,
+                            button=("📊 Buka Dashboard", dash_url),
+                        )
+                        if ok:
+                            runlog(f"Audit Run #{run_id}: Audio Ringkasan terkirim ke Telegram")
+                        else:
+                            runlog(f"Audit Run #{run_id}: Audio Ringkasan tidak terkirim ke Telegram", logging.WARNING)
+                    except Exception as exc:  # noqa: BLE001
+                        runlog(f"Audit Run #{run_id}: Telegram send_voice ringkasan gagal — {exc}", logging.WARNING)
+    except Exception as exc:  # noqa: BLE001
+        runlog(f"Audit Run #{run_id}: Audio Ringkasan gagal dibuat — {exc}", logging.WARNING)

@@ -168,3 +168,47 @@ def test_get_or_create_incident_audio_caching(tmp_path, monkeypatch, engine):
             data2, script2 = audio.get_or_create_incident_audio(s, loaded_inc, "Waskita")
             assert data2 == b"SYNTHESIZED_MP3"
             assert mock_fn.call_count == 1  # Still 1, cache hit!
+
+
+def test_build_run_summary_audio_script(engine):
+    from datetime import datetime, timezone
+    from afs.models import AuditRun
+
+    run = AuditRun(
+        id=1,
+        started_at=datetime(2026, 9, 22, 1, 0, tzinfo=timezone.utc),
+        emiten_scanned=33,
+        incidents_new=2,
+        escalations=1,
+    )
+    with session_scope() as s:
+        script = audio.build_run_summary_audio_script(s, run)
+    assert "Halo Analis" in script
+    assert "33 emiten" in script
+    assert "2 insiden baru" in script
+    assert "web Sentinel" in script
+
+
+def test_build_emiten_profile_audio_script(engine):
+    from afs.models import Emiten, EmitenEvaluation
+
+    with session_scope() as s:
+        s.add(Emiten(symbol="INDF.JK", company_name="Indofood Sukses Makmur", sector="Consumer Non-Cyclicals"))
+        s.add(EmitenEvaluation(
+            run_id=1,
+            symbol="INDF.JK",
+            report_date=date(2026, 6, 30),
+            score=20.0,
+            severity="LOW",
+            findings=[],
+        ))
+        s.commit()
+
+    with session_scope() as s:
+        script = audio.build_emiten_profile_audio_script(s, "INDF.JK")
+
+    assert "Halo Analis" in script
+    assert "Indofood Sukses Makmur" in script
+    assert "INDF" in script
+    assert "Rendah" in script
+    assert "20 dari seratus" in script

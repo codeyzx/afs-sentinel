@@ -139,6 +139,24 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "en": "Low risk",
     },
 
+    # Dashboard & Emiten Audio Briefing
+    "dash.audio_heading": {
+        "id": "🎧 Ringkasan Audit Pemindaian (~1 Menit)",
+        "en": "🎧 Audit Scan Briefing (~1 Min)",
+    },
+    "dash.audio_subtitle": {
+        "id": "Dengarkan ikhtisar pemindaian bursa, emiten berisiko, dan arahan triase hari ini.",
+        "en": "Listen to today's market scan overview, high risk emiten, and triage directions.",
+    },
+    "dash.emiten_audio_listen": {
+        "id": "Dengarkan Profil Forensik",
+        "en": "Listen to Forensic Profile",
+    },
+    "dash.emiten_audio_subtitle": {
+        "id": "Ikhtisar profil kesehatan dan tren risiko emiten (~1 menit).",
+        "en": "Emiten health overview and risk trend (~1 min).",
+    },
+
     # Triage Queue (Dashboard)
     "dash.queue_heading": {
         "id": "Perlu tindakan Anda",

@@ -213,3 +213,25 @@ def test_incident_audio_endpoint(client, seeded, monkeypatch, tmp_path):
 def test_incident_audio_not_found(client, seeded):
     resp = client.get("/incidents/AFS-NON-EXISTENT/audio")
     assert resp.status_code == 404
+
+
+def test_dashboard_audio_endpoint(client, seeded, monkeypatch, tmp_path):
+    from afs.config import get_settings
+
+    monkeypatch.setattr(get_settings(), "audio_dir", tmp_path)
+    monkeypatch.setattr("afs.audio.synthesize_speech", lambda text, voice=None: b"DASH_AUDIO_STREAM")
+    resp = client.get("/dashboard/audio")
+    assert resp.status_code == 200
+    assert resp.headers["content-type"] == "audio/mpeg"
+    assert resp.content == b"DASH_AUDIO_STREAM"
+
+
+def test_emiten_audio_endpoint(client, seeded, monkeypatch, tmp_path):
+    from afs.config import get_settings
+
+    monkeypatch.setattr(get_settings(), "audio_dir", tmp_path)
+    monkeypatch.setattr("afs.audio.synthesize_speech", lambda text, voice=None: b"EMITEN_AUDIO_STREAM")
+    resp = client.get("/emiten/EMTK.JK/audio")
+    assert resp.status_code == 200
+    assert resp.headers["content-type"] == "audio/mpeg"
+    assert resp.content == b"EMITEN_AUDIO_STREAM"
