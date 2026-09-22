@@ -23,7 +23,7 @@ from afs.incidents import apply_evaluation
 from afs.models import AuditRun, Incident, Lock, utcnow
 from afs.rules import evaluate_all
 from afs.scoring import compute_score
-from afs.sectors.client import SectorsClient
+from afs.sectors.client import SectorsAuthError, SectorsClient
 from afs.sectors.repository import DataRepository
 
 log = logging.getLogger(__name__)
@@ -285,6 +285,10 @@ def _execute(
                         escalated_from=outcome.previous_severity if outcome.kind == "ESCALATED" else None,
                     )
                 session.commit()
+            except SectorsAuthError:
+                session.rollback()  # fatal for every Emiten: stop now, fail the run once
+                stats.failed += 1
+                raise
             except Exception as exc:  # noqa: BLE001 - one Emiten must not stop the run (§6.2.3)
                 session.rollback()
                 stats.failed += 1

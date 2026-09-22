@@ -101,8 +101,8 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "en": "View details",
     },
     "dash.no_runs_yet": {
-        "id": "Belum ada Audit Run. Jalankan sekarang, atau tunggu pemindaian otomatis pertama.",
-        "en": "No Audit Runs yet. Run now, or wait for the first automatic scan.",
+        "id": "Belum ada Audit Run. Tunggu pemindaian otomatis pertama.",
+        "en": "No Audit Runs yet. Wait for the first automatic scan.",
     },
     "dash.next_run": {
         "id": "Berikutnya:",
@@ -111,14 +111,6 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
     "dash.next_run_first": {
         "id": "pada pemindaian otomatis pertama",
         "en": "on the first automatic scan",
-    },
-    "dash.run_now": {
-        "id": "Jalankan sekarang",
-        "en": "Run now",
-    },
-    "dash.login_to_run": {
-        "id": "Masuk untuk menjalankan",
-        "en": "Log in to run",
     },
     "dash.autonomous_mode": {
         "id": "Sistem Otonom Aktif",
@@ -648,18 +640,6 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
     },
 
     # Flashes
-    "flash.runner_unavailable": {
-        "id": "Runner belum tersedia",
-        "en": "Runner not available",
-    },
-    "flash.run_in_progress": {
-        "id": "Audit Run sedang berjalan",
-        "en": "Audit Run is already in progress",
-    },
-    "flash.run_started": {
-        "id": "Audit Run dimulai. Muat ulang halaman ini beberapa menit lagi untuk melihat hasilnya.",
-        "en": "Audit Run started. Reload this page in a few minutes to see results.",
-    },
     "flash.insight_failed": {
         "id": "Ringkasan AI gagal dibuat: {exc}",
         "en": "Failed to generate AI summary: {exc}",

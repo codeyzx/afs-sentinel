@@ -143,3 +143,12 @@ def test_requests_are_spaced_by_min_interval():
     now[0] += 0.5
     client.corporate_actions("B.JK")
     assert waits == [1.0]
+
+
+def test_401_raises_auth_error_without_retry():
+    from afs.sectors.client import SectorsAuthError
+
+    client, seen = make_client(lambda req: httpx.Response(401, json={"detail": "bad key"}))
+    with pytest.raises(SectorsAuthError):
+        client.quarterly_dates("ASII.JK")
+    assert len(seen) == 1

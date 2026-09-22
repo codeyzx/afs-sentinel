@@ -25,7 +25,7 @@ from sqlalchemy.orm import Session
 from afs.config import WIB, get_settings
 from afs.domain import Dividend, EvaluationInput, Filing, Quarter
 from afs.models import ApiCache, Emiten
-from afs.sectors.client import SectorsClient
+from afs.sectors.client import SectorsAuthError, SectorsClient
 
 log = logging.getLogger(__name__)
 
@@ -272,6 +272,8 @@ class DataRepository:
                 emiten.company_name = str(body.get("company_name") or emiten.company_name or "")
                 emiten.sector = str(overview.get("sector") or emiten.sector or "")
                 emiten.sub_sector = str(overview.get("sub_sector") or emiten.sub_sector or "")
+            except SectorsAuthError:
+                raise  # nothing else will succeed: let the Audit Run fail once, loudly
             except Exception as exc:  # noqa: BLE001 - keep the Emiten; name/sector stay as before
                 log.warning("company overview %s gagal: %s", symbol, exc)
             emiten.is_excluded = is_financial_sector(emiten.sector or "", emiten.sub_sector or "")

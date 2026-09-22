@@ -1,6 +1,4 @@
 import json
-import sys
-import types
 from datetime import date
 
 import pytest
@@ -157,37 +155,6 @@ def test_triage_persists_and_records_events(client, seeded):
 def test_triage_unknown_incident_404(client):
     login(client)
     assert client.post("/incidents/NOPE/triage", data={"status": "RESOLVED"}).status_code == 404
-
-
-def test_runs_requires_login(client):
-    r = client.post("/runs", follow_redirects=False)
-    assert r.status_code == 303 and r.headers["location"].startswith("/login")
-
-
-def test_runs_without_runner_flashes(client, monkeypatch):
-    monkeypatch.setitem(sys.modules, "afs.runner", None)  # import -> ImportError
-    login(client)
-    text = client.post("/runs").text
-    assert "Runner belum tersedia" in text
-
-
-def test_runs_starts_background_run(client, monkeypatch):
-    calls = []
-    fake = types.ModuleType("afs.runner")
-    fake.is_run_in_progress = lambda: False
-    fake.run_audit = lambda trigger: calls.append(trigger) or 1
-    monkeypatch.setitem(sys.modules, "afs.runner", fake)
-    login(client)
-    assert "Audit Run dimulai" in client.post("/runs").text
-    fake.is_run_in_progress = lambda: True
-    assert "Audit Run sedang berjalan" in client.post("/runs").text
-    import time
-
-    for _ in range(50):
-        if calls:
-            break
-        time.sleep(0.01)
-    assert calls == ["MANUAL"]
 
 
 def test_rule_markers_never_rely_on_colour_alone(client):

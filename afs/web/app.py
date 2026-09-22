@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import logging
-import threading
 from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -18,7 +17,7 @@ from starlette.middleware.sessions import SessionMiddleware
 from afs import audio, labels, schedule, telegram
 from afs.config import Settings, get_settings
 from afs.db import session_scope
-from afs.domain import IncidentEventKind, RunTrigger, TriageStatus
+from afs.domain import IncidentEventKind, TriageStatus
 from afs.labels import RULE_META, TRIAGE_LABEL
 from afs.models import Incident
 from afs.web import auth, queries
@@ -211,27 +210,6 @@ def event_description(kind: str, from_value: str | None, to_value: str | None, l
     return kind
 
 
-def _start_manual_run(request: Request) -> None:
-    lang = get_lang(request)
-    try:
-        from afs.runner import is_run_in_progress, run_audit
-    except ImportError:
-        auth.flash(request, t("flash.runner_unavailable", lang=lang), "yellow")
-        return
-    if is_run_in_progress():
-        auth.flash(request, t("flash.run_in_progress", lang=lang), "yellow")
-        return
-
-    def target() -> None:
-        try:
-            run_audit(RunTrigger.MANUAL)
-        except Exception:  # background thread: log, never crash the web process
-            log.exception("Manual Audit Run failed")
-
-    threading.Thread(target=target, name="manual-audit-run", daemon=True).start()
-    auth.flash(request, t("flash.run_started", lang=lang), "green")
-
-
 def _backtest_chart(results: list[Any], events: list[Any], lang: str = DEFAULT_LANG) -> dict[str, Any]:
     """x = quarter index; events get a fractional x between the surrounding report dates."""
     dates = [r.report_date for r in results]
@@ -261,7 +239,7 @@ def _backtest_chart(results: list[Any], events: list[Any], lang: str = DEFAULT_L
 
 def create_app(settings: Settings | None = None) -> FastAPI:
     settings = settings or get_settings()
-    telegram.quiet_http_logging()  # a manual Audit Run sends Telegram from this process
+    telegram.quiet_http_logging()
     app = FastAPI(title="AFS Sentinel", docs_url=None, redoc_url=None, openapi_url=None)
     app.state.settings = settings
     app.add_middleware(SessionMiddleware, secret_key=settings.session_secret, same_site="lax")
@@ -370,13 +348,6 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 "Accept-Ranges": "bytes",
             },
         )
-
-    @app.post("/runs")
-    def start_run(request: Request) -> Response:
-        if not auth.is_logged_in(request):
-            return auth.login_redirect("/")
-        _start_manual_run(request)
-        return RedirectResponse("/", status_code=303)
 
     @app.get("/incidents/{event_id}", response_class=HTMLResponse)
     def incident_detail(request: Request, event_id: str) -> Response:

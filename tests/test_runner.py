@@ -224,6 +224,18 @@ def test_all_emiten_failing_marks_run_failed(world):
     assert outbox.messages[-1][0].startswith("❌")
 
 
+def test_auth_error_aborts_run_immediately(world):
+    from afs.sectors.client import SectorsAuthError
+
+    world.add("AAAA.JK", SectorsAuthError("GET /x -> HTTP 401: API key tidak valid atau kredit habis"))
+    world.add("BBBB.JK", CRITICAL)
+    outbox = Outbox()
+    r = get_run(run(outbox=outbox))
+    assert (r.status, r.emiten_scanned, r.emiten_failed) == ("FAILED", 1, 1)  # BBBB never attempted
+    assert "HTTP 401" in r.error
+    assert outbox.messages[-1][0].startswith("❌")
+
+
 def test_telegram_failures_never_fail_the_run(world):
     world.add("AAAA.JK", CRITICAL)
     outbox = Outbox(fail=True)

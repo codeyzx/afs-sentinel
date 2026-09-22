@@ -15,11 +15,17 @@ log = logging.getLogger(__name__)
 
 RETRY_STATUSES = frozenset({500, 502, 503, 504})
 RATE_LIMITED = 429
+AUTH_STATUSES = frozenset({401, 403})
 MAX_FILING_PAGES = 10
 
 
 class SectorsApiError(RuntimeError):
     pass
+
+
+class SectorsAuthError(SectorsApiError):
+    """401/403: the key is invalid or its credits are exhausted. Nothing else will succeed either,
+    so callers abort the whole run instead of failing every Emiten one by one."""
 
 
 class SectorsClient:
@@ -82,6 +88,10 @@ class SectorsClient:
                 log.warning("Sectors API %s -> %s, retry %d", path, resp.status_code, attempt)
                 self._sleep(self._backoff * 2 ** (attempt - 1))
                 continue
+            if resp.status_code in AUTH_STATUSES:
+                raise SectorsAuthError(
+                    f"GET {path} -> HTTP {resp.status_code}: API key tidak valid atau kredit habis"
+                )
             if resp.status_code >= 400:
                 raise SectorsApiError(f"GET {path} -> HTTP {resp.status_code}")
             try:

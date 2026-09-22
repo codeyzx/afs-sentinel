@@ -17,7 +17,7 @@ from afs.config import get_settings
 from afs.db import init_db, session_scope
 from afs.domain import RunStatus, RunTrigger
 from afs.models import AuditRun
-from afs.sectors.client import SectorsClient
+from afs.sectors.client import SectorsAuthError, SectorsClient
 from afs.sectors.repository import DataRepository
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
@@ -54,8 +54,21 @@ def reset_data() -> None:
     log.info("Reset data selesai.")
 
 
+def preflight() -> None:
+    """Fail before touching the database: a dead key would otherwise wipe paid-for cache for nothing."""
+    settings = get_settings()
+    log.info("Preflight: cek API key (%s...)", settings.sectors_api_key[:8])
+    try:
+        SectorsClient().quarterly_dates("ASII.JK")  # free endpoint, no credit
+    except SectorsAuthError as exc:
+        log.error("API key ditolak: %s", exc)
+        sys.exit(2)
+    log.info("Preflight OK")
+
+
 def run_batch() -> None:
     init_db()
+    preflight()
     reset_data()
 
     # Discover sectors
@@ -86,9 +99,14 @@ def run_batch() -> None:
                 status = run.status if run else "UNKNOWN"
                 credits_used = run.credits_used if run else 0
                 scanned = run.emiten_scanned if run else 0
+                error = run.error if run else "?"
             log.info(f"Batch {sec} selesai: Run #{run_id} | Status: {status} | Scanned: {scanned} | Credits: {credits_used}")
+            if status == RunStatus.FAILED.value:
+                log.error(f"Batch {sec} FAILED ({error}); batch dihentikan")
+                sys.exit(1)
         except Exception as e:
             log.exception(f"Batch {sec} error: {e}")
+            sys.exit(1)
 
     # Final consolidated run across all 33 emiten
     log.info("\n==================================================")
