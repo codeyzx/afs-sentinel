@@ -37,8 +37,24 @@ def test_claim_sentence():
     rows = [SimpleNamespace(report_date=date(2021, 3, 31), severity="LOW"),
             SimpleNamespace(report_date=date(2021, 6, 30), severity="MODERATE")]
     assert claim_sentence(rows, event) == "Pertama kali Sedang: 2021-Q2, 22 bulan sebelum suspensi"
+    assert claim_sentence(rows, event, lang="en") == "First reached Moderate: 2021-Q2, 22 months before suspensi"
     late = CaseEvent(date=date(2021, 5, 1), label="x")
     assert claim_sentence(rows, late) == "Tidak terdeteksi lebih awal"
+    assert claim_sentence(rows, late, lang="en") == "Not detected earlier"
+
+
+def test_english_formatting():
+    dt = datetime(2026, 9, 19, 1, 0, tzinfo=timezone.utc)
+    assert fmt.fmt_wib(dt, with_day=True, lang="en") == "Saturday, 19 Sep 2026, 08:00 WIB"
+    assert fmt.fmt_date(date(2023, 5, 12), lang="en") == "12 May 2023"
+    assert fmt.fmt_num(12345.678, 2, lang="en") == "12,345.68"
+    assert fmt.fmt_score(75.0, lang="en") == "75.0"
+    assert fmt.fmt_finding_value("SLOAN_ACCRUAL", 0.138, lang="en") == "13.8%"
+    assert fmt.fmt_finding_value("ALTMAN_Z_ADAPTED", 1.42, lang="en") == "Z = 1.42"
+    assert fmt.fmt_finding_value("BENEISH_ADAPTED", 2, lang="en") == "2 of 3 indices"
+    assert fmt.fmt_duration(datetime(2026, 9, 19, 1, 0), datetime(2026, 9, 19, 1, 2, 15), lang="en") == "2m 15s"
+    assert fmt.fmt_value(True, lang="en") == "yes"
+    assert fmt.fmt_value(False, lang="en") == "no"
 
 
 def test_load_cases_handles_missing_and_bad_files(tmp_path):

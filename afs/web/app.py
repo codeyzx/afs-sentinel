@@ -1,4 +1,4 @@
-"""AFS Sentinel web app (docs/system-rules.md §9)."""
+"""AFS Sentinel web app (docs/system-rules.md §9) with i18n support."""
 
 from __future__ import annotations
 
@@ -12,6 +12,7 @@ from fastapi import FastAPI, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from jinja2 import pass_context
 from starlette.middleware.sessions import SessionMiddleware
 
 from afs import labels, schedule, telegram
@@ -23,47 +24,179 @@ from afs.models import Incident
 from afs.web import auth, queries
 from afs.web import formatting as fmt
 from afs.web.backtest_view import claim_sentence, load_cases
+from afs.web.i18n import (
+    DEFAULT_LANG,
+    LANGUAGES,
+    SUPPORTED_LANGS,
+    localize_headline,
+    localize_severity_reason,
+    t,
+)
 
 log = logging.getLogger(__name__)
 HERE = Path(__file__).resolve().parent
 
 
+def get_lang(request: Request) -> str:
+    """Determine the current language from query param, cookie, or default."""
+    param = request.query_params.get("lang")
+    if param in SUPPORTED_LANGS:
+        return param
+    cookie = request.cookies.get("lang")
+    if cookie in SUPPORTED_LANGS:
+        return cookie
+    return DEFAULT_LANG
+
+
 def _templates() -> Jinja2Templates:
     templates = Jinja2Templates(directory=HERE / "templates")
     env = templates.env
+
+    def _get_lang_from_ctx(ctx: Any) -> str:
+        lang = ctx.get("current_lang")
+        if lang in SUPPORTED_LANGS:
+            return lang
+        req = ctx.get("request")
+        if req is not None:
+            return get_lang(req)
+        return DEFAULT_LANG
+
+    @pass_context
+    def _wib(ctx: Any, dt: datetime | None, with_day: bool = False, lang: str | None = None) -> str:
+        return fmt.fmt_wib(dt, with_day=with_day, lang=lang or _get_lang_from_ctx(ctx))
+
+    @pass_context
+    def _date_id(ctx: Any, d: date | None, lang: str | None = None) -> str:
+        return fmt.fmt_date(d, lang=lang or _get_lang_from_ctx(ctx))
+
+    @pass_context
+    def _num(ctx: Any, value: float | int | None, decimals: int = 0, lang: str | None = None) -> str:
+        return fmt.fmt_num(value, decimals=decimals, lang=lang or _get_lang_from_ctx(ctx))
+
+    @pass_context
+    def _score(ctx: Any, score: float | None, lang: str | None = None) -> str:
+        return fmt.fmt_score(score, lang=lang or _get_lang_from_ctx(ctx))
+
+    @pass_context
+    def _finding_value(ctx: Any, rule_id: str, value: Any, lang: str | None = None) -> str:
+        return fmt.fmt_finding_value(rule_id, value, lang=lang or _get_lang_from_ctx(ctx))
+
+    @pass_context
+    def _value(ctx: Any, value: Any, lang: str | None = None) -> str:
+        return fmt.fmt_value(value, lang=lang or _get_lang_from_ctx(ctx))
+
+    @pass_context
+    def _finding_label(ctx: Any, status: str, lang: str | None = None) -> str:
+        return fmt.finding_label(status, lang=lang or _get_lang_from_ctx(ctx))
+
+    @pass_context
+    def _severity_label(ctx: Any, severity: str | None, lang: str | None = None) -> str:
+        return fmt.severity_label(severity, lang=lang or _get_lang_from_ctx(ctx))
+
+    @pass_context
+    def _triage_label(ctx: Any, status: str | None, lang: str | None = None) -> str:
+        return fmt.triage_label(status, lang=lang or _get_lang_from_ctx(ctx))
+
+    @pass_context
+    def _rule_name(ctx: Any, rule_id: str, lang: str | None = None) -> str:
+        return fmt.rule_name(rule_id, lang=lang or _get_lang_from_ctx(ctx))
+
+    @pass_context
+    def _rule_subtitle(ctx: Any, rule_id: str, lang: str | None = None) -> str:
+        return fmt.rule_subtitle(rule_id, lang=lang or _get_lang_from_ctx(ctx))
+
+    @pass_context
+    def _rule_limitation(ctx: Any, rule_id: str, lang: str | None = None) -> str:
+        return fmt.rule_limitation(rule_id, lang=lang or _get_lang_from_ctx(ctx))
+
+    @pass_context
+    def _trigger_label(ctx: Any, trigger: str | None, lang: str | None = None) -> str:
+        return fmt.trigger_label(trigger, lang=lang or _get_lang_from_ctx(ctx))
+
+    @pass_context
+    def _run_status_label(ctx: Any, status: str | None, lang: str | None = None) -> str:
+        return fmt.run_status_label(status, lang=lang or _get_lang_from_ctx(ctx))
+
+    @pass_context
+    def _fmt_duration(ctx: Any, start: datetime | None, end: datetime | None, lang: str | None = None) -> str:
+        return fmt.fmt_duration(start, end, lang=lang or _get_lang_from_ctx(ctx))
+
+    @pass_context
+    def _localize_headline(ctx: Any, text: str | None, lang: str | None = None) -> str:
+        return localize_headline(text, lang=lang or _get_lang_from_ctx(ctx))
+
+    @pass_context
+    def _localize_severity_reason(ctx: Any, text: str | None, lang: str | None = None) -> str:
+        return localize_severity_reason(text, lang=lang or _get_lang_from_ctx(ctx))
+
+    @pass_context
+    def _t(ctx: Any, key: str, lang: str | None = None, **kwargs: Any) -> str:
+        return t(key, lang=lang or _get_lang_from_ctx(ctx), **kwargs)
+
+    @pass_context
+    def _get_rule_legend(ctx: Any, lang: str | None = None) -> list[dict[str, Any]]:
+        return queries.rule_legend(lang=lang or _get_lang_from_ctx(ctx))
+
     env.filters.update(
-        wib=fmt.fmt_wib,
-        date_id=fmt.fmt_date,
-        num=fmt.fmt_num,
-        score=fmt.fmt_score,
+        wib=_wib,
+        date_id=_date_id,
+        num=_num,
+        score=_score,
         ticker=fmt.ticker,
         period=fmt.fmt_period,
-        finding_value=fmt.fmt_finding_value,
-        value=fmt.fmt_value,
-        finding_label=fmt.finding_label,
+        finding_value=_finding_value,
+        value=_value,
+        finding_label=_finding_label,
         finding_tone=fmt.finding_tone,
-        severity_label=fmt.severity_label,
+        severity_label=_severity_label,
         severity_tone=fmt.severity_tone,
-        triage_label=fmt.triage_label,
-        rule_name=fmt.rule_name,
-        rule_subtitle=fmt.rule_subtitle,
-        rule_limitation=fmt.rule_limitation,
-        trigger_label=fmt.trigger_label,
+        triage_label=_triage_label,
+        rule_name=_rule_name,
+        rule_subtitle=_rule_subtitle,
+        rule_limitation=_rule_limitation,
+        trigger_label=_trigger_label,
         trigger_icon=fmt.trigger_icon,
-        run_status_label=fmt.run_status_label,
+        run_status_label=_run_status_label,
         run_status_tone=fmt.run_status_tone,
+        localize_headline=_localize_headline,
+        localize_severity_reason=_localize_severity_reason,
+        t=_t,
     )
     env.globals.update(
         RULE_META=RULE_META,
         TRIAGE_LABEL=TRIAGE_LABEL,
         labels=labels,
-        fmt_duration=fmt.fmt_duration,
+        fmt_duration=_fmt_duration,
         RULE_LEGEND=queries.rule_legend(),
+        get_rule_legend=_get_rule_legend,
+        rule_legend=_get_rule_legend,
+        localize_headline=_localize_headline,
+        localize_severity_reason=_localize_severity_reason,
+        t=_t,
+        LANGUAGES=LANGUAGES,
     )
     return templates
 
 
-def event_description(kind: str, from_value: str | None, to_value: str | None) -> str:
+def event_description(kind: str, from_value: str | None, to_value: str | None, lang: str = DEFAULT_LANG) -> str:
+    if lang == "en":
+        match kind:
+            case IncidentEventKind.CREATED:
+                return (
+                    f"Incident created with severity {fmt.severity_label(to_value, lang='en')}"
+                    if to_value
+                    else "Incident created"
+                )
+            case IncidentEventKind.ESCALATED:
+                return f"Escalation: {fmt.severity_label(from_value, lang='en')} → {fmt.severity_label(to_value, lang='en')}"
+            case IncidentEventKind.DOWNGRADED:
+                return f"Severity downgraded: {fmt.severity_label(from_value, lang='en')} → {fmt.severity_label(to_value, lang='en')}"
+            case IncidentEventKind.TRIAGE_CHANGED:
+                return f"Triage status: {fmt.triage_label(from_value, lang='en')} → {fmt.triage_label(to_value, lang='en')}"
+            case IncidentEventKind.NOTE_UPDATED:
+                return "Analyst notes updated"
+        return kind
+
     match kind:
         case IncidentEventKind.CREATED:
             return f"Incident dibuat dengan severity {fmt.severity_label(to_value)}" if to_value else "Incident dibuat"
@@ -79,13 +212,14 @@ def event_description(kind: str, from_value: str | None, to_value: str | None) -
 
 
 def _start_manual_run(request: Request) -> None:
+    lang = get_lang(request)
     try:
         from afs.runner import is_run_in_progress, run_audit
     except ImportError:
-        auth.flash(request, "Runner belum tersedia", "yellow")
+        auth.flash(request, t("flash.runner_unavailable", lang=lang), "yellow")
         return
     if is_run_in_progress():
-        auth.flash(request, "Audit Run sedang berjalan", "yellow")
+        auth.flash(request, t("flash.run_in_progress", lang=lang), "yellow")
         return
 
     def target() -> None:
@@ -95,10 +229,10 @@ def _start_manual_run(request: Request) -> None:
             log.exception("Manual Audit Run failed")
 
     threading.Thread(target=target, name="manual-audit-run", daemon=True).start()
-    auth.flash(request, "Audit Run dimulai. Muat ulang halaman ini beberapa menit lagi untuk melihat hasilnya.", "green")
+    auth.flash(request, t("flash.run_started", lang=lang), "green")
 
 
-def _backtest_chart(results: list[Any], events: list[Any]) -> dict[str, Any]:
+def _backtest_chart(results: list[Any], events: list[Any], lang: str = DEFAULT_LANG) -> dict[str, Any]:
     """x = quarter index; events get a fractional x between the surrounding report dates."""
     dates = [r.report_date for r in results]
 
@@ -115,7 +249,13 @@ def _backtest_chart(results: list[Any], events: list[Any]) -> dict[str, Any]:
     return {
         "labels": [fmt.fmt_period(d) for d in dates],
         "scores": [r.score for r in results],
-        "events": [{"x": round(position(e.date), 3), "label": e.label} for e in events],
+        "events": [
+            {
+                "x": round(position(e.date), 3),
+                "label": e.display_label(lang) if hasattr(e, "display_label") else e.label,
+            }
+            for e in events
+        ],
     }
 
 
@@ -129,15 +269,32 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     templates = _templates()
 
     def render(request: Request, name: str, context: dict[str, Any], status_code: int = 200) -> HTMLResponse:
+        lang = get_lang(request)
         base = {
             "logged_in": auth.is_logged_in(request),
             "flashes": auth.pop_flashes(request),
             "current_path": request.url.path,
+            "current_lang": lang,
+            "languages": LANGUAGES,
         }
-        return templates.TemplateResponse(request, name, {**base, **context}, status_code=status_code)
+        resp = templates.TemplateResponse(request, name, {**base, **context}, status_code=status_code)
+        if "lang" in request.query_params and request.query_params["lang"] in SUPPORTED_LANGS:
+            resp.set_cookie(key="lang", value=request.query_params["lang"], max_age=31536000, path="/", samesite="lax")
+        return resp
+
+    @app.get("/set-language")
+    @app.post("/set-language")
+    def set_language(request: Request, lang: str = DEFAULT_LANG, next: str = "/") -> Response:
+        if lang not in SUPPORTED_LANGS:
+            lang = DEFAULT_LANG
+        redirect_url = auth.safe_next(next)
+        resp = RedirectResponse(redirect_url, status_code=303)
+        resp.set_cookie(key="lang", value=lang, max_age=31536000, path="/", samesite="lax")
+        return resp
 
     @app.get("/", response_class=HTMLResponse)
     def dashboard(request: Request) -> Response:
+        lang = get_lang(request)
         with session_scope() as s:
             evals = queries.latest_evaluations(s)
             last_success = schedule.last_successful_start(s)
@@ -149,8 +306,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                     "interval_days": settings.run_interval_days,
                     "next_run": fmt.next_scheduled_run(last_success, settings.run_interval_days),
                     "counts": queries.severity_counts(evals),
-                    "queue": queries.triage_queue(s),
-                    "rows": queries.universe_rows(s, evals),
+                    "queue": queries.triage_queue(s, lang=lang),
+                    "rows": queries.universe_rows(s, evals, lang=lang),
                 },
             )
 
@@ -163,13 +320,18 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @app.get("/incidents/{event_id}", response_class=HTMLResponse)
     def incident_detail(request: Request, event_id: str) -> Response:
+        lang = get_lang(request)
         with session_scope() as s:
             incident = s.get(Incident, event_id)
             if incident is None:
                 return render(request, "not_found.html", {"event_id": event_id}, status_code=404)
-            findings = queries.sorted_findings(incident.findings)
+            raw_findings = queries.sorted_findings(incident.findings)
+            findings = [
+                {**f, "headline": localize_headline(f.get("headline", ""), lang=lang)}
+                for f in raw_findings
+            ]
             events = [
-                {"at": e.created_at, "kind": e.kind, "text": event_description(e.kind, e.from_value, e.to_value)}
+                {"at": e.created_at, "kind": e.kind, "text": event_description(e.kind, e.from_value, e.to_value, lang=lang)}
                 for e in queries.incident_events(s, event_id)
             ]
             return render(
@@ -179,7 +341,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                     "incident": incident,
                     "company_name": queries.emiten_name(s, incident.symbol),
                     "findings": findings,
-                    "top_headline": findings[0].get("headline", "") if findings else "",
+                    "top_headline": localize_headline(raw_findings[0].get("headline", ""), lang=lang) if raw_findings else "",
                     "insight": queries.incident_insight(s, event_id),
                     "chart": queries.chart_quarters(s, incident.symbol, incident.report_date),
                     "events": events,
@@ -190,6 +352,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @app.post("/incidents/{event_id}/insight")
     def incident_insight(request: Request, event_id: str) -> Response:
         """Make an Incident Insight by hand — the way out when Gemini was down during the run."""
+        lang = get_lang(request)
         if not auth.is_logged_in(request):
             return auth.login_redirect(f"/incidents/{event_id}")
         from afs import insight as insight_mod
@@ -201,15 +364,16 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             try:
                 insight_mod.generate_one(s, event_id, company_name=queries.emiten_name(s, incident.symbol))
             except insight_mod.InsightUnavailable as exc:
-                auth.flash(request, f"Ringkasan AI gagal dibuat: {exc}", "red")
+                auth.flash(request, t("flash.insight_failed", lang=lang, exc=exc), "red")
             else:
-                auth.flash(request, "Ringkasan AI dibuat", "green")
+                auth.flash(request, t("flash.insight_success", lang=lang), "green")
         return RedirectResponse(f"/incidents/{event_id}#insight", status_code=303)
 
     @app.post("/incidents/{event_id}/triage")
     def incident_triage(
         request: Request, event_id: str, status: str = Form(""), notes: str | None = Form(None)
     ) -> Response:
+        lang = get_lang(request)
         if not auth.is_logged_in(request):
             return auth.login_redirect(f"/incidents/{event_id}")
         from afs.triage import update_triage
@@ -217,18 +381,19 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         try:
             triage_status = TriageStatus(status) if status else None
         except ValueError:
-            auth.flash(request, "Status triage tidak dikenal", "red")
+            auth.flash(request, t("flash.triage_unknown", lang=lang), "red")
             return RedirectResponse(f"/incidents/{event_id}", status_code=303)
         try:
             with session_scope() as s:
                 update_triage(s, event_id, status=triage_status, notes=notes)
         except KeyError:
             return render(request, "not_found.html", {"event_id": event_id}, status_code=404)
-        auth.flash(request, "Perubahan triage disimpan", "green")
+        auth.flash(request, t("flash.triage_saved", lang=lang), "green")
         return RedirectResponse(f"/incidents/{event_id}#triage", status_code=303)
 
     @app.get("/backtest", response_class=HTMLResponse)
     def backtest(request: Request) -> Response:
+        lang = get_lang(request)
         cases = load_cases(settings.backtest_cases_path)
         views = []
         with session_scope() as s:
@@ -239,26 +404,27 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                         "case": case,
                         "results": results,
                         "rows": [
-                            {"result": r, "dots": queries.rule_dots(r.findings)} for r in results
+                            {"result": r, "dots": queries.rule_dots(r.findings, lang=lang)} for r in results
                         ],
                         "claims": [
-                            {"event": e, "sentence": claim_sentence(results, e)} for e in case.events
+                            {"event": e, "sentence": claim_sentence(results, e, lang=lang)} for e in case.events
                         ]
                         if results
                         else [],
-                        "chart": _backtest_chart(results, case.events),
+                        "chart": _backtest_chart(results, case.events, lang=lang),
                     }
                 )
             return render(request, "backtest.html", {"views": views})
 
     @app.get("/logs", response_class=HTMLResponse)
     def logs(request: Request) -> Response:
+        lang = get_lang(request)
         with session_scope() as s:
             runs = queries.audit_runs(s)
             return render(
                 request,
                 "logs.html",
-                {"runs": [{"run": r, "evaluations": queries.run_evaluations(s, r.id)} for r in runs]},
+                {"runs": [{"run": r, "evaluations": queries.run_evaluations(s, r.id, lang=lang)} for r in runs]},
             )
 
     @app.get("/login", response_class=HTMLResponse)
@@ -267,18 +433,20 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @app.post("/login")
     def login_submit(request: Request, password: str = Form(""), next: str = Form("/")) -> Response:
+        lang = get_lang(request)
         if not auth.check_password(password, settings.admin_password):
             return render(
-                request, "login.html", {"next": auth.safe_next(next), "error": "Password salah."}, status_code=401
+                request, "login.html", {"next": auth.safe_next(next), "error": t("login.error", lang=lang)}, status_code=401
             )
         auth.login(request)
-        auth.flash(request, "Berhasil masuk", "green")
+        auth.flash(request, t("flash.login_success", lang=lang), "green")
         return RedirectResponse(auth.safe_next(next), status_code=303)
 
     @app.post("/logout")
     def logout(request: Request) -> Response:
+        lang = get_lang(request)
         auth.logout(request)
-        auth.flash(request, "Berhasil keluar", "gray")
+        auth.flash(request, t("flash.logout_success", lang=lang), "gray")
         return RedirectResponse("/", status_code=303)
 
     return app

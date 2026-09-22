@@ -141,3 +141,46 @@ pre.log {
 
 [x-cloak] { display: none !important; }
 .btn-sm { padding: .3rem .75rem; }
+
+/* Language dropdown & menu components */
+.dropdown-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.35rem);
+  min-width: 11.5rem;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+  padding: 0.35rem;
+  z-index: 50;
+}
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.45rem 0.65rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  color: var(--text);
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  transition: background-color 0.15s ease;
+}
+.dropdown-item:hover, .dropdown-item:focus-visible {
+  background: var(--panel-2);
+  color: var(--text);
+  text-decoration: none;
+}
+.dropdown-item.active {
+  color: var(--accent);
+  font-weight: 600;
+}
+.dropdown-item .check-icon {
+  color: var(--accent);
+  font-size: 0.85rem;
+}

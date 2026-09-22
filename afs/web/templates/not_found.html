@@ -1,9 +1,9 @@
 {% extends "base.html" %}
-{% block title %}Tidak ditemukan{% endblock %}
+{% block title %}{{ 'not_found.title' | t }}{% endblock %}
 {% block content %}
 <section class="max-w-xl">
-  <h1 class="font-display text-2xl font-semibold">Incident tidak ditemukan</h1>
-  <p class="mt-2">Tidak ada Incident dengan ID <strong>{{ event_id }}</strong>. Periksa kembali tautannya, atau cari dari antrean triage.</p>
-  <p class="mt-4"><a class="btn btn-ghost" href="/">Kembali ke Dashboard</a></p>
+  <h1 class="font-display text-2xl font-semibold">{{ 'not_found.heading' | t }}</h1>
+  <p class="mt-2">{{ 'not_found.body' | t(event_id=event_id) | safe }}</p>
+  <p class="mt-4"><a class="btn btn-ghost" href="/">{{ 'not_found.back' | t }}</a></p>
 </section>
 {% endblock %}

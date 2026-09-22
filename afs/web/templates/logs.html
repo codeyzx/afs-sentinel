@@ -1,23 +1,23 @@
 {% extends "base.html" %}
-{% from "_macros.html" import severity_badge %}
-{% block title %}Log Audit{% endblock %}
+{% from "_macros.html" import severity_badge with context %}
+{% block title %}{{ 'nav.logs' | t }}{% endblock %}
 {% block content %}
-<h1 class="font-display text-2xl font-semibold">Jejak audit</h1>
-<p class="muted text-sm">Setiap pemindaian tercatat, termasuk yang tidak menemukan apa pun. Klik baris untuk melihat hasil per emiten.</p>
+<h1 class="font-display text-2xl font-semibold">{{ 'logs.heading' | t }}</h1>
+<p class="muted text-sm">{{ 'logs.subtitle' | t }}</p>
 
 {% if runs %}
 <div class="panel mt-4 overflow-x-auto">
   <table class="ledger">
     <thead>
       <tr>
-        <th>Mulai</th>
-        <th class="num">Durasi</th>
-        <th>Pemicu</th>
-        <th class="num">Dipindai / gagal</th>
-        <th class="num">Incident baru</th>
-        <th class="num">Escalation</th>
-        <th class="num">Kredit</th>
-        <th>Status</th>
+        <th>{{ 'logs.th_started' | t }}</th>
+        <th class="num">{{ 'logs.th_duration' | t }}</th>
+        <th>{{ 'logs.th_trigger' | t }}</th>
+        <th class="num">{{ 'logs.th_scanned_failed' | t }}</th>
+        <th class="num">{{ 'logs.th_new_incidents' | t }}</th>
+        <th class="num">{{ 'logs.th_escalation' | t }}</th>
+        <th class="num">{{ 'logs.th_credits' | t }}</th>
+        <th>{{ 'logs.th_status' | t }}</th>
       </tr>
     </thead>
     {% for item in runs %}
@@ -38,17 +38,17 @@
         </tr>
         <tr x-show="open" x-cloak>
           <td colspan="8" style="background: var(--panel-2)">
-            {% if run.error %}<p class="tone-red text-sm mb-3">Alasan gagal: {{ run.error }}</p>{% endif %}
+            {% if run.error %}<p class="tone-red text-sm mb-3">{{ 'logs.failure_reason' | t(error=run.error) }}</p>{% endif %}
 
             {% if item.evaluations %}
               <table class="ledger">
                 <thead>
                   <tr>
-                    <th>Emiten</th>
-                    <th>Laporan</th>
-                    <th class="num">Skor</th>
-                    <th>Risiko</th>
-                    <th>Hasil</th>
+                    <th>{{ 'dash.th_emiten' | t }}</th>
+                    <th>{{ 'dash.th_report' | t }}</th>
+                    <th class="num">{{ 'dash.th_score' | t }}</th>
+                    <th>{{ 'logs.th_risk' | t }}</th>
+                    <th>{{ 'logs.th_outcome' | t }}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -73,14 +73,14 @@
                 </tbody>
               </table>
             {% else %}
-              <p class="muted text-sm">Tidak ada emiten yang berhasil dievaluasi pada run ini.</p>
+              <p class="muted text-sm">{{ 'logs.no_evaluations' | t }}</p>
             {% endif %}
 
             {% if run.log_text %}
               <p class="mt-3">
                 <button type="button" class="text-xs muted underline decoration-dotted underline-offset-2"
                         @click="raw = !raw" :aria-expanded="raw"
-                        x-text="raw ? 'Sembunyikan log teks mentah' : 'Log teks mentah'">Log teks mentah</button>
+                        x-text="raw ? '{{ 'logs.hide_raw' | t }}' : '{{ 'logs.show_raw' | t }}'">{{ 'logs.show_raw' | t }}</button>
               </p>
               <pre class="log mt-2" x-show="raw" x-cloak>{{ run.log_text }}</pre>
             {% endif %}
@@ -91,6 +91,6 @@
   </table>
 </div>
 {% else %}
-  <p class="panel mt-4 px-4 py-6 muted">Belum ada Audit Run. Pemindaian otomatis berjalan tiap 3 hari, atau jalankan manual dari Dashboard.</p>
+  <p class="panel mt-4 px-4 py-6 muted">{{ 'logs.empty' | t }}</p>
 {% endif %}
 {% endblock %}

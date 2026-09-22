@@ -1,17 +1,17 @@
 {% macro severity_badge(severity) -%}
-<span class="badge tone-{{ severity | severity_tone }}">{{ severity | severity_label }}</span>
+<span class="badge tone-{{ severity | severity_tone }}">{{ severity | severity_label(current_lang) }}</span>
 {%- endmacro %}
 
 {% macro finding_badge(status) -%}
-<span class="badge tone-{{ status | finding_tone }}">{{ status | finding_label }}</span>
+<span class="badge tone-{{ status | finding_tone }}">{{ status | finding_label(current_lang) }}</span>
 {%- endmacro %}
 
 {% macro low_confidence_badge() -%}
-<span class="badge tone-gray" title="Rule yang bisa dinilai berbobot kurang dari 50 dari 100">Keyakinan rendah</span>
+<span class="badge tone-gray" title="{{ 'badge.low_confidence_title' | t(lang=current_lang) }}">{{ 'badge.low_confidence' | t(lang=current_lang) }}</span>
 {%- endmacro %}
 
 {% macro triage_badge(status) -%}
-<span class="badge tone-gray">{{ status | triage_label }}</span>
+<span class="badge tone-gray">{{ status | triage_label(current_lang) }}</span>
 {%- endmacro %}
 
 {# dots: list of {number, name, subtitle, label, tone} in RULE_META order #}
@@ -26,7 +26,7 @@
 {# Number -> rule. Pairs with status_key(); together they explain a row of markers. #}
 {% macro rule_legend() -%}
 <ol class="legend">
-  {% for meta in RULE_LEGEND %}
+  {% for meta in get_rule_legend(current_lang) %}
     <li>
       <span class="dot-num" aria-hidden="true">{{ meta.number }}</span>
       <span><span style="color: var(--text)">{{ meta.name }}</span><br><span class="muted">{{ meta.subtitle }}</span></span>
@@ -38,10 +38,10 @@
 {# Colour -> status. Without this the dashboard never says what a red marker means. #}
 {% macro status_key() -%}
 <ul class="status-key muted">
-  <li><span class="swatch tone-green" aria-hidden="true"></span>Aman</li>
-  <li><span class="swatch tone-yellow" aria-hidden="true"></span>Waspada</li>
-  <li><span class="swatch tone-red" aria-hidden="true"></span>Bahaya</li>
-  <li><span class="swatch tone-gray" aria-hidden="true"></span>Tak bisa dinilai</li>
+  <li><span class="swatch tone-green" aria-hidden="true"></span>{{ 'status_key.pass' | t(lang=current_lang) }}</li>
+  <li><span class="swatch tone-yellow" aria-hidden="true"></span>{{ 'status_key.warning' | t(lang=current_lang) }}</li>
+  <li><span class="swatch tone-red" aria-hidden="true"></span>{{ 'status_key.red_flag' | t(lang=current_lang) }}</li>
+  <li><span class="swatch tone-gray" aria-hidden="true"></span>{{ 'status_key.insufficient_data' | t(lang=current_lang) }}</li>
 </ul>
 {%- endmacro %}
 
@@ -80,9 +80,9 @@
   {% elif items %}
     {{ items | map('value') | join(', ') }}
   {% else %}
-    <span class="muted">(kosong)</span>
+    <span class="muted">{{ 'common.empty' | t(lang=current_lang) }}</span>
   {% endif %}
 {% else %}
-  {{ v | value }}
+  {{ v | value(current_lang) }}
 {% endif %}
 {%- endmacro %}

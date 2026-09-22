@@ -1,21 +1,20 @@
 {% extends "base.html" %}
-{% from "_macros.html" import severity_badge, low_confidence_badge, rule_dots, rule_legend, status_key %}
+{% from "_macros.html" import severity_badge, low_confidence_badge, rule_dots, rule_legend, status_key with context %}
 {% block title %}Backtest{% endblock %}
 {% block content %}
-<h1 class="font-display text-2xl font-semibold">Backtest</h1>
+<h1 class="font-display text-2xl font-semibold">{{ 'backtest.heading' | t }}</h1>
 <p class="muted text-sm max-w-3xl">
-  Keenam Forensic Rule dijalankan ulang untuk tiap kuartal sejak 2021-Q1, seolah-olah hari itu adalah tanggal laporannya,
-  lalu dibandingkan dengan kejadian nyata. Backtest tidak membuat Incident dan tidak mengirim notifikasi.
+  {{ 'backtest.subtitle' | t }}
 </p>
 
 {% if not views %}
   <div class="panel mt-4 px-4 py-6">
-    <p class="font-semibold">Backtest belum dijalankan</p>
-    <p class="muted text-sm mt-1">Daftar kasus di <code>config/backtest_cases.json</code> belum tersedia. Setelah diisi, jalankan <code>python -m afs backtest</code>.</p>
+    <p class="font-semibold">{{ 'backtest.not_run_heading' | t }}</p>
+    <p class="muted text-sm mt-1">{{ 'backtest.not_run_body' | t | safe }}</p>
   </div>
 {% else %}
 <div x-data="{ tab: '{{ views[0].case.case_id }}' }" class="mt-5">
-  <div class="flex flex-wrap gap-2" role="tablist" aria-label="Kasus backtest">
+  <div class="flex flex-wrap gap-2" role="tablist" aria-label="{{ 'backtest.heading' | t }}">
     {% for v in views %}
       <button type="button" class="tab" role="tab" id="tab-{{ v.case.case_id }}" aria-controls="panel-{{ v.case.case_id }}"
         :aria-selected="tab === '{{ v.case.case_id }}'" @click="tab = '{{ v.case.case_id }}'">
@@ -32,45 +31,46 @@
 
     {% if not v.results %}
       <div class="panel px-4 py-6">
-        <p class="font-semibold">Backtest belum dijalankan</p>
-        <p class="muted text-sm mt-1">Jalankan <code>python -m afs backtest</code> untuk menghitung skor {{ v.case.symbol | ticker }} per kuartal.</p>
+        <p class="font-semibold">{{ 'backtest.not_run_heading' | t }}</p>
+        <p class="muted text-sm mt-1">{{ 'backtest.case_not_run' | t(symbol=(v.case.symbol | ticker)) | safe }}</p>
       </div>
     {% else %}
       {# Automatic claims (§8) #}
       <div class="space-y-2">
         {% for c in v.claims %}
+          {% set elabel = c.event.display_label(current_lang) if c.event.display_label is defined else c.event.label %}
           <p class="font-display text-xl sm:text-2xl leading-snug">{{ c.sentence }}.</p>
           <p class="text-sm muted">
-            Kejadian: {{ c.event.label }}, {{ c.event.date | date_id }}.
-            {% if c.event.source_url %}<a href="{{ c.event.source_url }}" target="_blank" rel="noopener">Sumber berita</a>{% endif %}
+            {% if current_lang == 'en' %}Event{% else %}Kejadian{% endif %}: {{ elabel }}, {{ c.event.date | date_id }}.
+            {% if c.event.source_url %}<a href="{{ c.event.source_url }}" target="_blank" rel="noopener">{{ 'backtest.news_source' | t }}</a>{% endif %}
           </p>
         {% endfor %}
       </div>
 
       <div class="panel mt-4 p-4">
         <div class="relative h-80"><canvas id="bt-chart-{{ cid }}" role="img"
-          aria-label="Grafik skor per kuartal {{ v.case.symbol | ticker }} dengan pita severity dan garis kejadian nyata"></canvas></div>
-        <p class="text-xs muted mt-2">Pita latar: hijau Rendah (0–30), kuning Sedang (30–60), merah Kritis (60–100). Garis putus-putus: kejadian nyata.</p>
+          aria-label="{{ 'backtest.chart_aria' | t(symbol=(v.case.symbol | ticker)) }}"></canvas></div>
+        <p class="text-xs muted mt-2">{{ 'backtest.chart_footnote' | t }}</p>
       </div>
       <script type="application/json" class="bt-chart-data" data-canvas="bt-chart-{{ cid }}">{{ v.chart | tojson }}</script>
 
-      <h2 class="font-display text-xl font-semibold mt-8">Rule Finding per kuartal</h2>
+      <h2 class="font-display text-xl font-semibold mt-8">{{ 'backtest.rule_findings_heading' | t }}</h2>
       <div class="mt-2 panel px-4 py-4">
-        <p class="text-xs uppercase tracking-wide muted mb-2">Warna penanda = status rule</p>
+        <p class="text-xs uppercase tracking-wide muted mb-2">{{ 'dash.legend_color' | t }}</p>
         {{ status_key() }}
-        <p class="text-xs uppercase tracking-wide muted mt-4 mb-2">Angka penanda = rule ke-berapa</p>
+        <p class="text-xs uppercase tracking-wide muted mt-4 mb-2">{{ 'dash.legend_number' | t }}</p>
         {{ rule_legend() }}
       </div>
       <div class="panel mt-3 overflow-x-auto">
         <table class="ledger">
-          <thead><tr><th>Kuartal</th><th class="num">Skor</th><th>Severity</th><th>Status rule</th></tr></thead>
+          <thead><tr><th>{{ 'backtest.th_quarter' | t }}</th><th class="num">{{ 'dash.th_score' | t }}</th><th>{{ 'dash.th_severity' | t }}</th><th>{{ 'dash.th_rule_status' | t }}</th></tr></thead>
           <tbody>
             {% for row in v.rows %}
               <tr>
                 <td class="whitespace-nowrap">{{ row.result.report_date | period }}</td>
                 <td class="num font-semibold">{{ row.result.score | score }}</td>
                 <td>
-                  {% if row.result.severity %}{{ severity_badge(row.result.severity) }}{% else %}<span class="badge tone-gray">Tak bisa dinilai</span>{% endif %}
+                  {% if row.result.severity %}{{ severity_badge(row.result.severity) }}{% else %}<span class="badge tone-gray">{{ 'common.cannot_assess' | t }}</span>{% endif %}
                   {% if row.result.low_confidence %}{{ low_confidence_badge() }}{% endif %}
                 </td>
                 <td>{{ rule_dots(row.dots) }}</td>
@@ -81,16 +81,17 @@
       </div>
     {% endif %}
 
-    <p class="mt-4 text-sm panel stripe tone-gray px-4 py-2"><span style="color: var(--text)">Penjualan Orang Dalam tidak dinilai — data sebelum 2025 tidak tersedia. Data kuartalan API hanya tersedia sejak 2020-Q1.</span></p>
+    <p class="mt-4 text-sm panel stripe tone-gray px-4 py-2"><span style="color: var(--text)">{{ 'backtest.insider_disclaimer' | t }}</span></p>
 
     {% if v.case.events %}
-      <h2 class="font-display text-lg font-semibold mt-6">Sumber kejadian</h2>
+      <h2 class="font-display text-lg font-semibold mt-6">{{ 'backtest.event_sources_heading' | t }}</h2>
       <ul class="mt-2 text-sm space-y-1">
         {% for e in v.case.events %}
+          {% set elabel = e.display_label(current_lang) if e.display_label is defined else e.label %}
           <li>
-            {{ e.date | date_id }}: {{ e.label }}
+            {{ e.date | date_id }}: {{ elabel }}
             {% if e.source_url %}(<a href="{{ e.source_url }}" target="_blank" rel="noopener">{{ e.source_url }}</a>){% endif %}
-            {% if e.verified is false %}<span class="badge tone-yellow ml-1">Sumber belum diverifikasi</span>{% endif %}
+            {% if e.verified is false %}<span class="badge tone-yellow ml-1">{{ 'backtest.source_unverified' | t }}</span>{% endif %}
           </li>
         {% endfor %}
       </ul>
@@ -108,7 +109,8 @@
   (function () {
     const css = getComputedStyle(document.documentElement);
     const c = (n) => css.getPropertyValue(n).trim();
-    const nf = new Intl.NumberFormat("id-ID", { maximumFractionDigits: 1 });
+    const isEn = {{ (current_lang == 'en') | tojson }};
+    const nf = new Intl.NumberFormat(isEn ? "en-US" : "id-ID", { maximumFractionDigits: 1 });
 
     // Severity bands behind the line and dashed vertical markers for real-world events.
     const bandsAndEvents = {
@@ -152,7 +154,7 @@
         type: "line",
         data: {
           datasets: [{
-            label: "Skor",
+            label: isEn ? "Score" : "Skor",
             data: d.scores.map((s, i) => ({ x: i, y: s })),
             borderColor: c("--accent"), backgroundColor: c("--accent"),
             pointRadius: 3, spanGaps: false, tension: 0,
@@ -165,7 +167,7 @@
             legend: { display: false },
             tooltip: { callbacks: {
               title: (items) => d.labels[items[0].parsed.x],
-              label: (ctx) => `Skor ${nf.format(ctx.parsed.y)}/100`,
+              label: (ctx) => isEn ? `Score ${nf.format(ctx.parsed.y)}/100` : `Skor ${nf.format(ctx.parsed.y)}/100`,
             } },
             bandsAndEvents: {
               bands: [

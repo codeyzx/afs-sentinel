@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% from "_macros.html" import severity_badge, low_confidence_badge, triage_badge, rule_legend, status_key %}
+{% from "_macros.html" import severity_badge, low_confidence_badge, triage_badge, rule_legend, status_key with context %}
 {% block title %}Dashboard{% endblock %}
 {% block content %}
 
@@ -7,48 +7,47 @@
 <section class="panel p-5 flex flex-col md:flex-row md:items-center gap-4" aria-labelledby="run-heading">
   <div class="flex-1 min-w-0">
     <h1 id="run-heading" class="font-display text-2xl font-semibold">
-      {% if last_run %}Sistem aktif{% else %}Sistem siap{% endif %}
-      <span class="muted font-sans text-base font-normal">· pemindaian otomatis tiap {{ interval_days }} hari</span>
+      {% if last_run %}{{ 'dash.system_active' | t }}{% else %}{{ 'dash.system_ready' | t }}{% endif %}
+      <span class="muted font-sans text-base font-normal">· {{ 'dash.scan_interval' | t(days=interval_days) }}</span>
     </h1>
     {% if last_run %}
       <p class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
         <span class="badge tone-{{ last_run.status | run_status_tone }}">{{ last_run.status | run_status_label }}</span>
-        <span>{{ last_run.emiten_scanned | num }} emiten dipindai</span>
+        <span>{{ 'dash.emiten_scanned' | t(count=(last_run.emiten_scanned | num)) }}</span>
         <span class="muted">·</span>
-        <span>{{ last_run.incidents_new | num }} Incident baru</span>
-        {% if last_run.emiten_failed %}<span class="muted">·</span><span class="tone-yellow">{{ last_run.emiten_failed | num }} gagal</span>{% endif %}
+        <span>{{ 'dash.incidents_new' | t(count=(last_run.incidents_new | num)) }}</span>
+        {% if last_run.emiten_failed %}<span class="muted">·</span><span class="tone-yellow">{{ 'dash.emiten_failed' | t(count=(last_run.emiten_failed | num)) }}</span>{% endif %}
       </p>
       <p class="mt-1 text-sm muted">
-        <span title="Pemicu Audit Run">{{ last_run.trigger | trigger_icon }} {{ last_run.trigger | trigger_label }}</span>
+        <span title="{{ 'dash.trigger_title' | t }}">{{ last_run.trigger | trigger_icon }} {{ last_run.trigger | trigger_label }}</span>
         · {{ last_run.started_at | wib }}
-        · <a href="/logs">Lihat rincian</a>
+        · <a href="/logs">{{ 'dash.view_details' | t }}</a>
       </p>
     {% else %}
-      <p class="mt-2 muted text-sm">Belum ada Audit Run. Jalankan sekarang, atau tunggu pemindaian otomatis pertama.</p>
+      <p class="mt-2 muted text-sm">{{ 'dash.no_runs_yet' | t }}</p>
     {% endif %}
     <p class="mt-2 text-sm">
-      Berikutnya:
-      <strong>{% if next_run %}{{ next_run | wib(true) }}{% else %}pada pemindaian otomatis pertama{% endif %}</strong>
+      {{ 'dash.next_run' | t }}
+      <strong>{% if next_run %}{{ next_run | wib(true) }}{% else %}{{ 'dash.next_run_first' | t }}{% endif %}</strong>
     </p>
   </div>
   <div class="shrink-0">
     {% if logged_in %}
       <form method="post" action="/runs">
-        <button type="submit" class="btn">Jalankan sekarang</button>
+        <button type="submit" class="btn">{{ 'dash.run_now' | t }}</button>
       </form>
     {% else %}
-      <a class="btn btn-ghost" href="/login?next=/">Masuk untuk menjalankan</a>
+      <a class="btn btn-ghost" href="/login?next=/">{{ 'dash.login_to_run' | t }}</a>
     {% endif %}
   </div>
 </section>
 
 {# 2. Severity counts #}
-{% set count_label = {"CRITICAL": "Butuh perhatian segera", "MODERATE": "Perlu ditinjau", "LOW": "Aman"} %}
-<section class="mt-6 grid grid-cols-3 gap-3" aria-label="Jumlah emiten per tingkat risiko">
+<section class="mt-6 grid grid-cols-3 gap-3" aria-label="{{ 'dash.counts_aria' | t }}">
   {% for key in ["CRITICAL", "MODERATE", "LOW"] %}
     <div class="panel stripe tone-{{ key | severity_tone }} px-4 py-3">
       <p class="text-3xl sm:text-4xl font-semibold">{{ counts[key] }}</p>
-      <p class="text-sm" style="color: var(--text)">{{ count_label[key] }}</p>
+      <p class="text-sm" style="color: var(--text)">{{ ('dash.count.' + key | lower) | t }}</p>
     </div>
   {% endfor %}
 </section>
@@ -56,7 +55,7 @@
 {# 3. Triage queue #}
 <section class="mt-8" aria-labelledby="queue-heading">
   <h2 id="queue-heading" class="font-display text-xl font-semibold">
-    Perlu tindakan Anda
+    {{ 'dash.queue_heading' | t }}
     {% if queue %}<span class="muted font-sans text-base font-normal">· {{ queue | length }}</span>{% endif %}
   </h2>
   {% if queue %}
@@ -78,7 +77,7 @@
       {% endfor %}
     </ul>
   {% else %}
-    <p class="mt-3 panel px-4 py-6 muted">Tidak ada yang perlu ditinjau. Emiten masuk daftar ini saat risikonya mencapai Sedang.</p>
+    <p class="mt-3 panel px-4 py-6 muted">{{ 'dash.queue_empty' | t }}</p>
   {% endif %}
 </section>
 
@@ -86,13 +85,13 @@
 <section class="mt-8" aria-labelledby="universe-heading"
   x-data="universeTable()" >
   <h2 id="universe-heading" class="font-display text-xl font-semibold">
-    Semua emiten dipantau
+    {{ 'dash.universe_heading' | t }}
     <span class="muted font-sans text-base font-normal">· {{ rows | length }}</span>
   </h2>
   <div class="mt-2 panel px-4 py-4">
-    <p class="text-xs uppercase tracking-wide muted mb-2">Warna penanda = status rule</p>
+    <p class="text-xs uppercase tracking-wide muted mb-2">{{ 'dash.legend_color' | t }}</p>
     {{ status_key() }}
-    <p class="text-xs uppercase tracking-wide muted mt-4 mb-2">Angka penanda = rule ke-berapa</p>
+    <p class="text-xs uppercase tracking-wide muted mt-4 mb-2">{{ 'dash.legend_number' | t }}</p>
     {{ rule_legend() }}
   </div>
   {% if rows %}
@@ -100,11 +99,11 @@
     <table class="ledger">
       <thead>
         <tr>
-          <th><button type="button" @click="sortBy('ticker')" class="hover:underline">Emiten <span x-text="arrow('ticker')"></span></button></th>
-          <th class="num"><button type="button" @click="sortBy('score')" class="hover:underline">Skor <span x-text="arrow('score')"></span></button></th>
-          <th><button type="button" @click="sortBy('severity_rank')" class="hover:underline">Severity <span x-text="arrow('severity_rank')"></span></button></th>
-          <th>Status rule</th>
-          <th class="hidden sm:table-cell">Laporan</th>
+          <th><button type="button" @click="sortBy('ticker')" class="hover:underline">{{ 'dash.th_emiten' | t }} <span x-text="arrow('ticker')"></span></button></th>
+          <th class="num"><button type="button" @click="sortBy('score')" class="hover:underline">{{ 'dash.th_score' | t }} <span x-text="arrow('score')"></span></button></th>
+          <th><button type="button" @click="sortBy('severity_rank')" class="hover:underline">{{ 'dash.th_severity' | t }} <span x-text="arrow('severity_rank')"></span></button></th>
+          <th>{{ 'dash.th_rule_status' | t }}</th>
+          <th class="hidden sm:table-cell">{{ 'dash.th_report' | t }}</th>
         </tr>
       </thead>
       <template x-for="r in sorted" :key="r.symbol">
@@ -120,7 +119,7 @@
             <td class="num font-semibold" x-text="r.score_text"></td>
             <td>
               <span class="badge" :class="'tone-' + r.severity_tone" x-text="r.severity_label"></span>
-              <template x-if="r.low_confidence"><span class="badge tone-gray mt-1" title="Rule yang bisa dinilai berbobot kurang dari 50 dari 100">Keyakinan rendah</span></template>
+              <template x-if="r.low_confidence"><span class="badge tone-gray mt-1" title="{{ 'badge.low_confidence_title' | t }}">{{ 'badge.low_confidence' | t }}</span></template>
             </td>
             <td>
               <span class="dot-row">
@@ -128,14 +127,14 @@
                   <span class="dot-num" :class="'tone-' + d.tone" :title="d.number + '. ' + d.name + ' \u2014 ' + d.label" role="img" :aria-label="d.number + '. ' + d.name + ': ' + d.label" x-text="d.number"></span>
                 </template>
               </span>
-              <template x-if="!r.evaluated"><span class="text-xs muted">Belum dinilai</span></template>
+              <template x-if="!r.evaluated"><span class="text-xs muted">{{ 'dash.not_evaluated' | t }}</span></template>
             </td>
             <td class="hidden sm:table-cell muted" x-text="r.period"></td>
           </tr>
           <tr x-show="open === r.symbol" x-cloak>
             <td colspan="5" style="background: var(--panel-2)">
               <template x-if="r.severity_reason"><p class="text-sm mb-2" x-text="r.severity_reason"></p></template>
-              <template x-if="r.findings.length === 0"><p class="muted text-sm">Belum ada Rule Finding untuk emiten ini.</p></template>
+              <template x-if="r.findings.length === 0"><p class="muted text-sm">{{ 'dash.no_findings_emiten' | t }}</p></template>
               <ul class="space-y-2">
                 <template x-for="f in r.findings" :key="f.name">
                   <li class="stripe pl-3" :class="'tone-' + f.tone">
@@ -145,12 +144,12 @@
                       <span class="badge ml-1" :class="'tone-' + f.tone" x-text="f.label"></span>
                     </p>
                     <p class="text-sm" style="color: var(--text)" x-text="f.headline"></p>
-                    <template x-if="f.missing"><p class="text-xs muted" x-text="'Data tidak tersedia: ' + f.missing"></p></template>
+                    <template x-if="f.missing"><p class="text-xs muted" x-text="'{{ 'dash.data_unavailable' | t(missing='') }}' + f.missing"></p></template>
                   </li>
                 </template>
               </ul>
               <template x-if="r.event_id">
-                <p class="mt-3 text-sm"><a :href="'/incidents/' + r.event_id">Buka Incident <span x-text="r.event_id"></span></a></p>
+                <p class="mt-3 text-sm"><a :href="'/incidents/' + r.event_id">{{ 'dash.open_incident' | t }} <span x-text="r.event_id"></span></a></p>
               </template>
             </td>
           </tr>
@@ -159,7 +158,7 @@
     </table>
   </div>
   {% else %}
-    <p class="mt-3 panel px-4 py-6 muted">Belum ada emiten yang dinilai. Hasil muncul di sini setelah Audit Run pertama selesai.</p>
+    <p class="mt-3 panel px-4 py-6 muted">{{ 'dash.universe_empty' | t }}</p>
   {% endif %}
   <script type="application/json" id="universe-data">{{ rows | tojson }}</script>
 </section>

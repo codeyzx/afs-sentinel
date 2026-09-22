@@ -12,6 +12,7 @@ from afs.domain import FindingStatus, TriageStatus
 from afs.labels import RULE_META, finding_sort_key
 from afs.models import ApiCache, AuditRun, BacktestResult, Emiten, EmitenEvaluation, Incident, IncidentEvent
 from afs.web import formatting as fmt
+from afs.web.i18n import localize_headline, localize_severity_reason
 
 TRIAGE_QUEUE_ORDER = {TriageStatus.UNTRIAGED.value: 0, TriageStatus.INVESTIGATING.value: 1}
 CHART_QUARTERS = 5
@@ -28,10 +29,11 @@ def sorted_findings(findings: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return sorted(findings or [], key=lambda f: finding_sort_key(f.get("rule_id", ""), _status(f.get("status", ""))))
 
 
-def rule_dots(findings: list[dict[str, Any]]) -> list[dict[str, str]]:
+def rule_dots(findings: list[dict[str, Any]], lang: str = "id") -> list[dict[str, str]]:
     """One entry per Forensic Rule in RULE_META order; rules absent from the findings show as gray."""
     by_rule = {f.get("rule_id"): f for f in findings or []}
     dots = []
+    not_eval_label = "Belum dinilai" if lang == "id" else "Not evaluated"
     for number, (rule_id, meta) in enumerate(RULE_META.items(), start=1):
         f = by_rule.get(rule_id)
         status = f.get("status", "") if f else FindingStatus.INSUFFICIENT_DATA.value
@@ -39,9 +41,9 @@ def rule_dots(findings: list[dict[str, Any]]) -> list[dict[str, str]]:
             {
                 "rule_id": rule_id,
                 "number": number,  # fixed position, not a rank: dot 3 is always Altman
-                "name": meta.name,
-                "subtitle": meta.subtitle,
-                "label": fmt.finding_label(status) if f else "Belum dinilai",
+                "name": fmt.rule_name(rule_id, lang=lang),
+                "subtitle": fmt.rule_subtitle(rule_id, lang=lang),
+                "label": fmt.finding_label(status, lang=lang) if f else not_eval_label,
                 "tone": fmt.finding_tone(status),
                 "headline": (f or {}).get("headline", ""),
             }
@@ -49,10 +51,15 @@ def rule_dots(findings: list[dict[str, Any]]) -> list[dict[str, str]]:
     return dots
 
 
-def rule_legend() -> list[dict[str, Any]]:
+def rule_legend(lang: str = "id") -> list[dict[str, Any]]:
     """The numbered legend beside the Universe table; numbers match `rule_dots`."""
     return [
-        {"number": n, "rule_id": rule_id, "name": meta.name, "subtitle": meta.subtitle}
+        {
+            "number": n,
+            "rule_id": rule_id,
+            "name": fmt.rule_name(rule_id, lang=lang),
+            "subtitle": fmt.rule_subtitle(rule_id, lang=lang),
+        }
         for n, (rule_id, meta) in enumerate(RULE_META.items(), start=1)
     ]
 
@@ -78,7 +85,7 @@ def severity_counts(evals: dict[str, EmitenEvaluation]) -> dict[str, int]:
     return counts
 
 
-def triage_queue(session: Session) -> list[dict[str, Any]]:
+def triage_queue(session: Session, lang: str = "id") -> list[dict[str, Any]]:
     incidents = session.scalars(select(Incident)).all()
     incidents = sorted(incidents, key=lambda i: (TRIAGE_QUEUE_ORDER.get(i.triage_status, 2), -(i.score or 0)))
     return [
@@ -90,17 +97,18 @@ def triage_queue(session: Session) -> list[dict[str, Any]]:
             "severity": i.severity,
             "low_confidence": i.low_confidence,
             "triage_status": i.triage_status,
-            "headline": (sorted_findings(i.findings)[:1] or [{}])[0].get("headline", ""),
+            "headline": localize_headline((sorted_findings(i.findings)[:1] or [{}])[0].get("headline", ""), lang=lang),
             "updated_at": i.updated_at,
         }
         for i in incidents
     ]
 
 
-def universe_rows(session: Session, evals: dict[str, EmitenEvaluation]) -> list[dict[str, Any]]:
+def universe_rows(session: Session, evals: dict[str, EmitenEvaluation], lang: str = "id") -> list[dict[str, Any]]:
     emiten = {e.symbol: e for e in session.scalars(select(Emiten).where(Emiten.is_excluded.is_(False)))}
     symbols = sorted(set(emiten) | set(evals))
     rows = []
+    not_eval_severity = "Belum dinilai" if lang == "id" else "Not evaluated"
     for symbol in symbols:
         ev = evals.get(symbol)
         e = emiten.get(symbol)
@@ -113,23 +121,23 @@ def universe_rows(session: Session, evals: dict[str, EmitenEvaluation]) -> list[
                 "sub_sector": e.sub_sector if e else "",
                 "evaluated": ev is not None,
                 "score": ev.score if ev else None,
-                "score_text": fmt.fmt_score(ev.score) if ev else "—",
+                "score_text": fmt.fmt_score(ev.score, lang=lang) if ev else "—",
                 "severity": ev.severity if ev else None,
                 "severity_rank": {"LOW": 0, "MODERATE": 1, "CRITICAL": 2}.get((ev.severity if ev else None) or "", -1),
-                "severity_label": (fmt.severity_label(ev.severity) if ev else "Belum dinilai"),
+                "severity_label": (fmt.severity_label(ev.severity, lang=lang) if ev else not_eval_severity),
                 "severity_tone": fmt.severity_tone(ev.severity if ev else None),
                 "low_confidence": bool(ev and ev.low_confidence),
-                "severity_reason": ev.severity_reason if ev else None,
+                "severity_reason": localize_severity_reason(ev.severity_reason, lang=lang) if ev else None,
                 "period": fmt.fmt_period(ev.report_date) if ev else "—",
                 "event_id": ev.event_id if ev else None,
-                "dots": rule_dots(ev.findings) if ev else [],
+                "dots": rule_dots(ev.findings, lang=lang) if ev else [],
                 "findings": [
                     {
-                        "name": fmt.rule_name(f.get("rule_id", "")),
-                        "subtitle": fmt.rule_subtitle(f.get("rule_id", "")),
-                        "label": fmt.finding_label(f.get("status", "")),
+                        "name": fmt.rule_name(f.get("rule_id", ""), lang=lang),
+                        "subtitle": fmt.rule_subtitle(f.get("rule_id", ""), lang=lang),
+                        "label": fmt.finding_label(f.get("status", ""), lang=lang),
                         "tone": fmt.finding_tone(f.get("status", "")),
-                        "headline": f.get("headline", ""),
+                        "headline": localize_headline(f.get("headline", ""), lang=lang),
                         "missing": f.get("missing"),
                     }
                     for f in findings
@@ -203,24 +211,25 @@ def audit_runs(session: Session, limit: int = 100) -> list[AuditRun]:
     return list(session.scalars(select(AuditRun).order_by(AuditRun.started_at.desc(), AuditRun.id.desc()).limit(limit)))
 
 
-def run_evaluations(session: Session, run_id: int) -> list[dict[str, Any]]:
+def run_evaluations(session: Session, run_id: int, lang: str = "id") -> list[dict[str, Any]]:
     """What one Audit Run did to each Emiten — the structured form of log_text."""
     names = {e.symbol: e.company_name for e in session.scalars(select(Emiten))}
     rows = session.scalars(
         select(EmitenEvaluation).where(EmitenEvaluation.run_id == run_id).order_by(EmitenEvaluation.id)
     )
     out = []
+    no_incident_text = "Tidak ada Incident" if lang == "id" else "No Incident"
     for ev in rows:
         out.append(
             {
                 "ticker": fmt.ticker(ev.symbol),
                 "name": names.get(ev.symbol, ""),
                 "period": fmt.fmt_period(ev.report_date),
-                "score_text": fmt.fmt_score(ev.score),
-                "severity_label": fmt.severity_label(ev.severity),
+                "score_text": fmt.fmt_score(ev.score, lang=lang),
+                "severity_label": fmt.severity_label(ev.severity, lang=lang),
                 "severity_tone": fmt.severity_tone(ev.severity),
                 "event_id": ev.event_id,
-                "outcome": "Incident " + ev.event_id if ev.event_id else "Tidak ada Incident",
+                "outcome": ("Incident " + ev.event_id) if ev.event_id else no_incident_text,
             }
         )
     return out

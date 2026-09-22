@@ -8,6 +8,7 @@
         {
           "date": "2023-05-08",
           "label": "BEI menghentikan sementara perdagangan saham WSKT karena penundaan bunga obligasi",
+          "label_en": "IDX temporarily suspended WSKT stock trading due to bond interest deferral",
           "source_url": "https://investasi.kontan.co.id/news/perdagangan-saham-waskita-karya-wskt-dihentikan-sementara-oleh-bei",
           "verified": true
         }
@@ -21,12 +22,14 @@
         {
           "date": "2021-05-18",
           "label": "BEI menyuspensi saham SRIL karena penundaan pembayaran pokok dan bunga MTN",
+          "label_en": "IDX suspended SRIL stock due to default on MTN principal and interest",
           "source_url": "https://market.bisnis.com/read/20210518/192/1394902/sritex-sril-tunda-bayar-mtn-sahamnya-kena-suspensi-bei",
           "verified": true
         },
         {
           "date": "2024-10-21",
           "label": "Pengadilan Niaga Semarang menyatakan Sritex pailit",
+          "label_en": "Semarang Commercial Court declared Sritex bankrupt",
           "source_url": "https://kabar24.bisnis.com/read/20241024/16/1810395/fakta-terkait-pn-semarang-putus-pailit-sritex-sril",
           "verified": true
         }

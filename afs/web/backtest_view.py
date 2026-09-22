@@ -11,12 +11,36 @@ from typing import Any, Sequence
 from afs.domain import Severity, quarter_label
 
 
+EVENT_LABEL_TRANSLATIONS: dict[str, str] = {
+    "BEI menghentikan sementara perdagangan saham WSKT karena penundaan bunga obligasi": (
+        "IDX temporarily suspended WSKT stock trading due to bond interest deferral"
+    ),
+    "BEI menyuspensi saham SRIL karena penundaan pembayaran pokok dan bunga MTN": (
+        "IDX suspended SRIL stock due to default on MTN principal and interest"
+    ),
+    "Pengadilan Niaga Semarang menyatakan Sritex pailit": (
+        "Semarang Commercial Court declared Sritex bankrupt"
+    ),
+    "suspensi saham oleh BEI": "stock suspension by IDX",
+    "suspensi karena gagal bayar": "suspension due to default",
+    "pailit": "bankruptcy",
+}
+
+
 @dataclass(frozen=True)
 class CaseEvent:
     date: date
     label: str
     source_url: str = ""
     verified: bool | None = None
+    label_en: str = ""
+
+    def display_label(self, lang: str = "id") -> str:
+        if lang == "en":
+            if self.label_en:
+                return self.label_en
+            return EVENT_LABEL_TRANSLATIONS.get(self.label, self.label)
+        return self.label
 
 
 @dataclass(frozen=True)
@@ -42,6 +66,7 @@ def load_cases(path: Path) -> list[BacktestCase]:
                     label=e.get("label", ""),
                     source_url=e.get("source_url", ""),
                     verified=e.get("verified"),
+                    label_en=e.get("label_en", ""),
                 )
                 for e in c.get("events", [])
             ]
@@ -66,12 +91,16 @@ def months_between(start: date, end: date) -> int:
     return months
 
 
-def claim_sentence(results: Sequence[Any], event: CaseEvent) -> str:
+def claim_sentence(results: Sequence[Any], event: CaseEvent, lang: str = "id") -> str:
     """results: objects with report_date and severity (BacktestResult rows), any order."""
+    label = event.display_label(lang) if hasattr(event, "display_label") else event.label
     for r in sorted(results, key=lambda r: r.report_date):
         if r.report_date >= event.date:
             break
         if r.severity and Severity(r.severity).rank >= Severity.MODERATE.rank:
             n = months_between(r.report_date, event.date)
-            return f"Pertama kali Sedang: {quarter_label(r.report_date)}, {n} bulan sebelum {event.label}"
-    return "Tidak terdeteksi lebih awal"
+            if lang == "en":
+                month_str = "month" if n == 1 else "months"
+                return f"First reached Moderate: {quarter_label(r.report_date)}, {n} {month_str} before {label}"
+            return f"Pertama kali Sedang: {quarter_label(r.report_date)}, {n} bulan sebelum {label}"
+    return "Not detected earlier" if lang == "en" else "Tidak terdeteksi lebih awal"
