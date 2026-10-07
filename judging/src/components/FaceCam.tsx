@@ -1,6 +1,6 @@
 import React from "react";
 import { Freeze, interpolate, OffthreadVideo, Sequence, useCurrentFrame } from "remotion";
-import type { ClipId } from "../media";
+import { GRADE, type ClipId } from "../media";
 import { SCENES, PEOPLE, type Person } from "../script";
 import { clipSrc, framingOf, trimOf } from "../timeline";
 import { C, F, FPS } from "../theme";
@@ -54,7 +54,7 @@ export const FaceCam: React.FC<{
       </div>
     );
 
-  const video = <OffthreadVideo src={src} muted startFrom={trim} style={cropStyle(clip, style, focus)} />;
+  const video = <OffthreadVideo src={src} muted startFrom={trim} style={{ ...cropStyle(clip, style, focus), filter: GRADE[who] }} />;
 
   const local = frame - playFrom;
   return (

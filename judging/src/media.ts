@@ -42,6 +42,12 @@ export type ClipId = keyof typeof RECORDINGS;
 
 /** End card details. null = placeholder shown in the video. */
 export const END_CARD = {
-  github: null as string | null, // contoh: "github.com/jtktop10/afs-sentinel"
+  github: "github.com/codeyzx/afs-sentinel" as string | null,
   app: "afs-sentinel-ee5d2e28af17.herokuapp.com",
+};
+
+/** Per-person colour correction (CSS filter) so the three webcams match. */
+export const GRADE: Partial<Record<"Fathan" | "Ais" | "Yahya", string>> = {
+  // Fathan's webcam is washed out: more contrast and colour, a touch darker and warmer.
+  Fathan: "contrast(1.18) brightness(0.94) saturate(1.2) sepia(0.06)",
 };

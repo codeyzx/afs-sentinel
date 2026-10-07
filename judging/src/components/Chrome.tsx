@@ -1,7 +1,7 @@
 import React from "react";
 import { AbsoluteFill, Audio, interpolate, Sequence, staticFile, useCurrentFrame } from "remotion";
 import { SCENES } from "../script";
-import { clipSrc, trimOf, type LineTiming, type SceneTiming, type Timing } from "../timeline";
+import { clipSrc, trimOf, voiceSrc, type LineTiming, type SceneTiming, type Timing } from "../timeline";
 import { C, F, FPS } from "../theme";
 import { phraseGroups } from "../words";
 import { Kicker } from "./primitives";
@@ -72,18 +72,20 @@ export const SceneHeader: React.FC<{ scene: SceneTiming; index: number; dark?: b
   );
 };
 
-/** All voices: each line's clips play their own audio here, so visuals can reuse a clip freely. */
+/** All voices: each line's clips play their own audio here, so visuals can reuse a clip freely.
+ * Prefers the levelled voice track from `npm run sync`; falls back to the camera's audio. */
 export const VoiceTrack: React.FC<{ timing: Timing }> = ({ timing }) => (
   <>
     {timing.scenes.flatMap((s) =>
       s.lines.flatMap((l) =>
         l.clips.map((clip) => {
-          const src = clipSrc(clip);
+          const voice = voiceSrc(clip);
+          const src = voice ?? clipSrc(clip);
           if (!src) return null;
           return (
             <Sequence key={clip} from={s.from + l.from} durationInFrames={l.dur} layout="none">
-              {/* group line: three mics, keep it from getting loud */}
-              <Audio src={src} startFrom={Math.round(trimOf(clip) * FPS)} volume={l.clips.length > 1 ? 0.6 : 1} name={clip} />
+              {/* group line: three voices at once, keep the sum at the same level as one */}
+              <Audio src={src} startFrom={voice ? 0 : Math.round(trimOf(clip) * FPS)} volume={l.clips.length > 1 ? 0.5 : 1} name={clip} />
             </Sequence>
           );
         }),

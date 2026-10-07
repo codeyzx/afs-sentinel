@@ -15,7 +15,7 @@ export type Timing = { scenes: SceneTiming[]; total: number; durations: ClipDura
 const LIMIT_SECONDS = 180;
 export const LIMIT_FRAMES = LIMIT_SECONDS * FPS;
 
-type SyncEntry = { file: string; start: number; end: number; w?: number; hgt?: number; face?: { x: number; y: number; h: number } };
+type SyncEntry = { file: string; start: number; end: number; voice?: string; w?: number; hgt?: number; face?: { x: number; y: number; h: number } };
 const SYNC = sync as Partial<Record<ClipId, SyncEntry>>;
 
 /** Frame size and median face position of a recording (from scripts/faces.py), if known. */
@@ -28,6 +28,12 @@ export const framingOf = (id: ClipId) => {
 export const clipSrc = (id: ClipId): string | null => {
   const file = (RECORDINGS[id] as string | null) ?? SYNC[id]?.file;
   return file ? staticFile(`recordings/${file}`) : null;
+};
+
+/** The cleaned, level voice track for a clip (`npm run sync`), already cut to the spoken span. */
+export const voiceSrc = (id: ClipId): string | null => {
+  const v = SYNC[id]?.voice;
+  return v && (RECORDINGS[id] as string | null) === null ? staticFile(`recordings/${v}`) : null;
 };
 
 /** Where the take starts: manual TRIM_START wins, else the speech onset found by `npm run sync`. */

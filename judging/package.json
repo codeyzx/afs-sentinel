@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "remotion studio",
-    "render": "remotion render Judging out/judging.mp4",
+    "render": "remotion render Judging out/judging.mp4 --codec=h264 --crf=18 --audio-bitrate=320k --timeout=180000 --concurrency=4 && node scripts/master.mjs",
     "still": "remotion still Judging out/still.png",
     "login": "node scripts/login.mjs",
     "capture": "node scripts/capture.mjs",
@@ -12,7 +12,8 @@
     "sync": "node scripts/sync.mjs",
     "prompter": "node scripts/render-prompters.mjs",
     "checklist": "node scripts/rekaman.ts",
-    "rekam": "node scripts/rekam.mjs"
+    "rekam": "node scripts/rekam.mjs",
+    "master": "node scripts/master.mjs"
   },
   "devDependencies": {
     "@types/react": "^19.3.0",

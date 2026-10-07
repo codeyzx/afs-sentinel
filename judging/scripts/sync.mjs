@@ -9,7 +9,7 @@
 // Writes src/generated/sync.json { clip: { file, start, end } } (seconds).
 // Usage: npm run sync            (all clips)
 //        node scripts/sync.mjs SC04_CAM_Yahya
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -43,9 +43,11 @@ export const hasFfmpeg = () => {
 const probe = (file) =>
   JSON.parse(execFileSync("ffprobe", ["-v", "error", "-show_entries", "stream=codec_type,codec_name:format=duration", "-of", "json", file]).toString());
 
+/** Look in recordings/ and one level of subfolders (e.g. recordings/ais/), skipping _raw/ and _old/. */
 function findFile(clip, override) {
   if (override) return fs.existsSync(path.join(REC, override)) ? override : null;
-  const hits = EXTS.map((e) => clip + e).filter((f) => fs.existsSync(path.join(REC, f)));
+  const dirs = ["", ...fs.readdirSync(REC, { withFileTypes: true }).filter((d) => d.isDirectory() && !d.name.startsWith("_") && !d.name.startsWith(".")).map((d) => d.name)];
+  const hits = dirs.flatMap((d) => EXTS.map((e) => path.join(d, clip + e))).filter((f) => fs.existsSync(path.join(REC, f)));
   return hits.find((f) => f.endsWith(".mp4")) ?? hits[0] ?? null;
 }
 
@@ -56,15 +58,16 @@ function normalize(file) {
   const info = probe(path.join(REC, file));
   const v = info.streams.find((s) => s.codec_type === "video");
   if (ext === ".mp4" && (!v || v.codec_name === "h264")) return file;
-  const target = path.basename(file, ext) + ".mp4";
-  const tmp = path.join(REC, `.${target}.tmp.mp4`);
+  const dir = path.dirname(file);
+  const target = path.join(dir, path.basename(file, ext) + ".mp4");
+  const tmp = path.join(REC, dir, `.${path.basename(target)}.tmp.mp4`);
   execFileSync("ffmpeg", [
     "-v", "error", "-y", "-i", path.join(REC, file),
     "-vf", "fps=30,scale=-2:'min(1080,ih)'", "-c:v", "libx264", "-crf", "17", "-preset", "medium", "-pix_fmt", "yuv420p",
     "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-movflags", "+faststart", tmp,
   ]);
   fs.mkdirSync(path.join(REC, "_raw"), { recursive: true });
-  fs.renameSync(path.join(REC, file), path.join(REC, "_raw", file));
+  fs.renameSync(path.join(REC, file), path.join(REC, "_raw", path.basename(file)));
   fs.renameSync(tmp, path.join(REC, target));
   console.log(`  ${file} → ${target} (asli disimpan di _raw/)`);
   return target;
@@ -110,6 +113,52 @@ function speechSpan(db) {
   return { start: Math.max(0, start * HOP - 0.06), end: (end + 1) * HOP + 0.12 };
 }
 
+/**
+ * A clean, level voice track per clip: the spoken span only, rumble cut, light denoise, de-clip
+ * when the take hit 0 dBFS, gentle compression, then loudness to -16 LUFS so all three voices
+ * sit at the same level. Written to recordings/_voice/<clip>.wav; the video plays this instead
+ * of the camera's own audio.
+ */
+function makeVoice(clip, entry) {
+  const src = path.join(REC, entry.file);
+  const peak = spawnPeak(src, entry.start, entry.end);
+  const chain = [
+    ...(peak > -0.5 ? ["adeclip"] : []),
+    "highpass=f=80",
+    "lowpass=f=14000",
+    "afftdn=nr=10:nf=-50",
+    "acompressor=threshold=-24dB:ratio=3:attack=8:release=180:makeup=2",
+    "loudnorm=I=-16:TP=-1.5:LRA=7",
+  ].join(",");
+  const rel = path.join("_voice", `${clip}.wav`);
+  fs.mkdirSync(path.join(REC, "_voice"), { recursive: true });
+  execFileSync("ffmpeg", [
+    "-v", "error", "-y", "-ss", String(entry.start), "-to", String(entry.end), "-i", src,
+    "-vn", "-af", chain, "-ar", "48000", "-ac", "1", path.join(REC, rel),
+  ]);
+  // loudnorm drifts on very short clips: one corrective gain pass, limited to keep the peaks safe
+  const off = -16 - integrated(path.join(REC, rel));
+  if (Math.abs(off) > 0.6) {
+    const tmp = path.join(REC, "_voice", `.${clip}.tmp.wav`);
+    execFileSync("ffmpeg", ["-v", "error", "-y", "-i", path.join(REC, rel), "-af", `volume=${off.toFixed(2)}dB,alimiter=limit=0.84:level=false`, tmp]);
+    fs.renameSync(tmp, path.join(REC, rel));
+  }
+  return rel;
+}
+
+/** Integrated loudness (LUFS) of a file. */
+function integrated(file) {
+  const { stderr } = spawnSync("ffmpeg", ["-hide_banner", "-nostats", "-i", file, "-af", "ebur128", "-f", "null", "-"], { encoding: "utf8", maxBuffer: 1 << 26 });
+  return Number(stderr.slice(stderr.lastIndexOf("Summary:")).match(/I:\s+(-?[\d.]+)/)?.[1] ?? -16);
+}
+
+/** Sample peak (dBFS) of the spoken span. */
+function spawnPeak(file, start, end) {
+  const { stderr } = spawnSync("ffmpeg", ["-hide_banner", "-nostats", "-ss", String(start), "-to", String(end), "-i", file, "-vn", "-af", "astats=measure_perchannel=none", "-f", "null", "-"], { encoding: "utf8", maxBuffer: 1 << 26 });
+  const m = stderr.match(/Peak level dB:\s*(-?[\d.]+|-inf)/);
+  return m && m[1] !== "-inf" ? Number(m[1]) : -99;
+}
+
 /** Face position per clip (scripts/faces.py via uv + OpenCV); skipped quietly when uv is missing. */
 function faces(clips) {
   if (!clips.length) return;
@@ -143,6 +192,7 @@ export function syncClips(only) {
     const entry = span
       ? { file, start: +span.start.toFixed(2), end: +Math.min(span.end, duration).toFixed(2) }
       : { file, start: silentStart, end: +Math.min(duration, silentStart + target + 0.5).toFixed(2), silent: true };
+    if (!entry.silent) entry.voice = makeVoice(clip, entry);
     state[clip] = entry;
     result[clip] = entry;
     const len = (entry.end - entry.start).toFixed(1);
