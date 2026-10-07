@@ -1,0 +1,36 @@
+{
+  "name": "judging",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "remotion studio",
+    "render": "remotion render Judging out/judging.mp4",
+    "still": "remotion still Judging out/still.png",
+    "login": "node scripts/login.mjs",
+    "capture": "node scripts/capture.mjs",
+    "typecheck": "tsc --noEmit",
+    "sync": "node scripts/sync.mjs",
+    "prompter": "node scripts/render-prompters.mjs",
+    "checklist": "node scripts/rekaman.ts",
+    "rekam": "node scripts/rekam.mjs"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "playwright": "^1.63.0",
+    "typescript": "^7.0.2"
+  },
+  "dependencies": {
+    "@remotion/bundler": "4.0.533",
+    "@remotion/cli": "4.0.533",
+    "@remotion/google-fonts": "4.0.533",
+    "@remotion/media-parser": "4.0.533",
+    "@remotion/media-utils": "4.0.533",
+    "@remotion/noise": "4.0.533",
+    "@remotion/paths": "4.0.533",
+    "@remotion/renderer": "4.0.533",
+    "@remotion/transitions": "4.0.533",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "remotion": "4.0.533"
+  }
+}

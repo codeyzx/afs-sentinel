@@ -1,0 +1,372 @@
+<template>
+  <script src="assets/vendor/gsap-3.14.2.min.js"></script>
+  <style>
+    @font-face {
+      font-family: 'Instrument Sans';
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      src: url("assets/fonts/captured-pxiTypc9vsFDm051Uf6KVwgkfoSxQ0GsQv8ToedPibnr0She1ZuWi3hKpA.woff2") format('woff2');
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+    @font-face {
+      font-family: 'Instrument Sans';
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      src: url("assets/fonts/captured-pxiTypc9vsFDm051Uf6KVwgkfoSxQ0GsQv8ToedPibnr0SZe1ZuWi3g.woff2") format('woff2');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    @font-face {
+      font-family: 'Instrument Sans';
+      font-style: normal;
+      font-weight: 600;
+      font-display: swap;
+      src: url("assets/fonts/captured-pxiTypc9vsFDm051Uf6KVwgkfoSxQ0GsQv8ToedPibnr0She1ZuWi3hKpA.woff2") format('woff2');
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+    @font-face {
+      font-family: 'Instrument Sans';
+      font-style: normal;
+      font-weight: 600;
+      font-display: swap;
+      src: url("assets/fonts/captured-pxiTypc9vsFDm051Uf6KVwgkfoSxQ0GsQv8ToedPibnr0SZe1ZuWi3g.woff2") format('woff2');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    @font-face {
+      font-family: 'IBM Plex Mono';
+      font-style: normal;
+      font-weight: 500;
+      font-display: swap;
+      src: url("assets/fonts/IBMPlexMono-500.woff2") format('woff2');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    @font-face {
+      font-family: 'IBM Plex Mono';
+      font-style: normal;
+      font-weight: 600;
+      font-display: swap;
+      src: url("assets/fonts/IBMPlexMono-600.woff2") format('woff2');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      color: #E7EEF0;
+      font-family: 'Instrument Sans', sans-serif;
+    }
+    .r05-bg {
+      position: absolute;
+      inset: 0;
+      background: #0E1920;
+    }
+    .r05-stage {
+      position: absolute;
+      inset: 0;
+    }
+    /* virtual camera — frame coordinates at scale 1, transform-origin 0 0 */
+    .r05-cam {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1920px;
+      height: 1080px;
+      transform-origin: 0 0;
+    }
+    .r05-head {
+      position: absolute;
+      left: 160px;
+      top: 84px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .r05-stub {
+      width: 36px;
+      height: 2px;
+      background: #FF7A70;
+    }
+    .r05-kicker {
+      font-family: 'IBM Plex Mono', monospace;
+      font-weight: 500;
+      font-size: 20px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #FF7A70;
+    }
+    .r05-grid {
+      position: absolute;
+      left: 160px;
+      top: 150px;
+      width: 1600px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      column-gap: 40px;
+      row-gap: 44px;
+    }
+    .r05-card {
+      position: relative;
+      height: 322px;
+      box-sizing: border-box;
+      background: #15232C;
+      border-top: 1px solid #26404B;
+      padding: 30px 32px 28px;
+    }
+    /* status frame: drawn around a card when its rule lights */
+    .r05-hl {
+      position: absolute;
+      inset: -1px 0 0 0;
+      border: 2px solid transparent;
+      opacity: 0;
+    }
+    .r05-hl.r05-danger { border-color: #FF7A70; box-shadow: 0 0 44px rgba(255, 122, 112, 0.28); }
+    .r05-hl.r05-warn { border-color: #F2C94C; box-shadow: 0 0 44px rgba(242, 201, 76, 0.22); }
+    .r05-hl.r05-safe { border-color: #5FD68E; box-shadow: 0 0 36px rgba(95, 214, 142, 0.16); }
+    .r05-bar {
+      position: absolute;
+      left: 0;
+      top: -1px;
+      width: 100%;
+      height: 6px;
+      transform-origin: 0 50%;
+    }
+    .r05-row {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 60px;
+    }
+    .r05-mk-wrap {
+      position: relative;
+      width: 60px;
+      height: 60px;
+    }
+    .r05-ring {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 3px solid #6F8189;
+    }
+    .r05-mk {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 2px solid #6F8189;
+      background-color: rgba(111, 129, 137, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'IBM Plex Mono', monospace;
+      font-weight: 600;
+      font-size: 26px;
+      color: #A7B1B6;
+    }
+    .r05-tag {
+      font-family: 'IBM Plex Mono', monospace;
+      font-weight: 600;
+      font-size: 22px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #0E1920;
+      padding: 9px 16px 8px;
+      transform-origin: 100% 50%;
+    }
+    .r05-name {
+      margin-top: 24px;
+      font-weight: 600;
+      font-size: 44px;
+      line-height: 1.12;
+      letter-spacing: -0.01em;
+      color: #E7EEF0;
+    }
+    .r05-sub {
+      position: absolute;
+      left: 32px;
+      right: 32px;
+      bottom: 28px;
+      font-weight: 400;
+      font-size: 26px;
+      line-height: 1.35;
+      color: #A7B1B6;
+    }
+    .r05-bar.r05-danger, .r05-tag.r05-danger { background: #FF7A70; }
+    .r05-bar.r05-warn, .r05-tag.r05-warn { background: #F2C94C; }
+    .r05-bar.r05-safe, .r05-tag.r05-safe { background: #5FD68E; }
+    /* caption band keep-out: zoomed cards fade to ink under the burned-in captions */
+    .r05-band {
+      position: absolute;
+      left: 0;
+      top: 860px;
+      width: 1920px;
+      height: 220px;
+      background: linear-gradient(180deg, rgba(14, 25, 32, 0) 0%, rgba(14, 25, 32, 0.92) 45%, #0E1920 100%);
+    }
+  </style>
+
+  <div id="root" data-composition-id="05-rules" data-start="0" data-duration="7.028" data-width="1920" data-height="1080">
+    <div id="r05-bg" class="r05-bg clip" data-start="0" data-duration="7.028" data-track-index="0"></div>
+
+    <div id="r05-stage" class="r05-stage clip" data-start="0" data-duration="7.028" data-track-index="1">
+      <div id="r05-cam" class="r05-cam">
+        <div id="r05-head" class="r05-head">
+          <div class="r05-stub"></div>
+          <div class="r05-kicker">6 FORENSIC RULE · SKOR KOMPOSIT 0–100</div>
+        </div>
+
+        <div class="r05-grid">
+          <div id="r05-card-1" class="r05-card">
+            <div id="r05-hl-1" class="r05-hl r05-danger"></div>
+            <div id="r05-bar-1" class="r05-bar r05-danger"></div>
+            <div class="r05-row">
+              <div class="r05-mk-wrap"><div id="r05-ring-1" class="r05-ring"></div><div id="r05-mk-1" class="r05-mk">1</div></div>
+              <div id="r05-tag-1" class="r05-tag r05-danger">BAHAYA</div>
+            </div>
+            <div class="r05-name">Sloan Accrual Ratio</div>
+            <div id="r05-sub-1" class="r05-sub">Seberapa banyak laba yang bukan uang tunai</div>
+          </div>
+
+          <div id="r05-card-2" class="r05-card">
+            <div id="r05-hl-2" class="r05-hl r05-warn"></div>
+            <div id="r05-bar-2" class="r05-bar r05-warn"></div>
+            <div class="r05-row">
+              <div class="r05-mk-wrap"><div id="r05-ring-2" class="r05-ring"></div><div id="r05-mk-2" class="r05-mk">2</div></div>
+              <div id="r05-tag-2" class="r05-tag r05-warn">WASPADA</div>
+            </div>
+            <div class="r05-name">Divergensi Laba–Kas</div>
+            <div id="r05-sub-2" class="r05-sub">Laba naik, tapi kas operasi turun</div>
+          </div>
+
+          <div id="r05-card-3" class="r05-card">
+            <div id="r05-hl-3" class="r05-hl r05-danger"></div>
+            <div id="r05-bar-3" class="r05-bar r05-danger"></div>
+            <div class="r05-row">
+              <div class="r05-mk-wrap"><div id="r05-ring-3" class="r05-ring"></div><div id="r05-mk-3" class="r05-mk">3</div></div>
+              <div id="r05-tag-3" class="r05-tag r05-danger">BAHAYA</div>
+            </div>
+            <div class="r05-name">Altman Z'' (Adapted)</div>
+            <div id="r05-sub-3" class="r05-sub">Risiko kesulitan keuangan</div>
+          </div>
+
+          <div id="r05-card-4" class="r05-card">
+            <div id="r05-hl-4" class="r05-hl r05-warn"></div>
+            <div id="r05-bar-4" class="r05-bar r05-warn"></div>
+            <div class="r05-row">
+              <div class="r05-mk-wrap"><div id="r05-ring-4" class="r05-ring"></div><div id="r05-mk-4" class="r05-mk">4</div></div>
+              <div id="r05-tag-4" class="r05-tag r05-warn">WASPADA</div>
+            </div>
+            <div class="r05-name">Beneish (Adapted)</div>
+            <div id="r05-sub-4" class="r05-sub">Tanda tekanan untuk memoles laporan</div>
+          </div>
+
+          <div id="r05-card-5" class="r05-card">
+            <div id="r05-hl-5" class="r05-hl r05-safe"></div>
+            <div id="r05-bar-5" class="r05-bar r05-safe"></div>
+            <div class="r05-row">
+              <div class="r05-mk-wrap"><div id="r05-ring-5" class="r05-ring"></div><div id="r05-mk-5" class="r05-mk">5</div></div>
+              <div id="r05-tag-5" class="r05-tag r05-safe">AMAN</div>
+            </div>
+            <div class="r05-name">Penjualan Orang Dalam</div>
+            <div id="r05-sub-5" class="r05-sub">Orang dalam/pemegang saham utama menjual</div>
+          </div>
+
+          <div id="r05-card-6" class="r05-card">
+            <div id="r05-hl-6" class="r05-hl r05-safe"></div>
+            <div id="r05-bar-6" class="r05-bar r05-safe"></div>
+            <div class="r05-row">
+              <div class="r05-mk-wrap"><div id="r05-ring-6" class="r05-ring"></div><div id="r05-mk-6" class="r05-mk">6</div></div>
+              <div id="r05-tag-6" class="r05-tag r05-safe">AMAN</div>
+            </div>
+            <div class="r05-name">Laba tanpa Dividen</div>
+            <div id="r05-sub-6" class="r05-sub">Untung, tapi tidak membagi kas</div>
+          </div>
+        </div>
+      </div>
+      <div class="r05-band"></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+      var COLORS = { danger: "#FF7A70", warn: "#F2C94C", safe: "#5FD68E" };
+      var ALL = [1, 2, 3, 4, 5, 6];
+      var card = function (n) { return "#r05-card-" + n; };
+
+      // ---- camera poses (pre-computed from the grid geometry) ----
+      // grid: left 160, top 150, cards 506.67 x 322, gaps 40 / 44.
+      // centring frame-space point (cx, cy) at (960, 440) with scale s: x = 960 - s*cx, y = 440 - s*cy.
+      function pose(cx, cy, s) { return { scale: s, x: 960 - s * cx, y: 440 - s * cy }; }
+      var WIDE = { scale: 1, x: 0, y: 0 };
+      var P_LABA = pose(686.7, 311, 1.45);   // cards 1 + 2 (top-left pair)
+      var P_UTANG = pose(413.3, 677, 1.75);  // card 4 (bottom-left)
+      var P_GAGAL = pose(1506.7, 311, 1.75); // card 3 (top-right)
+
+      // ---- initial state (all fromTo, seek-safe) ----
+      tl.fromTo("#r05-cam", WIDE, Object.assign({}, WIDE, { duration: 0.01 }), 0);
+      tl.fromTo("#r05-head", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.3, ease: "power3.out" }, 0.1);
+      ALL.forEach(function (k) {
+        tl.fromTo("#r05-hl-" + k, { opacity: 0 }, { opacity: 0, duration: 0.01 }, 0);
+        tl.fromTo("#r05-bar-" + k, { scaleX: 0 }, { scaleX: 0, duration: 0.01 }, 0);
+        tl.fromTo("#r05-tag-" + k, { opacity: 0, scale: 0.4 }, { opacity: 0, scale: 0.4, duration: 0.01 }, 0);
+        tl.fromTo("#r05-ring-" + k, { opacity: 0, scale: 1 }, { opacity: 0, scale: 1, duration: 0.01 }, 0);
+      });
+
+      // Scene 1 — cascade 1→6 on "Enam aturan forensik" (0.31s), gaps shrink across the cascade
+      [0.30, 0.39, 0.47, 0.54, 0.60, 0.65].forEach(function (t, i) {
+        tl.fromTo(card(i + 1), { opacity: 0, y: 90, scale: 0.94 }, { opacity: 1, y: 0, scale: 1, duration: 0.42, ease: "expo.out" }, t);
+      });
+
+      // focus: dim everything that is not the subject of the current VO phrase;
+      // cards the camera would push into the caption band are hidden instead of dimmed
+      function focus(ids, t, hidden) {
+        ALL.forEach(function (k) {
+          var o = ids.indexOf(k) >= 0 ? 1 : (hidden && hidden.indexOf(k) >= 0 ? 0 : 0.28);
+          tl.to(card(k), { opacity: o, duration: 0.35, ease: "power2.out" }, t);
+        });
+      }
+      function move(p, t, d) {
+        tl.to("#r05-cam", Object.assign({}, p, { duration: d, ease: "power3.inOut" }), t);
+      }
+      // light: marker fill + ring ripple + top bar wipe + status frame + tag pop + subtitle brightens
+      function light(n, status, t) {
+        var col = COLORS[status];
+        tl.to("#r05-mk-" + n, { backgroundColor: col, borderColor: col, color: "#0E1920", duration: 0.12, ease: "power2.out" }, t);
+        tl.fromTo("#r05-mk-" + n, { scale: 1.35 }, { scale: 1, duration: 0.45, ease: "expo.out", immediateRender: false }, t);
+        tl.fromTo("#r05-ring-" + n, { opacity: 0.9, scale: 1, borderColor: col }, { opacity: 0, scale: 2.4, duration: 0.6, ease: "power2.out", immediateRender: false }, t);
+        tl.to("#r05-bar-" + n, { scaleX: 1, duration: 0.32, ease: "power3.out" }, t);
+        tl.fromTo("#r05-hl-" + n, { opacity: 0, scale: 1.04 }, { opacity: 1, scale: 1, duration: 0.35, ease: "expo.out", immediateRender: false }, t);
+        tl.to("#r05-tag-" + n, { opacity: 1, scale: 1, duration: 0.36, ease: "expo.out" }, t + 0.06);
+        tl.to("#r05-sub-" + n, { color: "#E7EEF0", duration: 0.3, ease: "power1.out" }, t);
+      }
+
+      // Scene 2 — "mencari laba yang tak berwujud kas": push to cards 1+2
+      move(P_LABA, 1.1, 0.6);
+      focus([1, 2], 1.15, [4, 5, 6]);
+      light(1, "danger", 1.43); // "laba"
+      light(2, "warn", 2.36);   // "kas"
+
+      // Scene 3 — "utang yang melonjak": camera travels to card 4
+      move(P_UTANG, 2.72, 0.55);
+      focus([4], 2.8);
+      light(4, "warn", 3.35);   // "melonjak"
+
+      // Scene 4 — "risiko gagal bayar": camera travels to card 3
+      move(P_GAGAL, 4.02, 0.55);
+      focus([3], 4.1, [4, 5, 6]);
+      light(3, "danger", 4.6);  // "gagal"
+
+      // pull back to the whole grid; rules 5 and 6 read AMAN as the grid returns, then hold
+      move(WIDE, 5.15, 0.7);
+      focus(ALL, 5.2);
+      light(5, "safe", 5.55);
+      light(6, "safe", 5.65);
+
+      tl.to({}, { duration: 0.001 }, 7.02);
+      window.__timelines["05-rules"] = tl;
+    })();
+  </script>
+</template>

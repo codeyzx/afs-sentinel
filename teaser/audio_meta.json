@@ -1,0 +1,777 @@
+{
+  "bgm": {
+    "path": "assets/music/bgm.mp3",
+    "volume": 0.5,
+    "query": "HeyGen audio catalog (media-use resolve, free OAuth path): 'tense electronic orchestral, dark cinematic investigative', track a98ebf7ac1b046449d77e56482f61c65; carved under the voiceover group at strength 0.8",
+    "duration_s": 61.0
+  },
+  "bgm_pending": false,
+  "voices": [
+    {
+      "frame": 1,
+      "path": "assets/voice/vo-01.wav",
+      "duration_s": 7.14,
+      "words": [
+        {
+          "text": "Delapan",
+          "start": 0.498,
+          "end": 0.873,
+          "id": "w01_0"
+        },
+        {
+          "text": "Mei",
+          "start": 0.873,
+          "end": 1.191,
+          "id": "w01_1"
+        },
+        {
+          "text": "dua",
+          "start": 1.43,
+          "end": 1.634,
+          "id": "w01_2"
+        },
+        {
+          "text": "ribu",
+          "start": 1.634,
+          "end": 1.839,
+          "id": "w01_3"
+        },
+        {
+          "text": "dua",
+          "start": 1.839,
+          "end": 1.998,
+          "id": "w01_4"
+        },
+        {
+          "text": "puluh",
+          "start": 1.998,
+          "end": 2.191,
+          "id": "w01_5"
+        },
+        {
+          "text": "tiga",
+          "start": 2.191,
+          "end": 2.645,
+          "id": "w01_6"
+        },
+        {
+          "text": "Bursa",
+          "start": 3.402,
+          "end": 3.755,
+          "id": "w01_7"
+        },
+        {
+          "text": "menghentikan",
+          "start": 3.755,
+          "end": 4.243,
+          "id": "w01_8"
+        },
+        {
+          "text": "perdagangan",
+          "start": 4.243,
+          "end": 4.698,
+          "id": "w01_9"
+        },
+        {
+          "text": "saham",
+          "start": 4.698,
+          "end": 5.016,
+          "id": "w01_10"
+        },
+        {
+          "text": "Waskita",
+          "start": 5.016,
+          "end": 5.38,
+          "id": "w01_11"
+        },
+        {
+          "text": "Karya",
+          "start": 5.38,
+          "end": 5.868,
+          "id": "w01_12"
+        }
+      ]
+    },
+    {
+      "frame": 2,
+      "path": "assets/voice/vo-02.wav",
+      "duration_s": 7.828,
+      "words": [
+        {
+          "text": "Padahal",
+          "start": 0.307,
+          "end": 0.705,
+          "id": "w02_0"
+        },
+        {
+          "text": "tandanya",
+          "start": 0.705,
+          "end": 1.091,
+          "id": "w02_1"
+        },
+        {
+          "text": "sudah",
+          "start": 1.091,
+          "end": 1.307,
+          "id": "w02_2"
+        },
+        {
+          "text": "ada",
+          "start": 1.307,
+          "end": 1.523,
+          "id": "w02_3"
+        },
+        {
+          "text": "di",
+          "start": 1.523,
+          "end": 1.602,
+          "id": "w02_4"
+        },
+        {
+          "text": "laporan",
+          "start": 1.602,
+          "end": 1.886,
+          "id": "w02_5"
+        },
+        {
+          "text": "keuangan",
+          "start": 1.886,
+          "end": 2.477,
+          "id": "w02_6"
+        },
+        {
+          "text": "bertahun-tahun",
+          "start": 2.727,
+          "end": 3.341,
+          "id": "w02_7"
+        },
+        {
+          "text": "sebelumnya",
+          "start": 3.341,
+          "end": 3.977,
+          "id": "w02_8"
+        },
+        {
+          "text": "Tapi",
+          "start": 4.736,
+          "end": 4.998,
+          "id": "w02_9"
+        },
+        {
+          "text": "siapa",
+          "start": 4.998,
+          "end": 5.282,
+          "id": "w02_10"
+        },
+        {
+          "text": "yang",
+          "start": 5.282,
+          "end": 5.395,
+          "id": "w02_11"
+        },
+        {
+          "text": "sempat",
+          "start": 5.395,
+          "end": 5.645,
+          "id": "w02_12"
+        },
+        {
+          "text": "membaca",
+          "start": 5.645,
+          "end": 5.941,
+          "id": "w02_13"
+        },
+        {
+          "text": "semuanya",
+          "start": 5.941,
+          "end": 6.566,
+          "id": "w02_14"
+        }
+      ]
+    },
+    {
+      "frame": 3,
+      "path": "assets/voice/vo-03.wav",
+      "duration_s": 6.22,
+      "words": [
+        {
+          "text": "Kenalkan",
+          "start": 0.307,
+          "end": 0.705,
+          "id": "w03_0"
+        },
+        {
+          "text": "AFS",
+          "start": 0.705,
+          "end": 1.034,
+          "id": "w03_1"
+        },
+        {
+          "text": "Sentinel",
+          "start": 1.034,
+          "end": 1.625,
+          "id": "w03_2"
+        },
+        {
+          "text": "pengawas",
+          "start": 1.886,
+          "end": 2.239,
+          "id": "w03_3"
+        },
+        {
+          "text": "forensik",
+          "start": 2.239,
+          "end": 2.568,
+          "id": "w03_4"
+        },
+        {
+          "text": "otomatis",
+          "start": 2.568,
+          "end": 3.08,
+          "id": "w03_5"
+        },
+        {
+          "text": "untuk",
+          "start": 3.08,
+          "end": 3.284,
+          "id": "w03_6"
+        },
+        {
+          "text": "emiten",
+          "start": 3.284,
+          "end": 3.648,
+          "id": "w03_7"
+        },
+        {
+          "text": "di",
+          "start": 3.648,
+          "end": 3.716,
+          "id": "w03_8"
+        },
+        {
+          "text": "Bursa",
+          "start": 3.716,
+          "end": 3.989,
+          "id": "w03_9"
+        },
+        {
+          "text": "Efek",
+          "start": 3.989,
+          "end": 4.261,
+          "id": "w03_10"
+        },
+        {
+          "text": "Indonesia",
+          "start": 4.261,
+          "end": 4.943,
+          "id": "w03_11"
+        }
+      ]
+    },
+    {
+      "frame": 4,
+      "path": "assets/voice/vo-04.wav",
+      "duration_s": 7.032,
+      "words": [
+        {
+          "text": "Setiap",
+          "start": 0.307,
+          "end": 0.614,
+          "id": "w04_0"
+        },
+        {
+          "text": "tiga",
+          "start": 0.614,
+          "end": 0.807,
+          "id": "w04_1"
+        },
+        {
+          "text": "hari",
+          "start": 0.807,
+          "end": 1.216,
+          "id": "w04_2"
+        },
+        {
+          "text": "tanpa",
+          "start": 1.455,
+          "end": 1.716,
+          "id": "w04_3"
+        },
+        {
+          "text": "disentuh",
+          "start": 1.716,
+          "end": 2.011,
+          "id": "w04_4"
+        },
+        {
+          "text": "manusia",
+          "start": 2.011,
+          "end": 2.614,
+          "id": "w04_5"
+        },
+        {
+          "text": "ia",
+          "start": 2.864,
+          "end": 3.023,
+          "id": "w04_6"
+        },
+        {
+          "text": "menarik",
+          "start": 3.023,
+          "end": 3.295,
+          "id": "w04_7"
+        },
+        {
+          "text": "data",
+          "start": 3.295,
+          "end": 3.489,
+          "id": "w04_8"
+        },
+        {
+          "text": "Sectors",
+          "start": 3.489,
+          "end": 3.83,
+          "id": "w04_9"
+        },
+        {
+          "text": "API",
+          "start": 3.83,
+          "end": 4.159,
+          "id": "w04_10"
+        },
+        {
+          "text": "dan",
+          "start": 4.159,
+          "end": 4.307,
+          "id": "w04_11"
+        },
+        {
+          "text": "memindai",
+          "start": 4.307,
+          "end": 4.67,
+          "id": "w04_12"
+        },
+        {
+          "text": "tiga",
+          "start": 4.67,
+          "end": 4.909,
+          "id": "w04_13"
+        },
+        {
+          "text": "puluh",
+          "start": 4.909,
+          "end": 5.091,
+          "id": "w04_14"
+        },
+        {
+          "text": "tiga",
+          "start": 5.091,
+          "end": 5.307,
+          "id": "w04_15"
+        },
+        {
+          "text": "emiten",
+          "start": 5.307,
+          "end": 5.852,
+          "id": "w04_16"
+        }
+      ]
+    },
+    {
+      "frame": 5,
+      "path": "assets/voice/vo-05.wav",
+      "duration_s": 6.528,
+      "words": [
+        {
+          "text": "Enam",
+          "start": 0.307,
+          "end": 0.489,
+          "id": "w05_0"
+        },
+        {
+          "text": "aturan",
+          "start": 0.489,
+          "end": 0.773,
+          "id": "w05_1"
+        },
+        {
+          "text": "forensik",
+          "start": 0.773,
+          "end": 1.17,
+          "id": "w05_2"
+        },
+        {
+          "text": "mencari",
+          "start": 1.17,
+          "end": 1.432,
+          "id": "w05_3"
+        },
+        {
+          "text": "laba",
+          "start": 1.432,
+          "end": 1.705,
+          "id": "w05_4"
+        },
+        {
+          "text": "yang",
+          "start": 1.705,
+          "end": 1.864,
+          "id": "w05_5"
+        },
+        {
+          "text": "tak",
+          "start": 1.864,
+          "end": 1.977,
+          "id": "w05_6"
+        },
+        {
+          "text": "berwujud",
+          "start": 1.977,
+          "end": 2.364,
+          "id": "w05_7"
+        },
+        {
+          "text": "kas",
+          "start": 2.364,
+          "end": 2.739,
+          "id": "w05_8"
+        },
+        {
+          "text": "utang",
+          "start": 2.966,
+          "end": 3.239,
+          "id": "w05_9"
+        },
+        {
+          "text": "yang",
+          "start": 3.239,
+          "end": 3.352,
+          "id": "w05_10"
+        },
+        {
+          "text": "melonjak",
+          "start": 3.352,
+          "end": 3.852,
+          "id": "w05_11"
+        },
+        {
+          "text": "dan",
+          "start": 4.068,
+          "end": 4.273,
+          "id": "w05_12"
+        },
+        {
+          "text": "risiko",
+          "start": 4.273,
+          "end": 4.602,
+          "id": "w05_13"
+        },
+        {
+          "text": "gagal",
+          "start": 4.602,
+          "end": 4.886,
+          "id": "w05_14"
+        },
+        {
+          "text": "bayar",
+          "start": 4.886,
+          "end": 5.364,
+          "id": "w05_15"
+        }
+      ]
+    },
+    {
+      "frame": 6,
+      "path": "assets/voice/vo-06.wav",
+      "duration_s": 4.608,
+      "words": [
+        {
+          "text": "Begitu",
+          "start": 0.307,
+          "end": 0.614,
+          "id": "w06_0"
+        },
+        {
+          "text": "ada",
+          "start": 0.614,
+          "end": 0.773,
+          "id": "w06_1"
+        },
+        {
+          "text": "yang",
+          "start": 0.773,
+          "end": 0.909,
+          "id": "w06_2"
+        },
+        {
+          "text": "janggal",
+          "start": 0.909,
+          "end": 1.409,
+          "id": "w06_3"
+        },
+        {
+          "text": "peringatan",
+          "start": 1.67,
+          "end": 2.057,
+          "id": "w06_4"
+        },
+        {
+          "text": "langsung",
+          "start": 2.057,
+          "end": 2.341,
+          "id": "w06_5"
+        },
+        {
+          "text": "masuk",
+          "start": 2.341,
+          "end": 2.591,
+          "id": "w06_6"
+        },
+        {
+          "text": "ke",
+          "start": 2.591,
+          "end": 2.636,
+          "id": "w06_7"
+        },
+        {
+          "text": "Telegram",
+          "start": 2.636,
+          "end": 2.977,
+          "id": "w06_8"
+        },
+        {
+          "text": "Anda",
+          "start": 2.977,
+          "end": 3.432,
+          "id": "w06_9"
+        }
+      ]
+    },
+    {
+      "frame": 7,
+      "path": "assets/voice/vo-07.wav",
+      "duration_s": 5.784,
+      "words": [
+        {
+          "text": "Lengkap",
+          "start": 0.307,
+          "end": 0.591,
+          "id": "w07_0"
+        },
+        {
+          "text": "dengan",
+          "start": 0.591,
+          "end": 0.795,
+          "id": "w07_1"
+        },
+        {
+          "text": "ringkasan",
+          "start": 0.795,
+          "end": 1.17,
+          "id": "w07_2"
+        },
+        {
+          "text": "AI",
+          "start": 1.17,
+          "end": 1.568,
+          "id": "w07_3"
+        },
+        {
+          "text": "dan",
+          "start": 1.841,
+          "end": 2.034,
+          "id": "w07_4"
+        },
+        {
+          "text": "bukti",
+          "start": 2.034,
+          "end": 2.261,
+          "id": "w07_5"
+        },
+        {
+          "text": "perhitungan",
+          "start": 2.261,
+          "end": 2.727,
+          "id": "w07_6"
+        },
+        {
+          "text": "yang",
+          "start": 2.727,
+          "end": 2.852,
+          "id": "w07_7"
+        },
+        {
+          "text": "bisa",
+          "start": 2.852,
+          "end": 3.034,
+          "id": "w07_8"
+        },
+        {
+          "text": "dilacak",
+          "start": 3.034,
+          "end": 3.409,
+          "id": "w07_9"
+        },
+        {
+          "text": "sampai",
+          "start": 3.409,
+          "end": 3.727,
+          "id": "w07_10"
+        },
+        {
+          "text": "ke",
+          "start": 3.727,
+          "end": 3.807,
+          "id": "w07_11"
+        },
+        {
+          "text": "data",
+          "start": 3.807,
+          "end": 4.011,
+          "id": "w07_12"
+        },
+        {
+          "text": "sumbernya",
+          "start": 4.011,
+          "end": 4.602,
+          "id": "w07_13"
+        }
+      ]
+    },
+    {
+      "frame": 8,
+      "path": "assets/voice/vo-08.wav",
+      "duration_s": 6.992,
+      "words": [
+        {
+          "text": "Diuji",
+          "start": 0.307,
+          "end": 0.659,
+          "id": "w08_0"
+        },
+        {
+          "text": "pada",
+          "start": 0.659,
+          "end": 0.83,
+          "id": "w08_1"
+        },
+        {
+          "text": "kasus",
+          "start": 0.83,
+          "end": 1.102,
+          "id": "w08_2"
+        },
+        {
+          "text": "nyata",
+          "start": 1.102,
+          "end": 1.591,
+          "id": "w08_3"
+        },
+        {
+          "text": "Sentinel",
+          "start": 1.875,
+          "end": 2.295,
+          "id": "w08_4"
+        },
+        {
+          "text": "sudah",
+          "start": 2.295,
+          "end": 2.5,
+          "id": "w08_5"
+        },
+        {
+          "text": "menandai",
+          "start": 2.5,
+          "end": 2.864,
+          "id": "w08_6"
+        },
+        {
+          "text": "Waskita",
+          "start": 2.864,
+          "end": 3.284,
+          "id": "w08_7"
+        },
+        {
+          "text": "dua",
+          "start": 3.284,
+          "end": 3.432,
+          "id": "w08_8"
+        },
+        {
+          "text": "puluh",
+          "start": 3.432,
+          "end": 3.58,
+          "id": "w08_9"
+        },
+        {
+          "text": "lima",
+          "start": 3.58,
+          "end": 3.739,
+          "id": "w08_10"
+        },
+        {
+          "text": "bulan",
+          "start": 3.739,
+          "end": 4.034,
+          "id": "w08_11"
+        },
+        {
+          "text": "sebelum",
+          "start": 4.034,
+          "end": 4.318,
+          "id": "w08_12"
+        },
+        {
+          "text": "suspensi",
+          "start": 4.318,
+          "end": 5.023,
+          "id": "w08_13"
+        }
+      ]
+    },
+    {
+      "frame": 9,
+      "path": "assets/voice/vo-09.wav",
+      "duration_s": 7.048,
+      "words": [
+        {
+          "text": "AFS",
+          "start": 0.399,
+          "end": 0.876,
+          "id": "w09_0"
+        },
+        {
+          "text": "Sentinel",
+          "start": 0.876,
+          "end": 1.512,
+          "id": "w09_1"
+        },
+        {
+          "text": "Peringatan",
+          "start": 2.268,
+          "end": 2.689,
+          "id": "w09_2"
+        },
+        {
+          "text": "dini",
+          "start": 2.689,
+          "end": 3.132,
+          "id": "w09_3"
+        },
+        {
+          "text": "sebelum",
+          "start": 3.37,
+          "end": 3.757,
+          "id": "w09_4"
+        },
+        {
+          "text": "terlambat",
+          "start": 3.757,
+          "end": 4.382,
+          "id": "w09_5"
+        }
+      ]
+    }
+  ],
+  "sfx": []
+}

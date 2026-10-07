@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Perekam · AFS Sentinel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0E0D0B; --panel: #181614; --line: #2c2925; --text: #F4EFE6; --muted: rgba(244,239,230,.55);
+    --dim: rgba(244,239,230,.32); --red: #D93A2B; --marker: #F5D547; --ok: #5FD68E;
+    --sans: "Geist", system-ui, sans-serif; --mono: "Geist Mono", ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--ink); color: var(--text); font: 16px var(--sans); }
+  button, select { font: inherit; }
+  .app { display: grid; grid-template-columns: 340px 1fr; height: 100vh; }
+  aside { border-right: 1px solid var(--line); overflow: auto; padding: 18px 16px; }
+  h1 { font-size: 18px; margin: 0 0 4px; }
+  .sub { color: var(--muted); font-size: 13px; margin-bottom: 16px; }
+  .tabs { display: flex; gap: 6px; margin-bottom: 12px; }
+  .tabs button { flex: 1; background: var(--panel); color: var(--text); border: 1px solid var(--line); border-radius: 8px; padding: 8px; cursor: pointer; }
+  .tabs button.on { background: var(--text); color: var(--ink); font-weight: 600; }
+  .clip { display: grid; grid-template-columns: 22px 1fr auto; gap: 8px; align-items: center; padding: 9px 10px; border-radius: 8px; cursor: pointer; }
+  .clip:hover { background: var(--panel); }
+  .clip.on { background: #2a2620; outline: 1px solid var(--marker); }
+  .clip .name { font: 500 14px var(--mono); }
+  .clip .meta { font-size: 12px; color: var(--muted); }
+  .clip .st { font: 12px var(--mono); color: var(--muted); }
+  .clip .st.done { color: var(--ok); }
+  .dot { width: 14px; height: 14px; border-radius: 7px; border: 2px solid var(--dim); }
+  .dot.done { background: var(--ok); border-color: var(--ok); }
+  main { overflow: auto; padding: 22px 28px; display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 26px; align-content: start; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; }
+  .kicker { font: 500 12px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--red); }
+  .clipname { font: 600 26px var(--mono); margin: 6px 0 10px; }
+  .script { font-size: 22px; line-height: 1.5; }
+  .dir { color: var(--muted); margin-top: 12px; }
+  .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 16px; }
+  .btn { background: var(--red); color: #fff; border: 0; border-radius: 10px; padding: 12px 20px; font-weight: 600; cursor: pointer; }
+  .btn.ghost { background: transparent; color: var(--text); border: 1px solid var(--line); }
+  .btn.ok { background: var(--ok); color: var(--ink); }
+  .btn:disabled { opacity: .4; cursor: default; }
+  kbd { font: 12px var(--mono); border: 1px solid var(--dim); border-radius: 4px; padding: 1px 5px; margin-left: 6px; opacity: .8; }
+  .preview { position: relative; border-radius: 12px; overflow: hidden; background: #000; aspect-ratio: 16 / 9; }
+  .preview video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
+  .guide { position: absolute; inset: 0; pointer-events: none; }
+  .guide::before { content: ""; position: absolute; left: 33%; right: 33%; top: 6%; bottom: 0; border: 2px dashed rgba(245,213,71,.55); border-radius: 10px; }
+  .guide span { position: absolute; left: 0; right: 0; bottom: 8px; text-align: center; font: 12px var(--mono); color: rgba(245,213,71,.8); }
+  label { display: block; font-size: 13px; color: var(--muted); margin-top: 12px; }
+  select { width: 100%; margin-top: 4px; background: var(--ink); color: var(--text); border: 1px solid var(--line); border-radius: 8px; padding: 8px; }
+  .meter { height: 8px; background: var(--ink); border-radius: 4px; overflow: hidden; margin-top: 6px; }
+  .meter div { height: 100%; width: 0; background: var(--ok); transition: width .06s; }
+  .tips { font-size: 13px; color: var(--muted); line-height: 1.55; margin-top: 14px; padding-left: 18px; }
+  .note { margin-top: 12px; font-size: 14px; }
+  .note.warn { color: var(--marker); }
+  .note.ok { color: var(--ok); }
+  .note.err { color: #ff8a7a; }
+
+  /* take: full-screen prompter */
+  #take { position: fixed; inset: 0; background: var(--ink); display: none; z-index: 10; }
+  #take.on { display: block; }
+  #bar { position: absolute; left: 0; top: 0; height: 10px; width: 0; background: var(--red); }
+  #thead { position: absolute; left: 80px; right: 80px; top: 44px; display: flex; justify-content: space-between; font: 24px var(--mono); letter-spacing: .1em; color: var(--muted); text-transform: uppercase; }
+  #rec { color: var(--red); }
+  #text { position: absolute; left: 80px; right: 80px; top: 110px; }
+  #cur { font-size: clamp(40px, 5.2vw, 84px); font-weight: 600; line-height: 1.3; letter-spacing: -.01em; }
+  #cur span { border-radius: 8px; padding: 0 6px; margin: 0 -6px; color: var(--dim); }
+  #cur span.past { color: var(--text); }
+  #cur span.lit { background: var(--marker); color: var(--ink); }
+  #next { margin-top: 34px; font-size: clamp(26px, 3vw, 46px); line-height: 1.3; color: var(--dim); }
+  #pause { margin-top: 26px; font: 30px var(--mono); color: var(--marker); letter-spacing: .3em; visibility: hidden; }
+  #count { position: absolute; right: 90px; top: 58%; display: flex; align-items: baseline; gap: 18px; }
+  #count small { font: 26px var(--mono); color: var(--muted); letter-spacing: .1em; }
+  #count b { font: 150px Georgia, serif; color: var(--marker); }
+  #hold { position: absolute; left: 0; right: 0; top: 62%; text-align: center; font: 40px var(--mono); color: var(--ok); letter-spacing: .08em; display: none; }
+  #tfoot { position: absolute; left: 80px; right: 80px; bottom: 56px; font-size: 26px; color: var(--muted); }
+  #tfoot em { font: normal 20px var(--mono); color: var(--red); letter-spacing: .1em; text-transform: uppercase; margin-right: 14px; }
+  #esc { position: absolute; right: 24px; bottom: 18px; font: 13px var(--mono); color: var(--dim); }
+
+  /* review */
+  #review { position: fixed; inset: 0; background: rgba(14,13,11,.96); display: none; z-index: 11; padding: 32px; }
+  #review.on { display: grid; grid-template-rows: auto 1fr auto; gap: 16px; }
+  #review video { width: 100%; height: 100%; max-height: 70vh; background: #000; border-radius: 12px; }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside>
+    <h1>Perekam AFS Sentinel</h1>
+    <div class="sub">Pilih nama, pilih klip, tekan <b>Spasi</b>. Simpan otomatis ke <code>public/recordings/</code>.</div>
+    <div class="tabs" id="tabs"></div>
+    <div id="list"></div>
+  </aside>
+  <main>
+    <div>
+      <div class="card">
+        <div class="kicker" id="scene"></div>
+        <div class="clipname" id="clipname"></div>
+        <div class="script" id="script"></div>
+        <div class="dir" id="dir"></div>
+        <div class="row">
+          <button class="btn" id="go">● Rekam <kbd>Spasi</kbd></button>
+          <span id="dur" class="dir" style="margin:0"></span>
+        </div>
+        <div class="note" id="note"></div>
+      </div>
+      <ul class="tips">
+        <li>Tinggikan laptop sampai kamera sejajar mata. Cahaya dari depan wajah, jangan dari belakang.</li>
+        <li>Teks prompter muncul di <b>atas layar</b>, dekat kamera. Baca <b>kata yang menyala kuning</b> — jangan mendahului.</li>
+        <li>Hitung mundur 3-2-1, langsung bicara. Saat muncul <b>TAHAN DIAM</b>, tetap menatap kamera; rekaman berhenti sendiri.</li>
+        <li><kbd>Esc</kbd> membatalkan take. Setelah take: <kbd>Enter</kbd> simpan, <kbd>R</kbd> ulangi.</li>
+      </ul>
+    </div>
+    <div>
+      <div class="preview"><video id="cam" autoplay muted playsinline></video><div class="guide"><span>posisikan wajah di dalam kotak</span></div></div>
+      <label>Kamera <select id="vsel"></select></label>
+      <label>Mikrofon (earphone/mic eksternal lebih jernih) <select id="asel"></select></label>
+      <label>Level suara — bicara: bar sebaiknya sampai ⅔ <div class="meter"><div id="lvl"></div></div></label>
+      <div class="note" id="camnote"></div>
+    </div>
+  </main>
+</div>
+
+<div id="take">
+  <div id="bar"></div>
+  <div id="thead"><span id="tname"></span><span><span id="rec">● REC</span> &nbsp; <span id="tleft"></span></span></div>
+  <div id="text"><div id="cur"></div><div id="next"></div><div id="pause">· · jeda</div></div>
+  <div id="count"><small>MULAI DALAM</small><b id="countn">3</b></div>
+  <div id="hold">TAHAN DIAM · tatap kamera</div>
+  <div id="tfoot"></div>
+  <div id="esc">Esc = batal</div>
+</div>
+
+<div id="review">
+  <div><div class="kicker" id="rvscene"></div><div class="clipname" id="rvname"></div></div>
+  <video id="rv" controls></video>
+  <div class="row" style="margin:0">
+    <button class="btn ok" id="save">Simpan <kbd>Enter</kbd></button>
+    <button class="btn ghost" id="retake">Ulangi <kbd>R</kbd></button>
+    <button class="btn ghost" id="discard">Buang</button>
+    <span class="dir" id="rvinfo" style="margin:0"></span>
+  </div>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const PEOPLE = ["Fathan", "Ais", "Yahya"];
+let data, who, sel, stream, recorder, chunks = [], blob, mime, takeRaf, aborted = false;
+
+const store = { get: (k) => { try { return localStorage.getItem(k); } catch { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch {} } };
+
+async function load() {
+  data = await (await fetch("/api/clips")).json();
+  who = store.get("who") || "Fathan";
+  renderTabs();
+  pick(data.clips.find((c) => c.who === who && !data.status[c.clip]) || data.clips.find((c) => c.who === who));
+  await startCamera();
+}
+
+function renderTabs() {
+  $("tabs").innerHTML = PEOPLE.map((p) => `<button class="${p === who ? "on" : ""}" data-p="${p}">${p}</button>`).join("");
+  $("tabs").querySelectorAll("button").forEach((b) => (b.onclick = () => { who = b.dataset.p; store.set("who", who); renderTabs(); pick(data.clips.find((c) => c.who === who && !data.status[c.clip]) || data.clips.find((c) => c.who === who)); }));
+  renderList();
+}
+
+function renderList() {
+  const clips = data.clips.filter((c) => c.who === who);
+  const done = clips.filter((c) => data.status[c.clip]).length;
+  $("list").innerHTML = `<div class="sub">${done}/${clips.length} selesai</div>` + clips.map((c) => {
+    const st = data.status[c.clip];
+    const len = st && st.end != null ? `${(st.end - st.start).toFixed(1)}s` : st ? "✓" : `±${c.target}s`;
+    return `<div class="clip ${sel && sel.clip === c.clip ? "on" : ""}" data-c="${c.clip}"><div class="dot ${st ? "done" : ""}"></div><div><div class="name">${c.clip}</div><div class="meta">${c.scene}</div></div><div class="st ${st ? "done" : ""}">${len}</div></div>`;
+  }).join("");
+  $("list").querySelectorAll(".clip").forEach((el) => (el.onclick = () => pick(data.clips.find((c) => c.clip === el.dataset.c))));
+}
+
+function pick(c) {
+  sel = c;
+  $("scene").textContent = `${c.scene} · ${c.kind === "vo" ? "suara saja (wajah tidak dipakai)" : c.kind === "reaction" ? "tanpa bicara" : "wajah + suara"}`;
+  $("clipname").textContent = c.clip;
+  $("script").textContent = c.text;
+  $("dir").textContent = c.direction;
+  $("dur").textContent = `bacaan ±${c.target} dtk · take ±${(data.countdown + c.target + data.hold).toFixed(0)} dtk`;
+  const st = data.status[c.clip];
+  setNote(st ? `Sudah ada take: ${st.file}. Rekam lagi untuk mengganti (yang lama dipindah ke _old/).` : "", "ok");
+  renderList();
+}
+
+const setNote = (t, cls = "") => { $("note").textContent = t; $("note").className = "note " + cls; };
+
+async function startCamera() {
+  const vId = store.get("cam"), aId = store.get("mic");
+  stream?.getTracks().forEach((t) => t.stop());
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: { deviceId: vId ? { exact: vId } : undefined, width: { ideal: 1920 }, height: { ideal: 1080 }, frameRate: { ideal: 30 } },
+      audio: { deviceId: aId ? { exact: aId } : undefined, echoCancellation: false, autoGainControl: false, noiseSuppression: true },
+    });
+  } catch (err) {
+    $("camnote").textContent = `Kamera/mic tidak bisa dibuka: ${err.message}. Izinkan akses di browser.`;
+    $("camnote").className = "note err";
+    return;
+  }
+  $("cam").srcObject = stream;
+  const s = stream.getVideoTracks()[0].getSettings();
+  $("camnote").textContent = `Kamera ${s.width}×${s.height} @ ${Math.round(s.frameRate || 30)} fps` + (s.height < 720 ? " — resolusi rendah, coba kamera lain." : "");
+  $("camnote").className = "note " + (s.height < 720 ? "warn" : "ok");
+  const devs = await navigator.mediaDevices.enumerateDevices();
+  const fill = (el, kind, cur) => { el.innerHTML = devs.filter((d) => d.kind === kind).map((d) => `<option value="${d.deviceId}" ${d.deviceId === cur ? "selected" : ""}>${d.label || kind}</option>`).join(""); };
+  fill($("vsel"), "videoinput", stream.getVideoTracks()[0].getSettings().deviceId);
+  fill($("asel"), "audioinput", stream.getAudioTracks()[0].getSettings().deviceId);
+  meter();
+}
+$("vsel").onchange = () => { store.set("cam", $("vsel").value); startCamera(); };
+$("asel").onchange = () => { store.set("mic", $("asel").value); startCamera(); };
+
+let ac, an;
+function meter() {
+  ac?.close();
+  ac = new AudioContext();
+  an = ac.createAnalyser();
+  an.fftSize = 1024;
+  ac.createMediaStreamSource(stream).connect(an);
+  const buf = new Float32Array(an.fftSize);
+  const tick = () => {
+    an.getFloatTimeDomainData(buf);
+    let s = 0; for (const v of buf) s += v * v;
+    const db = 10 * Math.log10(s / buf.length + 1e-12);
+    $("lvl").style.width = Math.max(0, Math.min(100, (db + 60) * 1.8)) + "%";
+    requestAnimationFrame(tick);
+  };
+  tick();
+}
+
+function pickMime() {
+  for (const m of ["video/mp4;codecs=avc1.640028,mp4a.40.2", "video/mp4;codecs=avc1,mp4a.40.2", "video/mp4", "video/webm;codecs=vp9,opus", "video/webm;codecs=vp8,opus", "video/webm"]) {
+    if (MediaRecorder.isTypeSupported(m)) return m;
+  }
+  return "";
+}
+
+/* ---------------- take ---------------- */
+function startTake() {
+  if (!stream || !sel || $("take").classList.contains("on")) return;
+  aborted = false;
+  chunks = [];
+  mime = pickMime();
+  recorder = new MediaRecorder(stream, { mimeType: mime || undefined, videoBitsPerSecond: 8_000_000, audioBitsPerSecond: 192_000 });
+  recorder.ondataavailable = (e) => e.data.size && chunks.push(e.data);
+  recorder.onstop = () => { exitTake(); if (!aborted) review(); };
+  $("take").classList.add("on");
+  document.documentElement.requestFullscreen?.().catch(() => {});
+  setupPrompter(sel);
+  recorder.onstart = () => {
+    const t0 = performance.now();
+    const loop = () => {
+      const t = (performance.now() - t0) / 1000 - data.countdown;
+      drawPrompter(sel, t);
+      if (t >= sel.target + data.hold) { recorder.state !== "inactive" && recorder.stop(); return; }
+      takeRaf = requestAnimationFrame(loop);
+    };
+    loop();
+  };
+  recorder.start(1000);
+}
+
+function exitTake() {
+  cancelAnimationFrame(takeRaf);
+  $("take").classList.remove("on");
+  if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+}
+
+function abortTake() { aborted = true; recorder?.state !== "inactive" && recorder.stop(); }
+
+let groupOf = [];
+function setupPrompter(c) {
+  $("tname").textContent = `${c.clip} · ${c.who}`;
+  $("tfoot").innerHTML = `<em>${c.scene}</em>${c.direction}`;
+  groupOf = [];
+  c.groups.forEach((g, gi) => g.forEach((wi) => (groupOf[wi] = gi)));
+  $("cur").innerHTML = ""; $("next").textContent = "";
+}
+
+function drawPrompter(c, t) {
+  $("bar").style.width = Math.min(100, Math.max(0, (t / c.target) * 100)) + "%";
+  $("bar").style.background = t >= c.target ? "var(--ok)" : "var(--red)";
+  $("tleft").textContent = t < 0 ? `±${c.target} dtk` : t >= c.target ? "selesai" : `${(c.target - t).toFixed(1)} dtk`;
+  $("count").style.display = t < 0 ? "flex" : "none";
+  $("countn").textContent = Math.ceil(-t);
+  $("countn").style.opacity = 0.4 + 0.6 * (Math.ceil(-t) + t);
+  $("hold").style.display = t >= c.target ? "block" : "none";
+
+  if (c.kind === "reaction") {
+    const cue = t < c.target * 0.35 ? "Diam, tatap kamera, senyum" : c.text.replace(/[()]/g, "");
+    $("cur").innerHTML = `<span class="${t >= 0 ? "lit" : ""}" style="background:none;color:${t >= 0 ? "var(--marker)" : "var(--dim)"}">${cue}</span>`;
+    return;
+  }
+  const W = c.words;
+  let gi = 0;
+  c.groups.forEach((g, i) => { if (t >= W[g[0]].start - 0.35) gi = i; });
+  const g = c.groups[gi];
+  const lit = W.findIndex((w) => t >= w.start && t < w.end);
+  $("cur").innerHTML = g.map((wi) => `<span class="${wi === lit ? "lit" : t >= W[wi].end ? "past" : ""}">${W[wi].text}</span>`).join(" ");
+  const ng = c.groups[gi + 1];
+  $("next").textContent = ng ? ng.map((wi) => W[wi].text).join(" ") : "";
+  $("pause").style.visibility = t >= 0 && lit === -1 && t < W[W.length - 1].end ? "visible" : "hidden";
+}
+
+/* ---------------- review & save ---------------- */
+function review() {
+  blob = new Blob(chunks, { type: mime || "video/webm" });
+  $("rv").src = URL.createObjectURL(blob);
+  $("rvscene").textContent = sel.scene;
+  $("rvname").textContent = sel.clip;
+  $("rvinfo").textContent = `${(blob.size / 1e6).toFixed(1)} MB · ${mime.startsWith("video/mp4") ? "mp4" : "webm"}`;
+  $("review").classList.add("on");
+  $("rv").play().catch(() => {});
+}
+const closeReview = () => { $("rv").pause(); $("review").classList.remove("on"); };
+
+async function saveTake() {
+  if (!blob) return;
+  const ext = mime.startsWith("video/mp4") ? "mp4" : "webm";
+  $("save").disabled = true;
+  $("rvinfo").textContent = "Menyimpan & mengecek…";
+  try {
+    const r = await fetch(`/api/save?clip=${sel.clip}&ext=${ext}`, { method: "POST", body: blob });
+    const j = await r.json();
+    if (!r.ok) throw new Error(j.error);
+    closeReview();
+    data.status[sel.clip] = j.entry;
+    const e = j.entry;
+    if (e.end != null && !e.silent && sel.kind !== "reaction") {
+      const len = e.end - e.start, diff = len - sel.target, pct = Math.abs(diff) / sel.target;
+      setNote(
+        pct <= 0.12 ? `✓ Tersimpan · bacaan ${len.toFixed(1)} dtk (target ${sel.target}) — pas.`
+          : `Tersimpan · bacaan ${len.toFixed(1)} dtk vs target ${sel.target} (${diff > 0 ? "lebih lambat" : "lebih cepat"} ${Math.round(pct * 100)}%). Ikuti kata yang menyala; pertimbangkan ulang.`,
+        pct <= 0.12 ? "ok" : "warn",
+      );
+    } else setNote(j.note || `✓ Tersimpan · ${e.file}`, j.note ? "warn" : "ok");
+    const next = data.clips.find((c) => c.who === who && !data.status[c.clip]);
+    renderList();
+    if (next && pct_ok()) setTimeout(() => pick(next), 1200);
+  } catch (err) {
+    $("rvinfo").textContent = "Gagal menyimpan: " + err.message;
+  } finally {
+    $("save").disabled = false;
+  }
+}
+const pct_ok = () => $("note").classList.contains("ok");
+
+// Esc in full screen is eaten by the browser to leave full screen: treat that as cancel too.
+document.addEventListener("fullscreenchange", () => { if (!document.fullscreenElement && $("take").classList.contains("on")) abortTake(); });
+
+$("go").onclick = startTake;
+$("save").onclick = saveTake;
+$("retake").onclick = () => { closeReview(); startTake(); };
+$("discard").onclick = closeReview;
+document.addEventListener("keydown", (e) => {
+  if ($("take").classList.contains("on")) { if (e.key === "Escape") abortTake(); return; }
+  if ($("review").classList.contains("on")) {
+    if (e.key === "Enter") { e.preventDefault(); saveTake(); }
+    else if (e.key.toLowerCase() === "r") { closeReview(); startTake(); }
+    else if (e.key === "Escape") closeReview();
+    return;
+  }
+  if (e.code === "Space" && e.target.tagName !== "SELECT") { e.preventDefault(); startTake(); }
+});
+load();
+</script>
+</body>
+</html>

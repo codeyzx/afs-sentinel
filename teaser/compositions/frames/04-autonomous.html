@@ -1,0 +1,403 @@
+<template>
+  <div
+    id="root"
+    data-composition-id="04-autonomous"
+    data-start="0"
+    data-duration="7.532"
+    data-width="1920"
+    data-height="1080"
+  >
+    <style>
+      @font-face {
+        font-family: 'Instrument Sans';
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url("assets/fonts/captured-pxiTypc9vsFDm051Uf6KVwgkfoSxQ0GsQv8ToedPibnr0SZe1ZuWi3g.woff2") format('woff2');
+      }
+      @font-face {
+        font-family: 'Instrument Sans';
+        font-style: normal;
+        font-weight: 700;
+        font-display: swap;
+        src: url("assets/fonts/captured-pxiTypc9vsFDm051Uf6KVwgkfoSxQ0GsQv8ToedPibnr0SZe1ZuWi3g.woff2") format('woff2');
+      }
+      @font-face {
+        font-family: 'IBM Plex Mono';
+        font-style: normal;
+        font-weight: 500;
+        font-display: swap;
+        src: url("assets/fonts/IBMPlexMono-500.woff2") format('woff2');
+      }
+      @font-face {
+        font-family: 'IBM Plex Mono';
+        font-style: normal;
+        font-weight: 600;
+        font-display: swap;
+        src: url("assets/fonts/IBMPlexMono-600.woff2") format('woff2');
+      }
+
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        container-type: size;
+        font-family: 'Instrument Sans', sans-serif;
+        color: #E7EEF0;
+      }
+      #root * { box-sizing: border-box; margin: 0; padding: 0; }
+
+      #f04-bg { position: absolute; inset: 0; background: #0E1920; }
+      #f04-stage { position: absolute; inset: 0; }
+
+      /* ---- top band: kicker left, three pills right (above the window) ---- */
+      .f04-kicker {
+        position: absolute;
+        left: 120px;
+        top: 20px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        font-family: 'IBM Plex Mono', monospace;
+        font-weight: 500;
+        font-size: 17px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #FF7A70;
+      }
+      .f04-rule { width: 36px; height: 2px; background: #FF7A70; }
+      .f04-pills {
+        position: absolute;
+        right: 120px;
+        top: 14px;
+        display: flex;
+        gap: 12px;
+      }
+      .f04-pill {
+        height: 38px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 0 16px;
+        border: 1px solid #26404B;
+        font-family: 'IBM Plex Mono', monospace;
+        font-weight: 500;
+        font-size: 18px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #E7EEF0;
+        background: #0E1920;
+      }
+      .f04-pill i { font-style: normal; color: #FF7A70; }
+      .f04-pill-3 { border-color: #FF7A70; }
+
+      /* ---- browser window: 1680x780 screen at (120,100), chrome per frame.md ---- */
+      .f04-window {
+        position: absolute;
+        left: 119px;
+        top: 63px;
+        width: 1682px;
+        height: 818px;
+        border: 1px solid #26404B;
+        border-radius: 10px;
+        background: #15232C;
+        overflow: hidden;
+      }
+      .f04-titlebar {
+        position: absolute;
+        left: 0; top: 0; right: 0;
+        height: 36px;
+        background: #15232C;
+        border-bottom: 1px solid #26404B;
+        display: flex;
+        align-items: center;
+        padding-left: 16px;
+      }
+      .f04-dot { width: 10px; height: 10px; border-radius: 50%; background: #26404B; margin-right: 8px; }
+      .f04-url {
+        position: absolute;
+        left: 50%;
+        top: 7px;
+        width: 440px;
+        margin-left: -220px;
+        height: 22px;
+        border: 1px solid #26404B;
+        border-radius: 11px;
+        font-family: 'IBM Plex Mono', monospace;
+        font-weight: 500;
+        font-size: 13px;
+        line-height: 20px;
+        letter-spacing: 0.04em;
+        color: #A7B1B6;
+        text-align: center;
+      }
+      .f04-url span { position: absolute; left: 0; right: 0; top: 0; }
+      .f04-url b { font-weight: 500; color: #E7EEF0; }
+      .f04-screen {
+        position: absolute;
+        left: 0; top: 36px;
+        width: 1680px; height: 780px;
+        background: #0E1920;
+        overflow: hidden;
+      }
+
+      /* ---- virtual camera: the 1920x1080 source plane; GSAP owns its transform ---- */
+      .f04-cam {
+        position: absolute;
+        left: 0; top: 0;
+        width: 1920px; height: 1080px;
+      }
+      .f04-cam video {
+        position: absolute;
+        left: 0; top: 0;
+        width: 1920px; height: 1080px;
+        object-fit: cover;
+      }
+      /* focus marks live in source coordinates, so they stay locked to the UI under zoom */
+      .f04-spot {
+        position: absolute;
+        border-radius: 8px;
+        box-shadow: 0 0 0 4000px rgba(14, 25, 32, 0.66);
+        opacity: 0;
+      }
+      .f04-ring {
+        position: absolute;
+        border: 2px solid #FF7A70;
+        border-radius: 8px;
+        opacity: 0;
+      }
+      .f04-ripple {
+        position: absolute;
+        width: 72px; height: 72px;
+        margin: -36px 0 0 -36px;
+        border: 3px solid #FF7A70;
+        border-radius: 50%;
+        opacity: 0;
+      }
+      .f04-tapdot {
+        position: absolute;
+        width: 18px; height: 18px;
+        margin: -9px 0 0 -9px;
+        border-radius: 50%;
+        background: #FF7A70;
+        opacity: 0;
+      }
+
+      /* ---- callouts (frame space, never scaled by the camera) ---- */
+      .f04-callout {
+        position: absolute;
+        padding: 18px 22px 20px;
+        background: #0E1920;
+        border: 1px solid #26404B;
+        font-family: 'IBM Plex Mono', monospace;
+        text-transform: uppercase;
+      }
+      .f04-callout .f04-stub { width: 36px; height: 2px; background: #FF7A70; margin-bottom: 12px; }
+      .f04-head {
+        font-weight: 600;
+        font-size: 24px;
+        line-height: 1.25;
+        letter-spacing: 0.1em;
+        color: #FF7A70;
+        white-space: nowrap;
+      }
+      .f04-sub {
+        margin-top: 6px;
+        font-weight: 500;
+        font-size: 17px;
+        line-height: 1.4;
+        letter-spacing: 0.1em;
+        color: #A7B1B6;
+        white-space: nowrap;
+      }
+      #f04-call-col { width: 360px; }
+      .f04-leader { position: absolute; height: 2px; background: #FF7A70; }
+
+      /* counter card */
+      .f04-stat { width: 420px; }
+      .f04-counter-wrap { height: 108px; display: flex; align-items: flex-end; }
+      .f04-counter {
+        display: inline-block;
+        font-family: 'Instrument Sans', sans-serif;
+        font-size: 5.5cqw;
+        font-weight: 700;
+        line-height: 1;
+        letter-spacing: -0.04em;
+        font-variant-numeric: tabular-nums;
+        color: #E7EEF0;
+        transform-origin: left bottom;
+      }
+      .f04-fill-track { margin-top: 16px; width: 374px; height: 2px; background: #26404B; }
+      .f04-fill { width: 100%; height: 2px; background: #FF7A70; transform-origin: left center; }
+      .f04-stat .f04-sub { margin-top: 14px; color: #E7EEF0; font-size: 18px; }
+    </style>
+
+    <!-- full-bleed ground -->
+    <div id="f04-bg" class="clip" data-start="0" data-duration="7.532" data-track-index="0"></div>
+
+    <!-- top band -->
+    <div id="f04-stage" class="clip" data-start="0" data-duration="7.532" data-track-index="1">
+      <div class="f04-kicker" id="f04-kicker"><span class="f04-rule"></span><span>JEJAK AUDIT · DATA ASLI PRODUKSI</span></div>
+      <div class="f04-pills">
+        <div class="f04-pill" id="f04-pill-1"><i>/</i>SETIAP 3 HARI</div>
+        <div class="f04-pill" id="f04-pill-2"><i>/</i>TANPA MANUSIA</div>
+        <div class="f04-pill f04-pill-3" id="f04-pill-3"><i>/</i>DATA SECTORS API</div>
+      </div>
+    </div>
+
+    <!-- browser window (not timed: the videos inside carry the timing) -->
+    <div class="f04-window" id="f04-window">
+      <div class="f04-titlebar">
+        <span class="f04-dot"></span><span class="f04-dot"></span><span class="f04-dot"></span>
+        <div class="f04-url">
+          <span id="f04-url-a"><b>afs-sentinel.herokuapp.com</b></span>
+          <span id="f04-url-b"><b>afs-sentinel.herokuapp.com</b>/logs</span>
+        </div>
+      </div>
+      <div class="f04-screen">
+        <div class="f04-cam" id="f04-cam" data-layout-allow-overflow>
+          <video id="f04-video-dashboard" src="assets/footage/f04a-dashboard.mp4" muted playsinline
+            class="clip" data-hf-media-start-basis="local" data-start="0.3" data-duration="1.15" data-track-index="4002"></video>
+          <video id="f04-video-logs" src="assets/footage/f04b-logs.mp4" muted playsinline
+            class="clip" data-hf-media-start-basis="local" data-start="1.45" data-duration="6.082" data-track-index="4003"></video>
+
+          <!-- dashboard marks (source px) -->
+          <div class="f04-spot" id="f04-spot-dash" style="left:132px; top:146px; width:620px; height:194px;"></div>
+          <div class="f04-ring" id="f04-ring-days" style="left:352px; top:160px; width:392px; height:42px;"></div>
+          <div class="f04-ring" id="f04-ring-next" style="left:140px; top:294px; width:440px; height:40px;"></div>
+
+          <!-- /logs marks (source px) -->
+          <div class="f04-spot" id="f04-spot-col" style="left:688px; top:290px; width:226px; height:590px;"></div>
+          <div class="f04-ring" id="f04-ring-col" style="left:688px; top:290px; width:226px; height:590px; transform-origin:50% 0%;"></div>
+          <div class="f04-spot" id="f04-spot-row" style="left:124px; top:290px; width:1672px; height:54px;"></div>
+          <div class="f04-ring" id="f04-ring-row" style="left:688px; top:294px; width:492px; height:46px;"></div>
+          <div class="f04-ripple" id="f04-ripple" style="left:960px; top:316px;"></div>
+          <div class="f04-tapdot" id="f04-tapdot" style="left:960px; top:316px;"></div>
+          <div class="f04-spot" id="f04-spot-emiten" style="left:140px; top:36px; width:360px; height:1040px;"></div>
+          <div class="f04-ring" id="f04-ring-emiten" style="left:140px; top:36px; width:360px; height:1040px; transform-origin:50% 0%;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- callout: Pemicu column -->
+    <div class="f04-leader" id="f04-leader-col"></div>
+    <div class="f04-callout" id="f04-call-col">
+      <div class="f04-stub"></div>
+      <div class="f04-head">OTOMATIS · SISTEM</div>
+      <div class="f04-sub">PEMICU SETIAP RUN</div>
+    </div>
+
+    <!-- callout: counter card -->
+    <div class="f04-callout f04-stat" id="f04-stat">
+      <div class="f04-stub"></div>
+      <div class="f04-counter-wrap"><span class="f04-counter" id="f04-counter">0</span></div>
+      <div class="f04-fill-track"><div class="f04-fill" id="f04-fill"></div></div>
+      <div class="f04-sub">EMITEN DIPINDAI · TIAP RUN</div>
+    </div>
+
+    <script src="assets/vendor/gsap-3.14.2.min.js"></script>
+    <script>
+      (function () {
+        const tl = gsap.timeline({ paused: true });
+        const $ = function (n) { return document.getElementById("f04-" + n); };
+
+        // ---- camera geometry (constants; the screen is 1680x780 at frame (120,100)) ----
+        const W = 1680, H = 780, OX = 120, OY = 100;
+        function pose(cx, cy, s) {
+          let x = W / 2 - s * cx, y = H / 2 - s * cy;
+          x = Math.min(0, Math.max(W - 1920 * s, x));
+          y = Math.min(0, Math.max(H - 1080 * s, y));
+          return { x: x, y: y, scale: s };
+        }
+        function toFrame(p, sx, sy) { return { x: OX + p.x + p.scale * sx, y: OY + p.y + p.scale * sy }; }
+
+        const P0 = pose(960, 390, 1);        // app content column at 1:1
+        const PD = pose(560, 250, 1.75);      // dashboard status card: "tiap 3 hari" + "Berikutnya"
+        const PL = pose(720, 450, 1.7);      // /logs: Pemicu + Dipindai columns, first rows
+        const PE = pose(660, 540, 1.45);     // expanded run: per-emiten list
+
+        const cam = $("cam");
+        gsap.set(cam, { transformOrigin: "0 0" });
+
+        // place frame-space callouts from the poses they annotate
+        (function place() {
+          const colL = toFrame(PL, 688, 316);                 // left edge of Pemicu column, newest run row
+          const call = $("call-col");
+          call.style.left = Math.round(colL.x - 24 - 360) + "px";
+          call.style.top = Math.round(colL.y - 56) + "px";
+          const lead = $("leader-col");
+          lead.style.left = Math.round(colL.x - 24) + "px";
+          lead.style.width = "16px";
+          lead.style.top = Math.round(colL.y - 1) + "px";
+          const stat = $("stat");
+          stat.style.left = "1340px";
+          stat.style.top = "556px";
+        })();
+
+        tl.set($("url-b"), { opacity: 0 }, 0);
+
+        // Scene 1 (0.0–1.45): window rises, dashboard, punch-in to the schedule on "Setiap tiga hari"
+        tl.fromTo($("kicker"), { opacity: 0, x: -16 }, { opacity: 1, x: 0, duration: 0.3, ease: "power3.out" }, 0);
+        tl.fromTo($("window"), { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.28, ease: "power3.out" }, 0);
+        tl.fromTo(cam, { x: P0.x, y: P0.y, scale: P0.scale }, { x: PD.x, y: PD.y, scale: PD.scale, duration: 0.6, ease: "power3.inOut" }, 0.3);
+        tl.fromTo($("pill-1"), { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 0.3);
+        tl.fromTo($("spot-dash"), { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power2.out" }, 0.62);
+        tl.fromTo($("ring-days"), { opacity: 0, scale: 1.12 }, { opacity: 1, scale: 1, duration: 0.3, ease: "power3.out" }, 0.66);
+        tl.to($("ring-days"), { opacity: 0.35, duration: 0.2, ease: "power2.out" }, 1.0);
+        tl.fromTo($("ring-next"), { opacity: 0, scale: 1.12 }, { opacity: 1, scale: 1, duration: 0.3, ease: "power3.out" }, 1.0);
+
+        // Scene 2 (1.45): hard cut to /logs — the camera cuts with the footage
+        tl.set([$("spot-dash"), $("ring-days"), $("ring-next")], { opacity: 0 }, 1.45);
+        tl.set($("url-a"), { opacity: 0 }, 1.45);
+        tl.set($("url-b"), { opacity: 1 }, 1.45);
+        tl.set(cam, { x: PL.x, y: PL.y, scale: PL.scale }, 1.45);
+        tl.fromTo($("pill-2"), { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 1.45);
+        // every run row: "Otomatis · sistem"
+        tl.fromTo($("spot-col"), { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power2.out" }, 1.5);
+        tl.fromTo($("ring-col"), { opacity: 1, scaleY: 0 }, { opacity: 1, scaleY: 1, duration: 0.45, ease: "power2.inOut" }, 1.5);
+        tl.fromTo($("leader-col"), { scaleX: 0, transformOrigin: "100% 50%" }, { scaleX: 1, duration: 0.3, ease: "power3.out" }, 1.62);
+        tl.fromTo($("call-col"), { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.35, ease: "power3.out" }, 1.7);
+        // the real click on the newest run (footage 0.55s) expands it
+        tl.to([$("spot-col"), $("ring-col")], { opacity: 0, duration: 0.2, ease: "power2.in" }, 1.86);
+        tl.fromTo($("tapdot"), { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.1, ease: "power2.out" }, 1.9);
+        tl.to($("tapdot"), { opacity: 0, scale: 0.6, duration: 0.25, ease: "power2.in" }, 2.1);
+        tl.fromTo($("ripple"), { opacity: 0.9, scale: 0.3 }, { opacity: 0, scale: 2.2, duration: 0.55, ease: "power2.out", immediateRender: false }, 1.95);
+        tl.fromTo($("spot-row"), { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power2.out" }, 2.02);
+        tl.fromTo($("ring-row"), { opacity: 0, scale: 1.08 }, { opacity: 1, scale: 1, duration: 0.3, ease: "power3.out" }, 2.08);
+
+        // Scene 3 (2.86): "menarik data Sectors API" — pull back before the footage scrolls (3.1)
+        tl.fromTo($("pill-3"), { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 2.86);
+        tl.to([$("spot-row"), $("ring-row"), $("call-col"), $("leader-col")], { opacity: 0, duration: 0.2, ease: "power2.in" }, 2.86);
+                tl.to(cam, { x: P0.x, y: P0.y, scale: P0.scale, duration: 0.65, ease: "power2.inOut" }, 2.9);
+
+        // Scene 4 (4.3): "memindai tiga puluh tiga emiten" — punch into the per-emiten list, count 0 → 33
+        tl.to(cam, { x: PE.x, y: PE.y, scale: PE.scale, duration: 0.65, ease: "power3.inOut" }, 4.3);
+        tl.fromTo($("spot-emiten"), { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power2.out" }, 4.8);
+        tl.fromTo($("ring-emiten"), { opacity: 1, scaleY: 0 }, { opacity: 1, scaleY: 1, duration: 0.6, ease: "power2.inOut" }, 4.8);
+
+        const COUNT_AT = 4.3, COUNT_DUR = 1.6, COUNT_EASE = "power3.out";
+        const counter = $("counter");
+        const state = { value: 0 };
+        tl.fromTo($("stat"), { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.3, ease: "power3.out" }, COUNT_AT);
+        tl.fromTo(state, { value: 0 }, {
+          value: 33,
+          duration: COUNT_DUR,
+          ease: COUNT_EASE,
+          onUpdate: function () { counter.textContent = String(Math.round(state.value)); }
+        }, COUNT_AT);
+        tl.fromTo(counter, { scale: 0.5 }, { scale: 1, duration: COUNT_DUR, ease: COUNT_EASE }, COUNT_AT);
+        tl.fromTo($("fill"), { scaleX: 0 }, { scaleX: 1, duration: COUNT_DUR, ease: COUNT_EASE }, COUNT_AT);
+
+        // release the zoom before the slide-out at 7.032
+        tl.to([$("spot-emiten"), $("ring-emiten")], { opacity: 0, duration: 0.3, ease: "power2.in" }, 6.3);
+        tl.to(cam, { x: P0.x, y: P0.y, scale: P0.scale, duration: 0.6, ease: "power2.inOut" }, 6.35);
+
+        tl.set({}, {}, 7.032);
+
+        window.__timelines["04-autonomous"] = tl;
+      })();
+    </script>
+  </div>
+</template>

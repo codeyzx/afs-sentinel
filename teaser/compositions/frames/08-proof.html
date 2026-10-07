@@ -1,0 +1,462 @@
+<template id="f08-proof-template">
+  <div
+    id="root"
+    data-composition-id="08-proof"
+    data-start="0"
+    data-duration="7.592"
+    data-width="1920"
+    data-height="1080"
+  >
+    <style>
+      @font-face {
+        font-family: "Instrument Sans";
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url("assets/fonts/captured-pxiTypc9vsFDm051Uf6KVwgkfoSxQ0GsQv8ToedPibnr0SZe1ZuWi3g.woff2") format("woff2");
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+      @font-face {
+        font-family: "Instrument Sans";
+        font-style: normal;
+        font-weight: 600;
+        font-display: swap;
+        src: url("assets/fonts/captured-pxiTypc9vsFDm051Uf6KVwgkfoSxQ0GsQv8ToedPibnr0SZe1ZuWi3g.woff2") format("woff2");
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+      @font-face {
+        font-family: "Instrument Sans";
+        font-style: normal;
+        font-weight: 700;
+        font-display: swap;
+        src: url("assets/fonts/captured-pxiTypc9vsFDm051Uf6KVwgkfoSxQ0GsQv8ToedPibnr0SZe1ZuWi3g.woff2") format("woff2");
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+      @font-face {
+        font-family: "IBM Plex Mono";
+        font-style: normal;
+        font-weight: 500;
+        font-display: swap;
+        src: url("assets/fonts/IBMPlexMono-500.woff2") format("woff2");
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        container-type: size;
+        font-family: "Instrument Sans", sans-serif;
+      }
+
+      /* ---------- dark register (0 – 3.4s) ---------- */
+      [id="f08-proof-bg"] {
+        position: absolute;
+        inset: 0;
+        background: #0e1920;
+      }
+      /* virtual camera: everything that lives "in the footage world" sits in here.
+         Camera poses are transform x/y/scale with origin 0 0 (see CAM below). */
+      [id="f08-proof-cam"] {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1920px;
+        height: 1080px;
+        transform-origin: 0 0;
+      }
+      /* browser window — video rect x280 y112 w1360 h765 (footage scale 0.7083) */
+      [id="f08-proof-window"] {
+        position: absolute;
+        left: 279px;
+        top: 75px;
+        width: 1362px;
+        height: 803px;
+        border: 1px solid #26404b;
+        border-radius: 10px;
+        background: #15232c;
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+      }
+      [id="f08-proof-titlebar"] {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        padding: 0 16px;
+        gap: 8px;
+        background: #15232c;
+        border-bottom: 1px solid #26404b;
+        border-radius: 10px 10px 0 0;
+      }
+      [id="f08-proof-titlebar"] .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #26404b;
+      }
+      [id="f08-proof-titlebar"] .url {
+        margin-left: 20px;
+        font-family: "IBM Plex Mono", monospace;
+        font-weight: 500;
+        font-size: 14px;
+        letter-spacing: 0.04em;
+        color: #a7b1b6;
+      }
+      [id="f08-proof-titlebar"] .url b {
+        font-weight: 500;
+        color: #e7eef0;
+      }
+      [id="f08-proof-footage"] {
+        position: absolute;
+        left: 280px;
+        top: 112px;
+        width: 1360px;
+        height: 765px;
+        object-fit: cover;
+      }
+      /* annotation layer in FOOTAGE pixels (1920x1080 source), scaled onto the video rect */
+      [id="f08-proof-screen"] {
+        position: absolute;
+        left: 280px;
+        top: 112px;
+        width: 1920px;
+        height: 1080px;
+        transform: scale(0.708333);
+        transform-origin: 0 0;
+        pointer-events: none;
+      }
+      [id="f08-proof-screen"] > * {
+        position: absolute;
+      }
+      /* spotlight: transparent hole, the huge spread shadow is the scrim */
+      [id="f08-proof-spot-pt"] {
+        left: 176px;
+        top: 572px;
+        width: 84px;
+        height: 84px;
+        border-radius: 50%;
+        border: 4px solid #ff7a70;
+        box-shadow: 0 0 0 3000px rgba(14, 25, 32, 0.58);
+      }
+      [id="f08-proof-ripple"] {
+        left: 176px;
+        top: 572px;
+        width: 84px;
+        height: 84px;
+        border-radius: 50%;
+        border: 3px solid #ff7a70;
+        opacity: 0;
+      }
+      [id="f08-proof-pt-label"] {
+        left: 196px;
+        top: 668px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 14px 7px;
+        background: #0e1920;
+        border: 2px solid #ff7a70;
+        font-family: "IBM Plex Mono", monospace;
+        font-weight: 500;
+        font-size: 17px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #e7eef0;
+        white-space: nowrap;
+      }
+      [id="f08-proof-pt-label"] .hot {
+        color: #ff7a70;
+      }
+      [id="f08-proof-spot-line"] {
+        left: 104px;
+        top: 126px;
+        width: 812px;
+        height: 70px;
+        border-radius: 8px;
+        border: 3px solid #ff7a70;
+        box-shadow: 0 0 0 3000px rgba(14, 25, 32, 0.6);
+      }
+      [id="f08-proof-marker"] {
+        left: 312px;
+        top: 184px;
+        width: 432px;
+        height: 6px;
+        background: #ff7a70;
+        transform-origin: 0% 50%;
+      }
+
+      /* HUD kicker — outside the camera, stays put */
+      [id="f08-proof-kicker"] {
+        position: absolute;
+        left: 266px;
+        top: 22px;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        padding: 9px 16px 8px 14px;
+        background: rgba(14, 25, 32, 0.88);
+        border-radius: 4px;
+        font-family: "IBM Plex Mono", monospace;
+        font-weight: 500;
+        font-size: 17px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #ff7a70;
+      }
+      [id="f08-proof-kicker"] .k-rule {
+        display: block;
+        width: 36px;
+        height: 2px;
+        background: #ff7a70;
+      }
+
+      /* caption band keep-out: footage fades to ink under the burned-in captions */
+      [id="f08-proof-band"] {
+        position: absolute;
+        left: 0;
+        top: 860px;
+        width: 1920px;
+        height: 220px;
+        background: linear-gradient(180deg, rgba(14, 25, 32, 0) 0%, rgba(14, 25, 32, 0.92) 45%, #0e1920 100%);
+      }
+
+      /* ---------- red register (3.24s – end) ---------- */
+      [id="f08-proof-redfield"] {
+        position: absolute;
+        inset: 0;
+        background: #ff7a70;
+      }
+      [id="f08-proof-register"] {
+        position: absolute;
+        inset: 0;
+        color: #0e1920;
+      }
+      [id="f08-proof-count-wrap"] {
+        position: absolute;
+        left: 5.5cqw;
+        top: 150px;
+        display: flex;
+        align-items: baseline;
+        gap: 2cqw;
+      }
+      [id="f08-proof-counter"] {
+        display: inline-block;
+        width: 1.16em;
+        font-size: 22cqw;
+        font-weight: 700;
+        line-height: 0.88;
+        letter-spacing: -0.04em;
+        font-variant-numeric: tabular-nums;
+        transform-origin: 0% 85%;
+      }
+      [id="f08-proof-unit"] {
+        display: inline-block;
+        font-size: 7.5cqw;
+        font-weight: 700;
+        line-height: 0.9;
+        letter-spacing: -0.03em;
+      }
+      [id="f08-proof-line"] {
+        position: absolute;
+        left: 5.5cqw;
+        top: 590px;
+        max-width: 78cqw;
+      }
+      [id="f08-proof-line"] .l-rule {
+        display: block;
+        width: 36px;
+        height: 2px;
+        margin-bottom: 22px;
+        background: #0e1920;
+        transform-origin: 0% 50%;
+      }
+      [id="f08-proof-line"] .l-text {
+        font-size: 2.8cqw;
+        font-weight: 600;
+        line-height: 1.2;
+        letter-spacing: -0.01em;
+      }
+      [id="f08-proof-sub"] {
+        position: absolute;
+        left: 5.5cqw;
+        top: 790px;
+        width: 78cqw;
+      }
+      [id="f08-proof-sub"] .s-hair {
+        display: block;
+        width: 100%;
+        height: 1px;
+        background: rgba(14, 25, 32, 0.2);
+        transform-origin: 0% 50%;
+      }
+      [id="f08-proof-sub"] .s-text {
+        padding-top: 20px;
+        font-family: "IBM Plex Mono", monospace;
+        font-weight: 500;
+        font-size: 1.25cqw;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #0e1920;
+      }
+      [id="f08-proof-sub"] .s-text span {
+        color: rgba(14, 25, 32, 0.75);
+      }
+    </style>
+
+    <!-- full-bleed dark ground -->
+    <div id="f08-proof-bg" class="clip" data-start="0" data-duration="7.592" data-track-index="0"></div>
+
+    <!-- camera rig: window chrome + real footage + annotations in footage coordinates -->
+    <div id="f08-proof-cam">
+      <div id="f08-proof-window">
+        <div id="f08-proof-titlebar">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="url" data-layout-allow-overlap data-layout-allow-occlusion><b>afs-sentinel.herokuapp.com</b>/backtest</span>
+        </div>
+      </div>
+      <video
+        id="f08-proof-footage"
+        class="clip"
+        src="assets/footage/f08-backtest.mp4"
+        muted
+        playsinline
+        data-start="0"
+        data-duration="3.5"
+        data-track-index="3"
+      ></video>
+      <div id="f08-proof-screen" data-layout-allow-overlap data-layout-allow-occlusion data-layout-allow-overflow>
+        <div id="f08-proof-spot-pt"></div>
+        <div id="f08-proof-ripple"></div>
+        <div id="f08-proof-pt-label"><span class="hot">2021-Q1</span><span>· pertama kali sedang</span></div>
+        <div id="f08-proof-spot-line"></div>
+        <div id="f08-proof-marker"></div>
+      </div>
+    </div>
+
+    <div id="f08-proof-band"></div>
+
+    <!-- HUD kicker -->
+    <div id="f08-proof-kicker"><span class="k-rule"></span><span>Backtest · Diuji pada kasus nyata</span></div>
+
+    <!-- red register: flood field + payoff -->
+    <div id="f08-proof-redfield"></div>
+    <div id="f08-proof-register">
+      <div id="f08-proof-count-wrap">
+        <span id="f08-proof-counter">0</span>
+        <span id="f08-proof-unit">bulan</span>
+      </div>
+      <div id="f08-proof-line">
+        <span class="l-rule"></span>
+        <div class="l-text">sebelum suspensi saham WSKT (8 mei 2023)</div>
+      </div>
+      <div id="f08-proof-sub">
+        <span class="s-hair"></span>
+        <div class="s-text">SRIL · 42 bulan sebelum pailit <span>· Sumber: output /backtest</span></div>
+      </div>
+    </div>
+
+    <script src="assets/vendor/gsap-3.14.2.min.js"></script>
+    <script>
+      (function () {
+        const $ = (id) => document.getElementById("f08-proof-" + id);
+        const tl = gsap.timeline({ paused: true });
+
+        // ---- camera math (pre-computed, no DOM measurement) ----
+        // footage px (fx,fy) sits at cam-local (280 + K*fx, 112 + K*fy); with transform-origin 0 0,
+        // centring it at frame (cx,cy) at scale s needs x = cx - s*lx, y = cy - s*ly.
+        const K = 1360 / 1920;
+        const pose = (fx, fy, mag, cx, cy) => {
+          const s = mag / K;
+          return { scale: s, x: cx - s * (280 + K * fx), y: cy - s * (112 + K * fy) };
+        };
+        const WIDE = { scale: 1, x: 0, y: 0 };
+        // P1: first flag — 2021-Q1 point (218,614) with the y-axis and the dashed 8-Mei-2023 line in view
+        const P1 = pose(560, 600, 1.7, 960, 430);
+        // P2: the claim sentence "Pertama kali Sedang: 2021-Q1, 25 bulan sebelum…" (line 1, y≈158)
+        const P2 = pose(515, 175, 1.9, 960, 380);
+        // P3: push THROUGH the "25" glyph pair (footage x622–658, y142–175)
+        const P3 = pose(640, 158, 30, 960, 400);
+
+        const cam = $("cam");
+        tl.fromTo(cam, WIDE, { ...WIDE, duration: 0.01 }, 0);
+
+        // Scene 1 — kicker on "Diuji" (0.31s); real page scroll plays in the wide shot
+        tl.fromTo($("kicker"), { opacity: 0, x: -16 }, { opacity: 1, x: 0, duration: 0.45, ease: "power3.out" }, 0.3);
+        // the HUD kicker leaves as the camera starts moving, so it never sits on zoomed UI
+        tl.to($("kicker"), { opacity: 0, duration: 0.25, ease: "power1.in" }, 1.3);
+
+        // push in to the first flag point, landing on "Sentinel" (1.88s)
+        tl.to(cam, { ...P1, duration: 0.6, ease: "power3.inOut" }, 1.3);
+        tl.fromTo($("spot-pt"), { opacity: 0, scale: 1.8 }, { opacity: 1, scale: 1, duration: 0.4, ease: "expo.out" }, 1.82);
+        tl.fromTo($("ripple"), { opacity: 0.9, scale: 1 }, { opacity: 0, scale: 2.6, duration: 0.6, ease: "power2.out", immediateRender: false }, 1.9);
+        tl.fromTo($("pt-label"), { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.3, ease: "power3.out" }, 1.98);
+
+        // travel up to the claim sentence on "menandai" (2.50s), landing on "Waskita" (2.86s)
+        tl.to(cam, { ...P2, duration: 0.42, ease: "power3.inOut" }, 2.44);
+        tl.to([$("spot-pt"), $("pt-label")], { opacity: 0, duration: 0.2, ease: "power1.out" }, 2.44);
+        tl.fromTo($("spot-line"), { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power2.out" }, 2.66);
+        tl.fromTo($("marker"), { scaleX: 0 }, { scaleX: 1, duration: 0.34, ease: "power2.out" }, 2.72);
+
+        // Scene 3 seam — push THROUGH "25" (accelerating), red iris opens from the glyph
+        tl.to(cam, { ...P3, duration: 0.36, ease: "power3.in" }, 3.06);
+        tl.to([$("spot-line"), $("marker")], { opacity: 0, duration: 0.14, ease: "power1.in" }, 3.06);
+        tl.fromTo(cam, { filter: "blur(0px)" }, { filter: "blur(10px)", duration: 0.16, ease: "power2.in", immediateRender: false }, 3.24);
+        const red = $("redfield");
+        // the red register floods in as the camera goes through the glyphs
+        tl.fromTo(red, { opacity: 0 }, { opacity: 1, duration: 0.16, ease: "power2.in" }, 3.24);
+
+        // Count-up 0 → 25 on "dua puluh lima" (3.28s) — counting-dynamic-scale
+        const counter = $("counter");
+        const state = { v: 0 };
+        const COUNT_AT = 3.28;
+        const COUNT_DUR = 1.5;
+        tl.fromTo(
+          state,
+          { v: 0 },
+          {
+            v: 25,
+            duration: COUNT_DUR,
+            ease: "power3.out",
+            onUpdate: () => {
+              counter.textContent = String(Math.round(state.v));
+            },
+          },
+          COUNT_AT
+        );
+        tl.fromTo(counter, { scale: 0.5 }, { scale: 1, duration: COUNT_DUR, ease: "power3.out" }, COUNT_AT);
+        tl.fromTo(
+          counter,
+          { opacity: 0, filter: "blur(18px)" },
+          { opacity: 1, filter: "blur(0px)", duration: 0.45, ease: "power2.out" },
+          COUNT_AT
+        );
+
+        // "bulan" on its cue (3.74s)
+        tl.fromTo($("unit"), { opacity: 0, y: 28 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 3.74);
+
+        // "sebelum suspensi" (4.03s)
+        const line = $("line");
+        tl.fromTo(line.querySelector(".l-rule"), { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power2.out" }, 4.03);
+        tl.fromTo(line.querySelector(".l-text"), { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" }, 4.08);
+
+        // Scene 4 (5.2s) — mono sub-line, then stillness
+        const sub = $("sub");
+        tl.fromTo(sub.querySelector(".s-hair"), { scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: "power2.inOut" }, 5.2);
+        tl.fromTo(sub.querySelector(".s-text"), { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 5.3);
+
+        // camera rig and HUD are fully covered by the red field — hide them explicitly
+        tl.set([cam, $("kicker"), $("band")], { autoAlpha: 0 }, 3.46);
+
+        // hold to the frame's full length
+        tl.to({}, { duration: 0.001 }, 7.59);
+
+        window.__timelines = window.__timelines || {};
+        window.__timelines["08-proof"] = tl;
+      })();
+    </script>
+  </div>
+</template>

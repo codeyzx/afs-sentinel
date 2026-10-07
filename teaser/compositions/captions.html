@@ -1,0 +1,149 @@
+<template id="captions-template" data-composition-id="captions" data-width="1920" data-height="1080">
+<script src="assets/vendor/gsap-3.14.2.min.js"></script>
+
+<style>
+  @font-face {
+    font-family: 'Instrument Sans';
+    font-style: normal;
+    font-weight: 700;
+    font-display: block;
+    src: url("assets/fonts/captured-pxiTypc9vsFDm051Uf6KVwgkfoSxQ0GsQv8ToedPibnr0SZe1ZuWi3g.woff2") format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  }
+  @font-face {
+    font-family: 'Instrument Sans';
+    font-style: normal;
+    font-weight: 700;
+    font-display: block;
+    src: url("assets/fonts/captured-pxiTypc9vsFDm051Uf6KVwgkfoSxQ0GsQv8ToedPibnr0She1ZuWi3hKpA.woff2") format('woff2');
+    unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+  }
+
+  #captions-root {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  /* The reserved caption band: bottom 180px (y 900-1080, ~17%). Frames keep content above it. */
+  #caption-stage {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 900px;
+    height: 180px;
+  }
+  /* One phrase per plate; plates are stacked over the same band, one visible at a time. */
+  .cap-phrase {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+  }
+  /* Ink plate (flat, sharp) so the line reads on the red register as well as the dark one. */
+  .cap-plate {
+    display: flex;
+    align-items: baseline;
+    gap: 0 0.26em;
+    padding: 12px 34px 16px;
+    background: #0E1920;
+    white-space: nowrap;
+    font-family: 'Instrument Sans', sans-serif;
+    font-weight: 700;
+    font-size: 50px;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+  }
+  .cap-word {
+    display: inline-block;
+    color: rgba(231, 238, 240, 0.4);
+  }
+  .cap-word.is-active { color: #FF7A70; }
+  .cap-word.is-spoken { color: #E7EEF0; }
+  .cap-word.is-key.is-spoken { color: #FF7A70; }
+</style>
+
+<div
+  id="captions-root"
+  data-composition-id="captions"
+  data-timeline-locked
+  data-start="0"
+  data-duration="59.18"
+  data-fps="30"
+  data-width="1920"
+  data-height="1080"
+>
+  <div id="caption-stage" aria-hidden="true"></div>
+</div>
+
+<script>
+  // Phrase-level captions. Each token carries the VO timing of the word(s) it stands for
+  // (from caption_groups.json); "2023", "3", "33" and "25" each cover several spoken words.
+  // t = display text, s/e = composition-time start/end, k = key word (stays accent once spoken).
+  var PHRASES = [[{"t":"8","s":0.498,"e":0.873,"k":1},{"t":"Mei","s":0.873,"e":1.191,"k":1},{"t":"2023","s":1.43,"e":2.645,"k":1}],[{"t":"Bursa","s":3.402,"e":3.755,"k":0},{"t":"menghentikan","s":3.755,"e":4.243,"k":0},{"t":"perdagangan","s":4.243,"e":4.698,"k":0}],[{"t":"saham","s":4.698,"e":5.016,"k":0},{"t":"Waskita","s":5.016,"e":5.38,"k":1},{"t":"Karya.","s":5.38,"e":5.868,"k":1}],[{"t":"Padahal","s":7.447,"e":7.845,"k":0},{"t":"tandanya","s":7.845,"e":8.231,"k":0},{"t":"sudah","s":8.231,"e":8.447,"k":0},{"t":"ada","s":8.447,"e":8.663,"k":0}],[{"t":"di","s":8.663,"e":8.742,"k":0},{"t":"laporan","s":8.742,"e":9.026,"k":0},{"t":"keuangan,","s":9.026,"e":9.617,"k":0}],[{"t":"bertahun-tahun","s":9.867,"e":10.481,"k":1},{"t":"sebelumnya.","s":10.481,"e":11.117,"k":0}],[{"t":"Tapi","s":11.876,"e":12.138,"k":0},{"t":"siapa","s":12.138,"e":12.422,"k":0},{"t":"yang","s":12.422,"e":12.535,"k":0},{"t":"sempat","s":12.535,"e":12.785,"k":0},{"t":"membaca","s":12.785,"e":13.081,"k":0},{"t":"semuanya?","s":13.081,"e":13.706,"k":1}],[{"t":"Kenalkan","s":15.275,"e":15.673,"k":0},{"t":"AFS","s":15.673,"e":16.002,"k":1},{"t":"Sentinel,","s":16.002,"e":16.593,"k":1}],[{"t":"pengawas","s":16.854,"e":17.207,"k":0},{"t":"forensik","s":17.207,"e":17.536,"k":0},{"t":"otomatis","s":17.536,"e":18.048,"k":0}],[{"t":"untuk","s":18.048,"e":18.252,"k":0},{"t":"emiten","s":18.252,"e":18.616,"k":0},{"t":"di","s":18.616,"e":18.684,"k":0},{"t":"Bursa","s":18.684,"e":18.957,"k":0},{"t":"Efek","s":18.957,"e":19.229,"k":0},{"t":"Indonesia.","s":19.229,"e":19.911,"k":0}],[{"t":"Setiap","s":21.495,"e":21.802,"k":0},{"t":"3","s":21.802,"e":21.995,"k":1},{"t":"hari,","s":21.995,"e":22.404,"k":1}],[{"t":"tanpa","s":22.643,"e":22.904,"k":0},{"t":"disentuh","s":22.904,"e":23.199,"k":0},{"t":"manusia,","s":23.199,"e":23.802,"k":0}],[{"t":"ia","s":24.052,"e":24.211,"k":0},{"t":"menarik","s":24.211,"e":24.483,"k":0},{"t":"data","s":24.483,"e":24.677,"k":0},{"t":"Sectors","s":24.677,"e":25.018,"k":1},{"t":"API","s":25.018,"e":25.347,"k":1}],[{"t":"dan","s":25.347,"e":25.495,"k":0},{"t":"memindai","s":25.495,"e":25.858,"k":0},{"t":"33","s":25.858,"e":26.495,"k":1},{"t":"emiten.","s":26.495,"e":27.04,"k":0}],[{"t":"Enam","s":28.527,"e":28.709,"k":1},{"t":"aturan","s":28.709,"e":28.993,"k":0},{"t":"forensik","s":28.993,"e":29.39,"k":0},{"t":"mencari","s":29.39,"e":29.652,"k":0}],[{"t":"laba","s":29.652,"e":29.925,"k":0},{"t":"yang","s":29.925,"e":30.084,"k":0},{"t":"tak","s":30.084,"e":30.197,"k":0},{"t":"berwujud","s":30.197,"e":30.584,"k":0},{"t":"kas,","s":30.584,"e":30.959,"k":0}],[{"t":"utang","s":31.186,"e":31.459,"k":0},{"t":"yang","s":31.459,"e":31.572,"k":0},{"t":"melonjak,","s":31.572,"e":32.072,"k":0}],[{"t":"dan","s":32.288,"e":32.493,"k":0},{"t":"risiko","s":32.493,"e":32.822,"k":0},{"t":"gagal","s":32.822,"e":33.106,"k":0},{"t":"bayar.","s":33.106,"e":33.584,"k":0}],[{"t":"Begitu","s":35.055,"e":35.362,"k":0},{"t":"ada","s":35.362,"e":35.521,"k":0},{"t":"yang","s":35.521,"e":35.657,"k":0},{"t":"janggal,","s":35.657,"e":36.157,"k":0}],[{"t":"peringatan","s":36.418,"e":36.805,"k":0},{"t":"langsung","s":36.805,"e":37.089,"k":0},{"t":"masuk","s":37.089,"e":37.339,"k":0}],[{"t":"ke","s":37.339,"e":37.384,"k":0},{"t":"Telegram","s":37.384,"e":37.725,"k":1},{"t":"Anda.","s":37.725,"e":38.18,"k":0}],[{"t":"Lengkap","s":39.663,"e":39.947,"k":0},{"t":"dengan","s":39.947,"e":40.151,"k":0},{"t":"ringkasan","s":40.151,"e":40.526,"k":0},{"t":"AI,","s":40.526,"e":40.924,"k":1}],[{"t":"dan","s":41.197,"e":41.39,"k":0},{"t":"bukti","s":41.39,"e":41.617,"k":0},{"t":"perhitungan","s":41.617,"e":42.083,"k":0},{"t":"yang","s":42.083,"e":42.208,"k":0},{"t":"bisa","s":42.208,"e":42.39,"k":0},{"t":"dilacak","s":42.39,"e":42.765,"k":0}],[{"t":"sampai","s":42.765,"e":43.083,"k":0},{"t":"ke","s":43.083,"e":43.163,"k":0},{"t":"data","s":43.163,"e":43.367,"k":0},{"t":"sumbernya.","s":43.367,"e":43.958,"k":0}],[{"t":"Diuji","s":45.447,"e":45.799,"k":0},{"t":"pada","s":45.799,"e":45.97,"k":0},{"t":"kasus","s":45.97,"e":46.242,"k":0},{"t":"nyata,","s":46.242,"e":46.731,"k":0}],[{"t":"Sentinel","s":47.015,"e":47.435,"k":1},{"t":"sudah","s":47.435,"e":47.64,"k":0},{"t":"menandai","s":47.64,"e":48.004,"k":0},{"t":"Waskita","s":48.004,"e":48.424,"k":1}],[{"t":"25","s":48.424,"e":48.879,"k":1},{"t":"bulan","s":48.879,"e":49.174,"k":1},{"t":"sebelum","s":49.174,"e":49.458,"k":0},{"t":"suspensi.","s":49.458,"e":50.163,"k":0}],[{"t":"AFS","s":52.531,"e":53.008,"k":1},{"t":"Sentinel.","s":53.008,"e":53.644,"k":1}],[{"t":"Peringatan","s":54.4,"e":54.821,"k":0},{"t":"dini,","s":54.821,"e":55.264,"k":0},{"t":"sebelum","s":55.502,"e":55.889,"k":1},{"t":"terlambat.","s":55.889,"e":56.514,"k":1}]];
+  var DURATION = 59.18;
+  var LEAD = 0.12;   // plate appears just before its first word
+  var TAIL = 0.5;    // and lingers after its last word unless the next phrase needs the band
+  var FADE = 0.14;
+
+  (function () {
+    var stage = document.getElementById("caption-stage");
+    var tl = gsap.timeline({ paused: true });
+
+    PHRASES.forEach(function (ph, p) {
+      var box = document.createElement("div");
+      box.className = "cap-phrase";
+      box.id = "cap-phrase-" + p;
+      var plate = document.createElement("div");
+      plate.className = "cap-plate";
+      ph.forEach(function (w, i) {
+        var span = document.createElement("span");
+        span.className = "cap-word";
+        span.id = "cap-word-" + p + "-" + i;
+        span.textContent = w.t;
+        plate.appendChild(span);
+      });
+      box.appendChild(plate);
+      stage.appendChild(box);
+    });
+
+    // show/hide windows, computed once so no two plates are ever up together
+    var win = [];
+    var prevHide = 0;
+    PHRASES.forEach(function (ph, p) {
+      var first = ph[0].s;
+      var last = ph[ph.length - 1].e;
+      var next = PHRASES[p + 1];
+      var show = Math.max(first - LEAD, prevHide);
+      var hide = next ? Math.min(last + TAIL, next[0].s - 0.06) : Math.min(last + TAIL + 0.4, DURATION);
+      win.push({ show: show, hide: hide });
+      prevHide = hide;
+    });
+
+    PHRASES.forEach(function (ph, p) {
+      var box = document.getElementById("cap-phrase-" + p);
+      var w = win[p];
+      tl.fromTo(box, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.2, ease: "power3.out" }, w.show);
+      tl.to(box, { opacity: 0, duration: Math.min(FADE, w.hide - w.show - 0.2), ease: "power1.in" }, w.hide - Math.min(FADE, w.hide - w.show - 0.2));
+      tl.set(box, { opacity: 0 }, w.hide); // hard kill: the plate is gone at hide, whatever the tweens did
+
+      // word states by className sets — seek-safe in both directions
+      ph.forEach(function (tok, i) {
+        var el = document.getElementById("cap-word-" + p + "-" + i);
+        var base = "cap-word" + (tok.k ? " is-key" : "");
+        var at = Math.max(w.show, tok.s);
+        var off = i + 1 < ph.length ? Math.max(at + 0.05, ph[i + 1].s) : Math.min(tok.e + 0.1, w.hide);
+        tl.set(el, { className: base }, w.show);
+        tl.set(el, { className: base + " is-active" }, at);
+        tl.fromTo(el, { y: 6 }, { y: 0, duration: 0.16, ease: "power3.out", immediateRender: false }, at);
+        tl.set(el, { className: base + " is-spoken" }, off);
+      });
+    });
+
+    tl.to({}, { duration: DURATION }, 0);
+    window.__timelines = window.__timelines || {};
+    window.__timelines["captions"] = tl;
+  })();
+</script>
+</template>

@@ -1,0 +1,301 @@
+<template>
+  <script src="assets/vendor/gsap-3.14.2.min.js"></script>
+  <style>
+    @font-face {
+      font-family: 'Instrument Sans';
+      font-style: normal;
+      font-weight: 400;
+      font-display: block;
+      src: url("assets/fonts/captured-pxiTypc9vsFDm051Uf6KVwgkfoSxQ0GsQv8ToedPibnr0SZe1ZuWi3g.woff2") format('woff2');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    @font-face {
+      font-family: 'Instrument Sans';
+      font-style: normal;
+      font-weight: 400;
+      font-display: block;
+      src: url("assets/fonts/captured-pxiTypc9vsFDm051Uf6KVwgkfoSxQ0GsQv8ToedPibnr0She1ZuWi3hKpA.woff2") format('woff2');
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+    @font-face {
+      font-family: 'Instrument Sans';
+      font-style: normal;
+      font-weight: 700;
+      font-display: block;
+      src: url("assets/fonts/captured-pxiTypc9vsFDm051Uf6KVwgkfoSxQ0GsQv8ToedPibnr0SZe1ZuWi3g.woff2") format('woff2');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    @font-face {
+      font-family: 'Instrument Sans';
+      font-style: normal;
+      font-weight: 700;
+      font-display: block;
+      src: url("assets/fonts/captured-pxiTypc9vsFDm051Uf6KVwgkfoSxQ0GsQv8ToedPibnr0She1ZuWi3hKpA.woff2") format('woff2');
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+    @font-face {
+      font-family: 'IBM Plex Mono';
+      font-style: normal;
+      font-weight: 500;
+      font-display: block;
+      src: url("assets/fonts/IBMPlexMono-500.woff2") format('woff2');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      color: #E7EEF0;
+      font-family: "Instrument Sans", sans-serif;
+    }
+    .f02-twist-ground {
+      position: absolute;
+      inset: 0;
+      background: #0E1920;
+    }
+
+    /* ticker wall — three depth planes, all kept above the caption band (y < 880) */
+    .f02-twist-wall {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1920px;
+      height: 880px;
+      overflow: hidden;
+    }
+    .f02-twist-plane {
+      position: absolute;
+      inset: 0;
+      transform-origin: 960px 440px;
+    }
+    .f02-twist-tick {
+      position: absolute;
+      font-family: "IBM Plex Mono", monospace;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #6F8189;
+      white-space: nowrap;
+    }
+    .f02-twist-far { filter: blur(1.5px); }
+    .f02-twist-near { filter: blur(2px); }
+    .f02-twist-far .f02-twist-tick { font-size: 26px; }
+    .f02-twist-mid .f02-twist-tick { font-size: 44px; }
+    .f02-twist-near .f02-twist-tick { font-size: 92px; color: #A7B1B6; }
+
+    /* the one scanning line — foreshadows Sentinel reading the wall */
+    .f02-twist-scan {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 2px;
+      height: 880px;
+      background: #FF7A70;
+      opacity: 0;
+    }
+
+    /* kinetic-type stack — left, upper third */
+    .f02-twist-stack {
+      position: absolute;
+      left: 5.5cqw;
+      top: 150px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      text-transform: lowercase;
+      font-weight: 700;
+      transform-origin: 0% 30%;
+    }
+    .f02-twist-line { white-space: nowrap; }
+    .f02-twist-l1 {
+      font-size: 7.5cqw;
+      line-height: 0.95;
+      letter-spacing: -0.03em;
+      color: #E7EEF0;
+    }
+    .f02-twist-l2 {
+      font-size: 5.4cqw;
+      line-height: 1;
+      letter-spacing: -0.025em;
+      color: #A7B1B6;
+    }
+    .f02-twist-l3 {
+      font-size: 5.4cqw;
+      line-height: 1;
+      letter-spacing: -0.025em;
+      color: #FF7A70;
+    }
+    .f02-twist-word { display: inline-block; }
+    .f02-twist-glow {
+      display: inline-block;
+      text-shadow: 0 0 0 rgba(255, 122, 112, 0);
+    }
+
+    /* the question, in the opened center, on its own ink plate so the wall never crosses it */
+    .f02-twist-question {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 300px;
+      display: flex;
+      justify-content: center;
+    }
+    .f02-twist-qplate {
+      padding: 34px 64px 40px;
+      background: #0E1920;
+      text-align: center;
+      font-weight: 700;
+      font-size: 5.2cqw;
+      line-height: 1.08;
+      letter-spacing: -0.025em;
+      text-transform: lowercase;
+      color: #E7EEF0;
+    }
+    .f02-twist-qline { display: block; white-space: nowrap; }
+    .f02-twist-qline .red { color: #FF7A70; }
+  </style>
+
+  <div id="root" data-composition-id="02-twist" data-start="0" data-duration="8.428" data-width="1920" data-height="1080">
+    <div id="f02-twist-ground" class="clip f02-twist-ground" data-start="0" data-duration="8.428" data-track-index="0"></div>
+
+    <div id="f02-twist-wall" class="f02-twist-wall" data-layout-allow-overlap data-layout-allow-occlusion>
+      <div id="f02-twist-far" class="f02-twist-plane f02-twist-far" data-layout-allow-overlap data-layout-allow-occlusion></div>
+      <div id="f02-twist-mid" class="f02-twist-plane f02-twist-mid" data-layout-allow-overlap data-layout-allow-occlusion></div>
+      <div id="f02-twist-near" class="f02-twist-plane f02-twist-near" data-layout-allow-overlap data-layout-allow-occlusion></div>
+      <div id="f02-twist-scan" class="f02-twist-scan"></div>
+    </div>
+
+    <div id="f02-twist-stack" class="f02-twist-stack">
+      <div class="f02-twist-line f02-twist-l1">
+        <span class="f02-twist-word" data-at="0.30" data-off="70">tandanya</span>
+        <span class="f02-twist-word" data-at="1.05" data-off="48">sudah</span>
+        <span class="f02-twist-word" data-at="1.28" data-off="42">ada.</span>
+      </div>
+      <div class="f02-twist-line f02-twist-l2">
+        <span class="f02-twist-word" data-at="1.50" data-off="36">di</span>
+        <span class="f02-twist-word" data-at="1.60" data-off="60">laporan</span>
+        <span class="f02-twist-word" data-at="1.87" data-off="48">keuangan.</span>
+      </div>
+      <div class="f02-twist-line f02-twist-l3">
+        <span class="f02-twist-word" data-at="2.73" data-off="72"><span id="f02-twist-glow" class="f02-twist-glow">bertahun-tahun</span></span>
+        <span class="f02-twist-word" data-at="3.33" data-off="56">sebelumnya.</span>
+      </div>
+    </div>
+
+    <div id="f02-twist-question" class="f02-twist-question">
+      <div id="f02-twist-qplate" class="f02-twist-qplate">
+        <span class="f02-twist-qline">siapa yang sempat</span>
+        <span class="f02-twist-qline">membaca <span class="red">semuanya?</span></span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var FID = "02-twist";
+      var END = 8.428;
+      var F = 1 / 60;
+      var tl = gsap.timeline({ paused: true });
+      var byId = function (id) { return document.getElementById(id); };
+
+      // ---- the 33 real Universe tickers, laid out on three depth planes (fixed math, no randomness)
+      var T = ["ASII","UNTR","TLKM","EXCL","ISAT","TOWR","UNVR","ICBP","INDF","MYOR","CPIN",
+               "JPFA","BUMI","ITMG","ANTM","PGAS","ACES","GOTO","MAPI","KLBF","MDKA","MEDC",
+               "AKRA","BRPT","EMTK","SIDO","TPIA","INCO","INTP","AADI","AMRT","SMGR","PTBA"];
+      var PLANES = [
+        // id, cols, rows, x0, y0, dx, dy, row shift, ticker offset
+        { id: "f02-twist-far",  cols: 11, rows: 11, x0: -60, y0: 20,  dx: 190, dy: 80,  shift: 95,  off: 0 },
+        { id: "f02-twist-mid",  cols: 7,  rows: 7,  x0: -40, y0: 40,  dx: 300, dy: 128, shift: 150, off: 11 },
+        { id: "f02-twist-near", cols: 4,  rows: 4,  x0: -120, y0: 30, dx: 560, dy: 230, shift: 280, off: 22 }
+      ];
+      var rowsByPlane = [];
+      PLANES.forEach(function (p) {
+        var host = byId(p.id);
+        var rows = [];
+        for (var r = 0; r < p.rows; r++) {
+          var row = [];
+          for (var c = 0; c < p.cols; c++) {
+            var d = document.createElement("div");
+            d.className = "f02-twist-tick";
+            d.setAttribute("data-layout-allow-overlap", "");
+            d.setAttribute("data-layout-allow-occlusion", "");
+            d.textContent = T[(p.off + r * 5 + c * 7) % T.length];
+            d.style.left = (p.x0 + c * p.dx + (r % 2) * p.shift) + "px";
+            d.style.top = (p.y0 + r * p.dy) + "px";
+            host.appendChild(d);
+            row.push(d);
+          }
+          rows.push(row);
+        }
+        rowsByPlane.push(rows);
+      });
+
+      // ---- camera drift over the type (Scenes 1–3)
+      var stack = byId("f02-twist-stack");
+      tl.fromTo(stack, { scale: 1.04, x: 0 }, { scale: 1, x: 24, duration: 4.8, ease: "none" }, 0);
+
+      // ---- Scenes 1–3: per-word arrivals, whip up from below
+      var words = stack.getElementsByClassName("f02-twist-word");
+      Array.prototype.forEach.call(words, function (el) {
+        var at = Number(el.dataset.at);
+        var off = Number(el.dataset.off);
+        tl.fromTo(el, { opacity: 0 }, { opacity: 1, duration: F, ease: "none" }, at);
+        tl.fromTo(el, { y: off, filter: "blur(6px)" }, { y: 0, filter: "blur(0px)", duration: 0.24, ease: "power4.out" }, at);
+      });
+
+      // ---- Scene 3: keyword glow on "bertahun-tahun"
+      var glowEl = byId("f02-twist-glow");
+      tl.fromTo(glowEl, { textShadow: "0 0 0px rgba(255,122,112,0)" },
+        { textShadow: "0 0 44px rgba(255,122,112,0.85)", duration: 0.18, ease: "none" }, 2.727);
+      tl.to(glowEl, { textShadow: "0 0 6px rgba(255,122,112,0.1)", duration: 0.45, ease: "none" }, 3.341);
+
+      // ---- Scene 4 (on "Tapi" 4.74): the sentence leaves the frame; the wall floods in
+      tl.to(stack, { y: -90, opacity: 0, filter: "blur(10px)", duration: 0.45, ease: "power3.in" }, 4.62);
+
+      var PLANE_OPACITY = [0.22, 0.4, 0.55];
+      var PLANE_START = [4.72, 4.8, 4.92];
+      rowsByPlane.forEach(function (rows, pi) {
+        rows.forEach(function (row, r) {
+          row.forEach(function (el, c) {
+            var at = PLANE_START[pi] + r * 0.05 + c * 0.012;
+            tl.fromTo(el, { opacity: 0 }, { opacity: PLANE_OPACITY[pi], duration: F, ease: "none" }, at);
+            tl.fromTo(el, { y: 30 + pi * 24 }, { y: 0, duration: 0.22, ease: "power4.out" }, at);
+          });
+        });
+      });
+      // parallax drift — nearer planes travel further
+      var planes = [byId("f02-twist-far"), byId("f02-twist-mid"), byId("f02-twist-near")];
+      var DRIFT = [-30, -80, -200];
+      planes.forEach(function (pl, i) {
+        tl.fromTo(pl, { x: 0 }, { x: DRIFT[i], duration: END - 4.72, ease: "none" }, 4.72);
+      });
+
+      // one red scan line crosses the wall
+      var scan = byId("f02-twist-scan");
+      tl.fromTo(scan, { opacity: 0 }, { opacity: 0.8, duration: 0.1, ease: "none" }, 5.0);
+      tl.fromTo(scan, { x: 0 }, { x: 1920, duration: 0.9, ease: "power2.inOut" }, 5.0);
+      tl.to(scan, { opacity: 0, duration: 0.1, ease: "none" }, 5.8);
+
+      // ---- Scene 5 (on "semuanya" 5.94): clutter shoved outward, the question opens the center
+      var SHOVE = 5.94;
+      var PUSH = [1.18, 1.45, 1.9];
+      var DIM = [0.12, 0.18, 0.14];
+      planes.forEach(function (pl, i) {
+        tl.fromTo(pl, { scale: 1 }, { scale: PUSH[i], duration: 1.0, ease: "expo.out", immediateRender: false }, SHOVE);
+        tl.to(pl, { opacity: DIM[i] / PLANE_OPACITY[i], duration: 0.5, ease: "power3.out" }, SHOVE);
+      });
+      var q = byId("f02-twist-qplate");
+      tl.fromTo(q, { opacity: 0 }, { opacity: 1, duration: 0.18, ease: "none" }, SHOVE + 0.06);
+      tl.fromTo(q, { scale: 1.25, filter: "blur(14px)" }, { scale: 1, filter: "blur(0px)", duration: 0.6, ease: "expo.out" }, SHOVE + 0.06);
+      // slow settle so the held question is never frozen
+      tl.fromTo(q, { y: 0 }, { y: -10, duration: END - SHOVE - 0.7, ease: "none", immediateRender: false }, SHOVE + 0.7);
+
+      tl.set({}, {}, END);
+      window.__timelines = window.__timelines || {};
+      window.__timelines[FID] = tl;
+    })();
+  </script>
+</template>

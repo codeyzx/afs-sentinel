@@ -1,0 +1,2565 @@
+{
+ "countdown": 3,
+ "hold": 2,
+ "clips": [
+  {
+   "clip": "SC02_CAM_Fathan",
+   "who": "Fathan",
+   "scene": "SC02 · Perkenalan & masalah",
+   "kind": "cam",
+   "text": "Halo, Juri! Kami JTKTOP10. Saya Fathan, ini Yahya, developer kami, dan Ais, researcher. Masalahnya: tanda bahaya itu sudah ada di laporan keuangan, tapi tidak ada analis yang sempat membedah ratusan laporan setiap kuartal.",
+   "direction": "Energik di awal, serius mulai “Masalahnya:”. Beri jeda kecil setelah “Yahya” dan “Ais”.",
+   "target": 16,
+   "words": [
+    {
+     "text": "Halo,",
+     "start": 0,
+     "end": 0.368
+    },
+    {
+     "text": "Juri!",
+     "start": 0.588,
+     "end": 0.957
+    },
+    {
+     "text": "Kami",
+     "start": 1.377,
+     "end": 1.745
+    },
+    {
+     "text": "JTKTOP10.",
+     "start": 1.745,
+     "end": 1.957
+    },
+    {
+     "text": "Saya",
+     "start": 2.377,
+     "end": 2.746
+    },
+    {
+     "text": "Fathan,",
+     "start": 2.746,
+     "end": 3.114
+    },
+    {
+     "text": "ini",
+     "start": 3.334,
+     "end": 3.702
+    },
+    {
+     "text": "Yahya,",
+     "start": 3.702,
+     "end": 4.071
+    },
+    {
+     "text": "developer",
+     "start": 4.291,
+     "end": 4.973
+    },
+    {
+     "text": "kami,",
+     "start": 4.973,
+     "end": 5.341
+    },
+    {
+     "text": "dan",
+     "start": 5.561,
+     "end": 5.773
+    },
+    {
+     "text": "Ais,",
+     "start": 5.773,
+     "end": 5.985
+    },
+    {
+     "text": "researcher.",
+     "start": 6.205,
+     "end": 6.73
+    },
+    {
+     "text": "Masalahnya:",
+     "start": 7.15,
+     "end": 7.832
+    },
+    {
+     "text": "tanda",
+     "start": 8.152,
+     "end": 8.521
+    },
+    {
+     "text": "bahaya",
+     "start": 8.521,
+     "end": 9.046
+    },
+    {
+     "text": "itu",
+     "start": 9.046,
+     "end": 9.414
+    },
+    {
+     "text": "sudah",
+     "start": 9.414,
+     "end": 9.783
+    },
+    {
+     "text": "ada",
+     "start": 9.783,
+     "end": 10.151
+    },
+    {
+     "text": "di",
+     "start": 10.151,
+     "end": 10.363
+    },
+    {
+     "text": "laporan",
+     "start": 10.363,
+     "end": 10.888
+    },
+    {
+     "text": "keuangan,",
+     "start": 10.888,
+     "end": 11.257
+    },
+    {
+     "text": "tapi",
+     "start": 11.477,
+     "end": 11.845
+    },
+    {
+     "text": "tidak",
+     "start": 11.845,
+     "end": 12.213
+    },
+    {
+     "text": "ada",
+     "start": 12.213,
+     "end": 12.582
+    },
+    {
+     "text": "analis",
+     "start": 12.582,
+     "end": 13.107
+    },
+    {
+     "text": "yang",
+     "start": 13.107,
+     "end": 13.319
+    },
+    {
+     "text": "sempat",
+     "start": 13.319,
+     "end": 13.687
+    },
+    {
+     "text": "membedah",
+     "start": 13.687,
+     "end": 14.213
+    },
+    {
+     "text": "ratusan",
+     "start": 14.213,
+     "end": 14.738
+    },
+    {
+     "text": "laporan",
+     "start": 14.738,
+     "end": 15.263
+    },
+    {
+     "text": "setiap",
+     "start": 15.263,
+     "end": 15.632
+    },
+    {
+     "text": "kuartal.",
+     "start": 15.632,
+     "end": 16
+    }
+   ],
+   "groups": [
+    [
+     0,
+     1
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     4,
+     5
+    ],
+    [
+     6,
+     7
+    ],
+    [
+     8,
+     9
+    ],
+    [
+     10,
+     11,
+     12
+    ],
+    [
+     13,
+     14,
+     15,
+     16,
+     17
+    ],
+    [
+     18,
+     19,
+     20,
+     21
+    ],
+    [
+     22,
+     23,
+     24,
+     25,
+     26,
+     27
+    ],
+    [
+     28,
+     29,
+     30,
+     31,
+     32
+    ]
+   ]
+  },
+  {
+   "clip": "SC03_CAM_Fathan",
+   "who": "Fathan",
+   "scene": "SC03 · Solusi & target audiens",
+   "kind": "cam",
+   "text": "AFS Sentinel kami bangun untuk analis riset dan investor saham BEI. Ia memindai 33 emiten non-keuangan secara otomatis, lalu hanya melaporkan yang perlu diperiksa. Analis tidak perlu lagi mencari, tinggal memutuskan.",
+   "direction": "Persuasif.",
+   "target": 14.8,
+   "words": [
+    {
+     "text": "AFS",
+     "start": 0,
+     "end": 0.21
+    },
+    {
+     "text": "Sentinel",
+     "start": 0.21,
+     "end": 0.732
+    },
+    {
+     "text": "kami",
+     "start": 0.732,
+     "end": 1.097
+    },
+    {
+     "text": "bangun",
+     "start": 1.097,
+     "end": 1.463
+    },
+    {
+     "text": "untuk",
+     "start": 1.463,
+     "end": 1.829
+    },
+    {
+     "text": "analis",
+     "start": 1.829,
+     "end": 2.351
+    },
+    {
+     "text": "riset",
+     "start": 2.351,
+     "end": 2.716
+    },
+    {
+     "text": "dan",
+     "start": 2.716,
+     "end": 2.927
+    },
+    {
+     "text": "investor",
+     "start": 2.927,
+     "end": 3.448
+    },
+    {
+     "text": "saham",
+     "start": 3.448,
+     "end": 3.814
+    },
+    {
+     "text": "BEI.",
+     "start": 3.814,
+     "end": 4.024
+    },
+    {
+     "text": "Ia",
+     "start": 4.444,
+     "end": 4.654
+    },
+    {
+     "text": "memindai",
+     "start": 4.654,
+     "end": 5.176
+    },
+    {
+     "text": "33",
+     "start": 5.176,
+     "end": 5.853
+    },
+    {
+     "text": "emiten",
+     "start": 5.853,
+     "end": 6.374
+    },
+    {
+     "text": "non-keuangan",
+     "start": 6.374,
+     "end": 6.896
+    },
+    {
+     "text": "secara",
+     "start": 6.896,
+     "end": 7.417
+    },
+    {
+     "text": "otomatis,",
+     "start": 7.417,
+     "end": 8.095
+    },
+    {
+     "text": "lalu",
+     "start": 8.315,
+     "end": 8.68
+    },
+    {
+     "text": "hanya",
+     "start": 8.68,
+     "end": 9.046
+    },
+    {
+     "text": "melaporkan",
+     "start": 9.046,
+     "end": 9.723
+    },
+    {
+     "text": "yang",
+     "start": 9.723,
+     "end": 9.934
+    },
+    {
+     "text": "perlu",
+     "start": 9.934,
+     "end": 10.299
+    },
+    {
+     "text": "diperiksa.",
+     "start": 10.299,
+     "end": 10.977
+    },
+    {
+     "text": "Analis",
+     "start": 11.397,
+     "end": 11.918
+    },
+    {
+     "text": "tidak",
+     "start": 11.918,
+     "end": 12.284
+    },
+    {
+     "text": "perlu",
+     "start": 12.284,
+     "end": 12.65
+    },
+    {
+     "text": "lagi",
+     "start": 12.65,
+     "end": 13.016
+    },
+    {
+     "text": "mencari,",
+     "start": 13.016,
+     "end": 13.537
+    },
+    {
+     "text": "tinggal",
+     "start": 13.757,
+     "end": 14.123
+    },
+    {
+     "text": "memutuskan.",
+     "start": 14.123,
+     "end": 14.8
+    }
+   ],
+   "groups": [
+    [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    [
+     6,
+     7,
+     8,
+     9,
+     10
+    ],
+    [
+     11,
+     12,
+     13,
+     14,
+     15,
+     16,
+     17
+    ],
+    [
+     18,
+     19,
+     20,
+     21,
+     22,
+     23
+    ],
+    [
+     24,
+     25,
+     26,
+     27,
+     28
+    ],
+    [
+     29,
+     30
+    ]
+   ]
+  },
+  {
+   "clip": "SC07a_CAM_Fathan",
+   "who": "Fathan",
+   "scene": "SC07 · Halaman incident",
+   "kind": "cam",
+   "text": "…dan kita langsung masuk ke halaman bukti. Vonisnya di atas. Setiap kartu bukti bisa dibuka: rumusnya, angka mentahnya, sampai endpoint Sectors asalnya. Grafik ini menunjukkan laba naik, tapi kas operasi tertinggal.",
+   "direction": "Menyambung kalimat Yahya. Lancar, menunjukkan.",
+   "target": 14.5,
+   "words": [
+    {
+     "text": "…dan",
+     "start": 0,
+     "end": 0.21
+    },
+    {
+     "text": "kita",
+     "start": 0.21,
+     "end": 0.575
+    },
+    {
+     "text": "langsung",
+     "start": 0.575,
+     "end": 0.941
+    },
+    {
+     "text": "masuk",
+     "start": 0.941,
+     "end": 1.306
+    },
+    {
+     "text": "ke",
+     "start": 1.306,
+     "end": 1.516
+    },
+    {
+     "text": "halaman",
+     "start": 1.516,
+     "end": 2.037
+    },
+    {
+     "text": "bukti.",
+     "start": 2.037,
+     "end": 2.402
+    },
+    {
+     "text": "Vonisnya",
+     "start": 2.822,
+     "end": 3.343
+    },
+    {
+     "text": "di",
+     "start": 3.343,
+     "end": 3.553
+    },
+    {
+     "text": "atas.",
+     "start": 3.553,
+     "end": 3.918
+    },
+    {
+     "text": "Setiap",
+     "start": 4.338,
+     "end": 4.704
+    },
+    {
+     "text": "kartu",
+     "start": 4.704,
+     "end": 5.069
+    },
+    {
+     "text": "bukti",
+     "start": 5.069,
+     "end": 5.435
+    },
+    {
+     "text": "bisa",
+     "start": 5.435,
+     "end": 5.8
+    },
+    {
+     "text": "dibuka:",
+     "start": 5.8,
+     "end": 6.321
+    },
+    {
+     "text": "rumusnya,",
+     "start": 6.641,
+     "end": 7.162
+    },
+    {
+     "text": "angka",
+     "start": 7.382,
+     "end": 7.747
+    },
+    {
+     "text": "mentahnya,",
+     "start": 7.747,
+     "end": 8.268
+    },
+    {
+     "text": "sampai",
+     "start": 8.488,
+     "end": 8.853
+    },
+    {
+     "text": "endpoint",
+     "start": 8.853,
+     "end": 9.219
+    },
+    {
+     "text": "Sectors",
+     "start": 9.219,
+     "end": 9.584
+    },
+    {
+     "text": "asalnya.",
+     "start": 9.584,
+     "end": 10.105
+    },
+    {
+     "text": "Grafik",
+     "start": 10.525,
+     "end": 10.89
+    },
+    {
+     "text": "ini",
+     "start": 10.89,
+     "end": 11.256
+    },
+    {
+     "text": "menunjukkan",
+     "start": 11.256,
+     "end": 11.932
+    },
+    {
+     "text": "laba",
+     "start": 11.932,
+     "end": 12.298
+    },
+    {
+     "text": "naik,",
+     "start": 12.298,
+     "end": 12.507
+    },
+    {
+     "text": "tapi",
+     "start": 12.727,
+     "end": 13.093
+    },
+    {
+     "text": "kas",
+     "start": 13.093,
+     "end": 13.303
+    },
+    {
+     "text": "operasi",
+     "start": 13.303,
+     "end": 13.979
+    },
+    {
+     "text": "tertinggal.",
+     "start": 13.979,
+     "end": 14.5
+    }
+   ],
+   "groups": [
+    [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    [
+     7,
+     8,
+     9
+    ],
+    [
+     10,
+     11,
+     12,
+     13,
+     14,
+     15
+    ],
+    [
+     16,
+     17
+    ],
+    [
+     18,
+     19,
+     20,
+     21
+    ],
+    [
+     22,
+     23,
+     24,
+     25,
+     26
+    ],
+    [
+     27,
+     28,
+     29,
+     30
+    ]
+   ]
+  },
+  {
+   "clip": "SC07b_CAM_Fathan",
+   "who": "Fathan",
+   "scene": "SC07 · Halaman incident",
+   "kind": "cam",
+   "text": "Setelah ditelaah, analis tinggal menandai: sedang diperiksa.",
+   "direction": "Datar, yakin.",
+   "target": 4.2,
+   "words": [
+    {
+     "text": "Setelah",
+     "start": 0,
+     "end": 0.546
+    },
+    {
+     "text": "ditelaah,",
+     "start": 0.546,
+     "end": 1.092
+    },
+    {
+     "text": "analis",
+     "start": 1.312,
+     "end": 1.858
+    },
+    {
+     "text": "tinggal",
+     "start": 1.858,
+     "end": 2.242
+    },
+    {
+     "text": "menandai:",
+     "start": 2.242,
+     "end": 2.788
+    },
+    {
+     "text": "sedang",
+     "start": 3.108,
+     "end": 3.491
+    },
+    {
+     "text": "diperiksa.",
+     "start": 3.491,
+     "end": 4.2
+    }
+   ],
+   "groups": [
+    [
+     0,
+     1
+    ],
+    [
+     2,
+     3,
+     4
+    ],
+    [
+     5,
+     6
+    ]
+   ]
+  },
+  {
+   "clip": "SC10_CAM_Fathan",
+   "who": "Fathan",
+   "scene": "SC10 · Penutup",
+   "kind": "cam",
+   "text": "Laporan keuangan sudah memberi peringatan. AFS Sentinel memastikan ada yang membacanya, tepat waktu.",
+   "direction": "Pelan, meyakinkan.",
+   "target": 6.8,
+   "words": [
+    {
+     "text": "Laporan",
+     "start": 0,
+     "end": 0.55
+    },
+    {
+     "text": "keuangan",
+     "start": 0.55,
+     "end": 0.935
+    },
+    {
+     "text": "sudah",
+     "start": 0.935,
+     "end": 1.321
+    },
+    {
+     "text": "memberi",
+     "start": 1.321,
+     "end": 1.87
+    },
+    {
+     "text": "peringatan.",
+     "start": 1.87,
+     "end": 2.584
+    },
+    {
+     "text": "AFS",
+     "start": 3.004,
+     "end": 3.225
+    },
+    {
+     "text": "Sentinel",
+     "start": 3.225,
+     "end": 3.775
+    },
+    {
+     "text": "memastikan",
+     "start": 3.775,
+     "end": 4.488
+    },
+    {
+     "text": "ada",
+     "start": 4.488,
+     "end": 4.874
+    },
+    {
+     "text": "yang",
+     "start": 4.874,
+     "end": 5.095
+    },
+    {
+     "text": "membacanya,",
+     "start": 5.095,
+     "end": 5.809
+    },
+    {
+     "text": "tepat",
+     "start": 6.029,
+     "end": 6.414
+    },
+    {
+     "text": "waktu.",
+     "start": 6.414,
+     "end": 6.8
+    }
+   ],
+   "groups": [
+    [
+     0,
+     1,
+     2,
+     3,
+     4
+    ],
+    [
+     5,
+     6,
+     7,
+     8,
+     9,
+     10
+    ],
+    [
+     11,
+     12
+    ]
+   ]
+  },
+  {
+   "clip": "SC10_ALL_Fathan",
+   "who": "Fathan",
+   "scene": "SC10 · Penutup",
+   "kind": "cam",
+   "text": "AFS Sentinel. Peringatan dini, sebelum terlambat.",
+   "direction": "Tatap kamera, ucapkan serempak sambil senyum. Mulai bicara 1 detik setelah tombol rekam.",
+   "target": 3.5,
+   "words": [
+    {
+     "text": "AFS",
+     "start": 0,
+     "end": 0.213
+    },
+    {
+     "text": "Sentinel.",
+     "start": 0.213,
+     "end": 0.743
+    },
+    {
+     "text": "Peringatan",
+     "start": 1.163,
+     "end": 1.85
+    },
+    {
+     "text": "dini,",
+     "start": 1.85,
+     "end": 2.221
+    },
+    {
+     "text": "sebelum",
+     "start": 2.441,
+     "end": 2.971
+    },
+    {
+     "text": "terlambat.",
+     "start": 2.971,
+     "end": 3.5
+    }
+   ],
+   "groups": [
+    [
+     0,
+     1
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     4,
+     5
+    ]
+   ]
+  },
+  {
+   "clip": "SC01_VO_Ais",
+   "who": "Ais",
+   "scene": "SC01 · Hook",
+   "kind": "vo",
+   "text": "Delapan Mei 2023. Bursa menghentikan perdagangan saham Waskita Karya. Sistem kami… sudah menandainya dua puluh lima bulan sebelumnya.",
+   "direction": "Suara saja. Pelan, berat. Jeda panjang setelah “Waskita Karya”.",
+   "target": 10.8,
+   "words": [
+    {
+     "text": "Delapan",
+     "start": 0,
+     "end": 0.56
+    },
+    {
+     "text": "Mei",
+     "start": 0.56,
+     "end": 0.786
+    },
+    {
+     "text": "2023.",
+     "start": 0.786,
+     "end": 2.181
+    },
+    {
+     "text": "Bursa",
+     "start": 2.601,
+     "end": 2.994
+    },
+    {
+     "text": "menghentikan",
+     "start": 2.994,
+     "end": 3.721
+    },
+    {
+     "text": "perdagangan",
+     "start": 3.721,
+     "end": 4.448
+    },
+    {
+     "text": "saham",
+     "start": 4.448,
+     "end": 4.841
+    },
+    {
+     "text": "Waskita",
+     "start": 4.841,
+     "end": 5.401
+    },
+    {
+     "text": "Karya.",
+     "start": 5.401,
+     "end": 5.794
+    },
+    {
+     "text": "Sistem",
+     "start": 6.214,
+     "end": 6.606
+    },
+    {
+     "text": "kami…",
+     "start": 6.606,
+     "end": 6.999
+    },
+    {
+     "text": "sudah",
+     "start": 7.549,
+     "end": 7.942
+    },
+    {
+     "text": "menandainya",
+     "start": 7.942,
+     "end": 8.669
+    },
+    {
+     "text": "dua",
+     "start": 8.669,
+     "end": 8.895
+    },
+    {
+     "text": "puluh",
+     "start": 8.895,
+     "end": 9.287
+    },
+    {
+     "text": "lima",
+     "start": 9.287,
+     "end": 9.68
+    },
+    {
+     "text": "bulan",
+     "start": 9.68,
+     "end": 10.073
+    },
+    {
+     "text": "sebelumnya.",
+     "start": 10.073,
+     "end": 10.8
+    }
+   ],
+   "groups": [
+    [
+     0,
+     1,
+     2
+    ],
+    [
+     3,
+     4,
+     5,
+     6,
+     7,
+     8
+    ],
+    [
+     9,
+     10
+    ],
+    [
+     11,
+     12,
+     13,
+     14,
+     15,
+     16,
+     17
+    ]
+   ]
+  },
+  {
+   "clip": "SC02_CAM_Ais",
+   "who": "Ais",
+   "scene": "SC02 · Perkenalan & masalah",
+   "kind": "reaction",
+   "text": "(mengangguk ke kamera)",
+   "direction": "Diam, senyum, lalu mengangguk.",
+   "target": 3,
+   "words": [],
+   "groups": []
+  },
+  {
+   "clip": "SC05_CAM_Ais",
+   "who": "Ais",
+   "scene": "SC05 · Mesin forensik",
+   "kind": "cam",
+   "text": "Mesinnya enam Forensic Rule yang deterministik. Tiga inti: Sloan Accrual, divergensi laba dan kas, dan Altman Z. Ditambah Beneish, penjualan orang dalam, dan laba tanpa dividen. Semuanya digabung menjadi satu skor risiko, nol sampai seratus.",
+   "direction": "Yakin. Hitung pakai jari (jari masuk frame).",
+   "target": 16.8,
+   "words": [
+    {
+     "text": "Mesinnya",
+     "start": 0,
+     "end": 0.536
+    },
+    {
+     "text": "enam",
+     "start": 0.536,
+     "end": 0.912
+    },
+    {
+     "text": "Forensic",
+     "start": 0.912,
+     "end": 1.448
+    },
+    {
+     "text": "Rule",
+     "start": 1.448,
+     "end": 1.824
+    },
+    {
+     "text": "yang",
+     "start": 1.824,
+     "end": 2.04
+    },
+    {
+     "text": "deterministik.",
+     "start": 2.04,
+     "end": 2.896
+    },
+    {
+     "text": "Tiga",
+     "start": 3.316,
+     "end": 3.692
+    },
+    {
+     "text": "inti:",
+     "start": 3.692,
+     "end": 4.068
+    },
+    {
+     "text": "Sloan",
+     "start": 4.388,
+     "end": 4.604
+    },
+    {
+     "text": "Accrual,",
+     "start": 4.604,
+     "end": 4.98
+    },
+    {
+     "text": "divergensi",
+     "start": 5.2,
+     "end": 5.896
+    },
+    {
+     "text": "laba",
+     "start": 5.896,
+     "end": 6.272
+    },
+    {
+     "text": "dan",
+     "start": 6.272,
+     "end": 6.488
+    },
+    {
+     "text": "kas,",
+     "start": 6.488,
+     "end": 6.704
+    },
+    {
+     "text": "dan",
+     "start": 6.924,
+     "end": 7.14
+    },
+    {
+     "text": "Altman",
+     "start": 7.14,
+     "end": 7.516
+    },
+    {
+     "text": "Z.",
+     "start": 7.516,
+     "end": 7.732
+    },
+    {
+     "text": "Ditambah",
+     "start": 8.152,
+     "end": 8.688
+    },
+    {
+     "text": "Beneish,",
+     "start": 8.688,
+     "end": 9.064
+    },
+    {
+     "text": "penjualan",
+     "start": 9.284,
+     "end": 9.82
+    },
+    {
+     "text": "orang",
+     "start": 9.82,
+     "end": 10.196
+    },
+    {
+     "text": "dalam,",
+     "start": 10.196,
+     "end": 10.572
+    },
+    {
+     "text": "dan",
+     "start": 10.792,
+     "end": 11.008
+    },
+    {
+     "text": "laba",
+     "start": 11.008,
+     "end": 11.384
+    },
+    {
+     "text": "tanpa",
+     "start": 11.384,
+     "end": 11.76
+    },
+    {
+     "text": "dividen.",
+     "start": 11.76,
+     "end": 12.296
+    },
+    {
+     "text": "Semuanya",
+     "start": 12.716,
+     "end": 13.252
+    },
+    {
+     "text": "digabung",
+     "start": 13.252,
+     "end": 13.788
+    },
+    {
+     "text": "menjadi",
+     "start": 13.788,
+     "end": 14.324
+    },
+    {
+     "text": "satu",
+     "start": 14.324,
+     "end": 14.7
+    },
+    {
+     "text": "skor",
+     "start": 14.7,
+     "end": 14.916
+    },
+    {
+     "text": "risiko,",
+     "start": 14.916,
+     "end": 15.452
+    },
+    {
+     "text": "nol",
+     "start": 15.672,
+     "end": 15.888
+    },
+    {
+     "text": "sampai",
+     "start": 15.888,
+     "end": 16.264
+    },
+    {
+     "text": "seratus.",
+     "start": 16.264,
+     "end": 16.8
+    }
+   ],
+   "groups": [
+    [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    [
+     6,
+     7
+    ],
+    [
+     8,
+     9
+    ],
+    [
+     10,
+     11,
+     12,
+     13
+    ],
+    [
+     14,
+     15,
+     16
+    ],
+    [
+     17,
+     18
+    ],
+    [
+     19,
+     20,
+     21
+    ],
+    [
+     22,
+     23,
+     24,
+     25
+    ],
+    [
+     26,
+     27,
+     28,
+     29,
+     30,
+     31
+    ],
+    [
+     32,
+     33,
+     34
+    ]
+   ]
+  },
+  {
+   "clip": "SC07_CAM_Ais",
+   "who": "Ais",
+   "scene": "SC07 · Halaman incident",
+   "kind": "cam",
+   "text": "Ringkasan AI hanya menceritakan angka yang sudah dihitung. AI tidak pernah mengubah skor.",
+   "direction": "Menekankan “tidak pernah”.",
+   "target": 5.5,
+   "words": [
+    {
+     "text": "Ringkasan",
+     "start": 0,
+     "end": 0.523
+    },
+    {
+     "text": "AI",
+     "start": 0.523,
+     "end": 0.734
+    },
+    {
+     "text": "hanya",
+     "start": 0.734,
+     "end": 1.1
+    },
+    {
+     "text": "menceritakan",
+     "start": 1.1,
+     "end": 1.935
+    },
+    {
+     "text": "angka",
+     "start": 1.935,
+     "end": 2.302
+    },
+    {
+     "text": "yang",
+     "start": 2.302,
+     "end": 2.513
+    },
+    {
+     "text": "sudah",
+     "start": 2.513,
+     "end": 2.879
+    },
+    {
+     "text": "dihitung.",
+     "start": 2.879,
+     "end": 3.402
+    },
+    {
+     "text": "AI",
+     "start": 3.822,
+     "end": 4.033
+    },
+    {
+     "text": "tidak",
+     "start": 4.033,
+     "end": 4.4
+    },
+    {
+     "text": "pernah",
+     "start": 4.4,
+     "end": 4.766
+    },
+    {
+     "text": "mengubah",
+     "start": 4.766,
+     "end": 5.289
+    },
+    {
+     "text": "skor.",
+     "start": 5.289,
+     "end": 5.5
+    }
+   ],
+   "groups": [
+    [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7
+    ],
+    [
+     8,
+     9,
+     10,
+     11,
+     12
+    ]
+   ]
+  },
+  {
+   "clip": "SC08_CAM_Ais",
+   "who": "Ais",
+   "scene": "SC08 · Backtest",
+   "kind": "cam",
+   "text": "Tapi apakah ini benar-benar bekerja? Kami putar ulang keenam rule ke kuartal historis. Waskita: pertama kali level Sedang di 2021-Q1, dua puluh lima bulan sebelum suspensi. Sritex: empat puluh dua bulan sebelum pailit. Kalimat klaim ini dihasilkan oleh sistem, bukan kami tulis tangan.",
+   "direction": "Retoris di awal, tegas di angka 25 dan 42.",
+   "target": 20,
+   "words": [
+    {
+     "text": "Tapi",
+     "start": 0,
+     "end": 0.375
+    },
+    {
+     "text": "apakah",
+     "start": 0.375,
+     "end": 0.909
+    },
+    {
+     "text": "ini",
+     "start": 0.909,
+     "end": 1.284
+    },
+    {
+     "text": "benar-benar",
+     "start": 1.284,
+     "end": 1.978
+    },
+    {
+     "text": "bekerja?",
+     "start": 1.978,
+     "end": 2.513
+    },
+    {
+     "text": "Kami",
+     "start": 2.933,
+     "end": 3.308
+    },
+    {
+     "text": "putar",
+     "start": 3.308,
+     "end": 3.683
+    },
+    {
+     "text": "ulang",
+     "start": 3.683,
+     "end": 4.058
+    },
+    {
+     "text": "keenam",
+     "start": 4.058,
+     "end": 4.433
+    },
+    {
+     "text": "rule",
+     "start": 4.433,
+     "end": 4.808
+    },
+    {
+     "text": "ke",
+     "start": 4.808,
+     "end": 5.023
+    },
+    {
+     "text": "kuartal",
+     "start": 5.023,
+     "end": 5.398
+    },
+    {
+     "text": "historis.",
+     "start": 5.398,
+     "end": 5.933
+    },
+    {
+     "text": "Waskita:",
+     "start": 6.353,
+     "end": 6.887
+    },
+    {
+     "text": "pertama",
+     "start": 7.207,
+     "end": 7.742
+    },
+    {
+     "text": "kali",
+     "start": 7.742,
+     "end": 8.117
+    },
+    {
+     "text": "level",
+     "start": 8.117,
+     "end": 8.492
+    },
+    {
+     "text": "Sedang",
+     "start": 8.492,
+     "end": 8.867
+    },
+    {
+     "text": "di",
+     "start": 8.867,
+     "end": 9.082
+    },
+    {
+     "text": "2021-Q1,",
+     "start": 9.082,
+     "end": 9.297
+    },
+    {
+     "text": "dua",
+     "start": 9.517,
+     "end": 9.733
+    },
+    {
+     "text": "puluh",
+     "start": 9.733,
+     "end": 10.108
+    },
+    {
+     "text": "lima",
+     "start": 10.108,
+     "end": 10.483
+    },
+    {
+     "text": "bulan",
+     "start": 10.483,
+     "end": 10.858
+    },
+    {
+     "text": "sebelum",
+     "start": 10.858,
+     "end": 11.392
+    },
+    {
+     "text": "suspensi.",
+     "start": 11.392,
+     "end": 11.927
+    },
+    {
+     "text": "Sritex:",
+     "start": 12.347,
+     "end": 12.722
+    },
+    {
+     "text": "empat",
+     "start": 13.042,
+     "end": 13.417
+    },
+    {
+     "text": "puluh",
+     "start": 13.417,
+     "end": 13.792
+    },
+    {
+     "text": "dua",
+     "start": 13.792,
+     "end": 14.007
+    },
+    {
+     "text": "bulan",
+     "start": 14.007,
+     "end": 14.382
+    },
+    {
+     "text": "sebelum",
+     "start": 14.382,
+     "end": 14.916
+    },
+    {
+     "text": "pailit.",
+     "start": 14.916,
+     "end": 15.291
+    },
+    {
+     "text": "Kalimat",
+     "start": 15.711,
+     "end": 16.246
+    },
+    {
+     "text": "klaim",
+     "start": 16.246,
+     "end": 16.461
+    },
+    {
+     "text": "ini",
+     "start": 16.461,
+     "end": 16.836
+    },
+    {
+     "text": "dihasilkan",
+     "start": 16.836,
+     "end": 17.53
+    },
+    {
+     "text": "oleh",
+     "start": 17.53,
+     "end": 17.905
+    },
+    {
+     "text": "sistem,",
+     "start": 17.905,
+     "end": 18.28
+    },
+    {
+     "text": "bukan",
+     "start": 18.5,
+     "end": 18.875
+    },
+    {
+     "text": "kami",
+     "start": 18.875,
+     "end": 19.25
+    },
+    {
+     "text": "tulis",
+     "start": 19.25,
+     "end": 19.625
+    },
+    {
+     "text": "tangan.",
+     "start": 19.625,
+     "end": 20
+    }
+   ],
+   "groups": [
+    [
+     0,
+     1,
+     2,
+     3,
+     4
+    ],
+    [
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12
+    ],
+    [
+     13,
+     14,
+     15,
+     16,
+     17,
+     18,
+     19
+    ],
+    [
+     20,
+     21,
+     22,
+     23,
+     24,
+     25
+    ],
+    [
+     26,
+     27,
+     28,
+     29,
+     30,
+     31,
+     32
+    ],
+    [
+     33,
+     34,
+     35,
+     36,
+     37,
+     38
+    ],
+    [
+     39,
+     40,
+     41,
+     42
+    ]
+   ]
+  },
+  {
+   "clip": "SC10_CAM_Ais",
+   "who": "Ais",
+   "scene": "SC10 · Penutup",
+   "kind": "cam",
+   "text": "Terukur, bisa dilacak…",
+   "direction": "Menggantung, oper ke Yahya.",
+   "target": 2,
+   "words": [
+    {
+     "text": "Terukur,",
+     "start": 0,
+     "end": 0.659
+    },
+    {
+     "text": "bisa",
+     "start": 0.879,
+     "end": 1.341
+    },
+    {
+     "text": "dilacak…",
+     "start": 1.341,
+     "end": 2
+    }
+   ],
+   "groups": [
+    [
+     0,
+     1,
+     2
+    ]
+   ]
+  },
+  {
+   "clip": "SC10_ALL_Ais",
+   "who": "Ais",
+   "scene": "SC10 · Penutup",
+   "kind": "cam",
+   "text": "AFS Sentinel. Peringatan dini, sebelum terlambat.",
+   "direction": "Tatap kamera, ucapkan serempak sambil senyum. Mulai bicara 1 detik setelah tombol rekam.",
+   "target": 3.5,
+   "words": [
+    {
+     "text": "AFS",
+     "start": 0,
+     "end": 0.213
+    },
+    {
+     "text": "Sentinel.",
+     "start": 0.213,
+     "end": 0.743
+    },
+    {
+     "text": "Peringatan",
+     "start": 1.163,
+     "end": 1.85
+    },
+    {
+     "text": "dini,",
+     "start": 1.85,
+     "end": 2.221
+    },
+    {
+     "text": "sebelum",
+     "start": 2.441,
+     "end": 2.971
+    },
+    {
+     "text": "terlambat.",
+     "start": 2.971,
+     "end": 3.5
+    }
+   ],
+   "groups": [
+    [
+     0,
+     1
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     4,
+     5
+    ]
+   ]
+  },
+  {
+   "clip": "SC02_CAM_Yahya",
+   "who": "Yahya",
+   "scene": "SC02 · Perkenalan & masalah",
+   "kind": "reaction",
+   "text": "(melambai ke kamera)",
+   "direction": "Diam, senyum, lalu melambai. Santai.",
+   "target": 3,
+   "words": [],
+   "groups": []
+  },
+  {
+   "clip": "SC04_CAM_Yahya",
+   "who": "Yahya",
+   "scene": "SC04 · Otomasi",
+   "kind": "cam",
+   "text": "Ini jantung otomasinya. Heroku Scheduler memicu pipeline setiap pagi jam delapan WIB, dan pipeline sendiri yang menentukan kapan jatuh tempo: tiga hari sejak run sukses terakhir. Tanpa tombol, tanpa manusia. Data Sectors API disimpan permanen di Postgres, jadi kuartal yang sama tidak pernah dibayar dua kali.",
+   "direction": "Tenang, jelas. Tekankan “tanpa tombol, tanpa manusia”.",
+   "target": 21,
+   "words": [
+    {
+     "text": "Ini",
+     "start": 0,
+     "end": 0.37
+    },
+    {
+     "text": "jantung",
+     "start": 0.37,
+     "end": 0.74
+    },
+    {
+     "text": "otomasinya.",
+     "start": 0.74,
+     "end": 1.583
+    },
+    {
+     "text": "Heroku",
+     "start": 2.003,
+     "end": 2.531
+    },
+    {
+     "text": "Scheduler",
+     "start": 2.531,
+     "end": 3.058
+    },
+    {
+     "text": "memicu",
+     "start": 3.058,
+     "end": 3.586
+    },
+    {
+     "text": "pipeline",
+     "start": 3.586,
+     "end": 4.271
+    },
+    {
+     "text": "setiap",
+     "start": 4.271,
+     "end": 4.641
+    },
+    {
+     "text": "pagi",
+     "start": 4.641,
+     "end": 5.012
+    },
+    {
+     "text": "jam",
+     "start": 5.012,
+     "end": 5.224
+    },
+    {
+     "text": "delapan",
+     "start": 5.224,
+     "end": 5.752
+    },
+    {
+     "text": "WIB,",
+     "start": 5.752,
+     "end": 5.965
+    },
+    {
+     "text": "dan",
+     "start": 6.185,
+     "end": 6.397
+    },
+    {
+     "text": "pipeline",
+     "start": 6.397,
+     "end": 7.082
+    },
+    {
+     "text": "sendiri",
+     "start": 7.082,
+     "end": 7.61
+    },
+    {
+     "text": "yang",
+     "start": 7.61,
+     "end": 7.823
+    },
+    {
+     "text": "menentukan",
+     "start": 7.823,
+     "end": 8.508
+    },
+    {
+     "text": "kapan",
+     "start": 8.508,
+     "end": 8.878
+    },
+    {
+     "text": "jatuh",
+     "start": 8.878,
+     "end": 9.248
+    },
+    {
+     "text": "tempo:",
+     "start": 9.248,
+     "end": 9.618
+    },
+    {
+     "text": "tiga",
+     "start": 9.938,
+     "end": 10.308
+    },
+    {
+     "text": "hari",
+     "start": 10.308,
+     "end": 10.679
+    },
+    {
+     "text": "sejak",
+     "start": 10.679,
+     "end": 11.049
+    },
+    {
+     "text": "run",
+     "start": 11.049,
+     "end": 11.261
+    },
+    {
+     "text": "sukses",
+     "start": 11.261,
+     "end": 11.632
+    },
+    {
+     "text": "terakhir.",
+     "start": 11.632,
+     "end": 12.159
+    },
+    {
+     "text": "Tanpa",
+     "start": 12.579,
+     "end": 12.949
+    },
+    {
+     "text": "tombol,",
+     "start": 12.949,
+     "end": 13.32
+    },
+    {
+     "text": "tanpa",
+     "start": 13.54,
+     "end": 13.91
+    },
+    {
+     "text": "manusia.",
+     "start": 13.91,
+     "end": 14.437
+    },
+    {
+     "text": "Data",
+     "start": 14.857,
+     "end": 15.228
+    },
+    {
+     "text": "Sectors",
+     "start": 15.228,
+     "end": 15.598
+    },
+    {
+     "text": "API",
+     "start": 15.598,
+     "end": 15.968
+    },
+    {
+     "text": "disimpan",
+     "start": 15.968,
+     "end": 16.496
+    },
+    {
+     "text": "permanen",
+     "start": 16.496,
+     "end": 17.023
+    },
+    {
+     "text": "di",
+     "start": 17.023,
+     "end": 17.236
+    },
+    {
+     "text": "Postgres,",
+     "start": 17.236,
+     "end": 17.606
+    },
+    {
+     "text": "jadi",
+     "start": 17.826,
+     "end": 18.196
+    },
+    {
+     "text": "kuartal",
+     "start": 18.196,
+     "end": 18.566
+    },
+    {
+     "text": "yang",
+     "start": 18.566,
+     "end": 18.779
+    },
+    {
+     "text": "sama",
+     "start": 18.779,
+     "end": 19.149
+    },
+    {
+     "text": "tidak",
+     "start": 19.149,
+     "end": 19.519
+    },
+    {
+     "text": "pernah",
+     "start": 19.519,
+     "end": 19.89
+    },
+    {
+     "text": "dibayar",
+     "start": 19.89,
+     "end": 20.417
+    },
+    {
+     "text": "dua",
+     "start": 20.417,
+     "end": 20.63
+    },
+    {
+     "text": "kali.",
+     "start": 20.63,
+     "end": 21
+    }
+   ],
+   "groups": [
+    [
+     0,
+     1,
+     2
+    ],
+    [
+     3,
+     4,
+     5,
+     6,
+     7
+    ],
+    [
+     8,
+     9,
+     10,
+     11
+    ],
+    [
+     12,
+     13,
+     14,
+     15,
+     16,
+     17,
+     18,
+     19
+    ],
+    [
+     20,
+     21,
+     22,
+     23,
+     24,
+     25
+    ],
+    [
+     26,
+     27
+    ],
+    [
+     28,
+     29
+    ],
+    [
+     30,
+     31,
+     32,
+     33,
+     34,
+     35,
+     36
+    ],
+    [
+     37,
+     38,
+     39,
+     40,
+     41
+    ],
+    [
+     42,
+     43,
+     44,
+     45
+    ]
+   ]
+  },
+  {
+   "clip": "SC06_CAM_Yahya",
+   "who": "Yahya",
+   "scene": "SC06 · Alert Telegram",
+   "kind": "cam",
+   "text": "Begitu skor menembus ambang, Analyst langsung menerima ini di Telegram: tingkat keparahan, skor, dan tiga temuan teratas dalam bahasa awam. Satu klik di ‘Buka Incident’…",
+   "direction": "Sedikit mendesak. Akhir kalimat menggantung (dioper ke Fathan).",
+   "target": 11.5,
+   "words": [
+    {
+     "text": "Begitu",
+     "start": 0,
+     "end": 0.539
+    },
+    {
+     "text": "skor",
+     "start": 0.539,
+     "end": 0.756
+    },
+    {
+     "text": "menembus",
+     "start": 0.756,
+     "end": 1.296
+    },
+    {
+     "text": "ambang,",
+     "start": 1.296,
+     "end": 1.674
+    },
+    {
+     "text": "Analyst",
+     "start": 1.894,
+     "end": 2.272
+    },
+    {
+     "text": "langsung",
+     "start": 2.272,
+     "end": 2.65
+    },
+    {
+     "text": "menerima",
+     "start": 2.65,
+     "end": 3.351
+    },
+    {
+     "text": "ini",
+     "start": 3.351,
+     "end": 3.729
+    },
+    {
+     "text": "di",
+     "start": 3.729,
+     "end": 3.946
+    },
+    {
+     "text": "Telegram:",
+     "start": 3.946,
+     "end": 4.485
+    },
+    {
+     "text": "tingkat",
+     "start": 4.805,
+     "end": 5.184
+    },
+    {
+     "text": "keparahan,",
+     "start": 5.184,
+     "end": 5.884
+    },
+    {
+     "text": "skor,",
+     "start": 6.104,
+     "end": 6.321
+    },
+    {
+     "text": "dan",
+     "start": 6.541,
+     "end": 6.758
+    },
+    {
+     "text": "tiga",
+     "start": 6.758,
+     "end": 7.137
+    },
+    {
+     "text": "temuan",
+     "start": 7.137,
+     "end": 7.515
+    },
+    {
+     "text": "teratas",
+     "start": 7.515,
+     "end": 8.054
+    },
+    {
+     "text": "dalam",
+     "start": 8.054,
+     "end": 8.432
+    },
+    {
+     "text": "bahasa",
+     "start": 8.432,
+     "end": 8.971
+    },
+    {
+     "text": "awam.",
+     "start": 8.971,
+     "end": 9.35
+    },
+    {
+     "text": "Satu",
+     "start": 9.77,
+     "end": 10.148
+    },
+    {
+     "text": "klik",
+     "start": 10.148,
+     "end": 10.365
+    },
+    {
+     "text": "di",
+     "start": 10.365,
+     "end": 10.583
+    },
+    {
+     "text": "‘Buka",
+     "start": 10.583,
+     "end": 10.961
+    },
+    {
+     "text": "Incident’…",
+     "start": 10.961,
+     "end": 11.5
+    }
+   ],
+   "groups": [
+    [
+     0,
+     1,
+     2,
+     3
+    ],
+    [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9
+    ],
+    [
+     10,
+     11,
+     12
+    ],
+    [
+     13,
+     14,
+     15,
+     16,
+     17,
+     18,
+     19
+    ],
+    [
+     20,
+     21,
+     22,
+     23,
+     24
+    ]
+   ]
+  },
+  {
+   "clip": "SC09_CAM_Yahya",
+   "who": "Yahya",
+   "scene": "SC09 · Log run",
+   "kind": "cam",
+   "text": "Dan ini bukti eksekusi tanpa pengawasan: riwayat Audit Run. Label ‘Otomatis · sistem’ berarti dipicu scheduler, tidak disentuh siapa pun, lengkap dengan timestamp, jumlah emiten, dan kredit API. Setiap run juga melapor ke Telegram, termasuk saat hasilnya nol.",
+   "direction": "Mantap.",
+   "target": 17.5,
+   "words": [
+    {
+     "text": "Dan",
+     "start": 0,
+     "end": 0.211
+    },
+    {
+     "text": "ini",
+     "start": 0.211,
+     "end": 0.58
+    },
+    {
+     "text": "bukti",
+     "start": 0.58,
+     "end": 0.948
+    },
+    {
+     "text": "eksekusi",
+     "start": 0.948,
+     "end": 1.629
+    },
+    {
+     "text": "tanpa",
+     "start": 1.629,
+     "end": 1.997
+    },
+    {
+     "text": "pengawasan:",
+     "start": 1.997,
+     "end": 2.678
+    },
+    {
+     "text": "riwayat",
+     "start": 2.998,
+     "end": 3.523
+    },
+    {
+     "text": "Audit",
+     "start": 3.523,
+     "end": 3.891
+    },
+    {
+     "text": "Run.",
+     "start": 3.891,
+     "end": 4.103
+    },
+    {
+     "text": "Label",
+     "start": 4.523,
+     "end": 4.891
+    },
+    {
+     "text": "‘Otomatis",
+     "start": 4.891,
+     "end": 5.572
+    },
+    {
+     "text": "·",
+     "start": 5.572,
+     "end": 5.783
+    },
+    {
+     "text": "sistem’",
+     "start": 5.783,
+     "end": 6.152
+    },
+    {
+     "text": "berarti",
+     "start": 6.152,
+     "end": 6.676
+    },
+    {
+     "text": "dipicu",
+     "start": 6.676,
+     "end": 7.201
+    },
+    {
+     "text": "scheduler,",
+     "start": 7.201,
+     "end": 7.726
+    },
+    {
+     "text": "tidak",
+     "start": 7.946,
+     "end": 8.314
+    },
+    {
+     "text": "disentuh",
+     "start": 8.314,
+     "end": 8.838
+    },
+    {
+     "text": "siapa",
+     "start": 8.838,
+     "end": 9.207
+    },
+    {
+     "text": "pun,",
+     "start": 9.207,
+     "end": 9.418
+    },
+    {
+     "text": "lengkap",
+     "start": 9.638,
+     "end": 10.006
+    },
+    {
+     "text": "dengan",
+     "start": 10.006,
+     "end": 10.374
+    },
+    {
+     "text": "timestamp,",
+     "start": 10.374,
+     "end": 10.899
+    },
+    {
+     "text": "jumlah",
+     "start": 11.119,
+     "end": 11.487
+    },
+    {
+     "text": "emiten,",
+     "start": 11.487,
+     "end": 12.012
+    },
+    {
+     "text": "dan",
+     "start": 12.232,
+     "end": 12.443
+    },
+    {
+     "text": "kredit",
+     "start": 12.443,
+     "end": 12.811
+    },
+    {
+     "text": "API.",
+     "start": 12.811,
+     "end": 13.179
+    },
+    {
+     "text": "Setiap",
+     "start": 13.599,
+     "end": 13.967
+    },
+    {
+     "text": "run",
+     "start": 13.967,
+     "end": 14.179
+    },
+    {
+     "text": "juga",
+     "start": 14.179,
+     "end": 14.547
+    },
+    {
+     "text": "melapor",
+     "start": 14.547,
+     "end": 15.072
+    },
+    {
+     "text": "ke",
+     "start": 15.072,
+     "end": 15.283
+    },
+    {
+     "text": "Telegram,",
+     "start": 15.283,
+     "end": 15.808
+    },
+    {
+     "text": "termasuk",
+     "start": 16.028,
+     "end": 16.552
+    },
+    {
+     "text": "saat",
+     "start": 16.552,
+     "end": 16.764
+    },
+    {
+     "text": "hasilnya",
+     "start": 16.764,
+     "end": 17.289
+    },
+    {
+     "text": "nol.",
+     "start": 17.289,
+     "end": 17.5
+    }
+   ],
+   "groups": [
+    [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    [
+     6,
+     7,
+     8
+    ],
+    [
+     9,
+     10,
+     11,
+     12,
+     13,
+     14,
+     15
+    ],
+    [
+     16,
+     17,
+     18,
+     19
+    ],
+    [
+     20,
+     21,
+     22
+    ],
+    [
+     23,
+     24
+    ],
+    [
+     25,
+     26,
+     27
+    ],
+    [
+     28,
+     29,
+     30,
+     31,
+     32,
+     33
+    ],
+    [
+     34,
+     35,
+     36,
+     37
+    ]
+   ]
+  },
+  {
+   "clip": "SC10_CAM_Yahya",
+   "who": "Yahya",
+   "scene": "SC10 · Penutup",
+   "kind": "cam",
+   "text": "…dan berjalan sendiri.",
+   "direction": "Menutup kalimat Ais.",
+   "target": 2,
+   "words": [
+    {
+     "text": "…dan",
+     "start": 0,
+     "end": 0.335
+    },
+    {
+     "text": "berjalan",
+     "start": 0.335,
+     "end": 1.168
+    },
+    {
+     "text": "sendiri.",
+     "start": 1.168,
+     "end": 2
+    }
+   ],
+   "groups": [
+    [
+     0,
+     1,
+     2
+    ]
+   ]
+  },
+  {
+   "clip": "SC10_ALL_Yahya",
+   "who": "Yahya",
+   "scene": "SC10 · Penutup",
+   "kind": "cam",
+   "text": "AFS Sentinel. Peringatan dini, sebelum terlambat.",
+   "direction": "Tatap kamera, ucapkan serempak sambil senyum. Mulai bicara 1 detik setelah tombol rekam.",
+   "target": 3.5,
+   "words": [
+    {
+     "text": "AFS",
+     "start": 0,
+     "end": 0.213
+    },
+    {
+     "text": "Sentinel.",
+     "start": 0.213,
+     "end": 0.743
+    },
+    {
+     "text": "Peringatan",
+     "start": 1.163,
+     "end": 1.85
+    },
+    {
+     "text": "dini,",
+     "start": 1.85,
+     "end": 2.221
+    },
+    {
+     "text": "sebelum",
+     "start": 2.441,
+     "end": 2.971
+    },
+    {
+     "text": "terlambat.",
+     "start": 2.971,
+     "end": 3.5
+    }
+   ],
+   "groups": [
+    [
+     0,
+     1
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     4,
+     5
+    ]
+   ]
+  }
+ ]
+}

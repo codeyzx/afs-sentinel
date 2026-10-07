@@ -1,0 +1,1186 @@
+{
+  "total_duration_s": 59.18,
+  "width": 1920,
+  "height": 1080,
+  "groups": [
+    {
+      "id": "caption-group-0",
+      "frame": 1,
+      "start": 0.498,
+      "end": 1.311,
+      "text": "Delapan Mei",
+      "words": [
+        {
+          "id": "caption-word-0-0",
+          "text": "Delapan",
+          "start": 0.498,
+          "end": 0.873
+        },
+        {
+          "id": "caption-word-0-1",
+          "text": "Mei",
+          "start": 0.873,
+          "end": 1.191
+        }
+      ]
+    },
+    {
+      "id": "caption-group-1",
+      "frame": 1,
+      "start": 1.43,
+      "end": 1.839,
+      "text": "dua ribu",
+      "words": [
+        {
+          "id": "caption-word-1-0",
+          "text": "dua",
+          "start": 1.43,
+          "end": 1.634
+        },
+        {
+          "id": "caption-word-1-1",
+          "text": "ribu",
+          "start": 1.634,
+          "end": 1.839
+        }
+      ]
+    },
+    {
+      "id": "caption-group-2",
+      "frame": 1,
+      "start": 1.839,
+      "end": 2.765,
+      "text": "dua puluh tiga",
+      "words": [
+        {
+          "id": "caption-word-2-0",
+          "text": "dua",
+          "start": 1.839,
+          "end": 1.998
+        },
+        {
+          "id": "caption-word-2-1",
+          "text": "puluh",
+          "start": 1.998,
+          "end": 2.191
+        },
+        {
+          "id": "caption-word-2-2",
+          "text": "tiga",
+          "start": 2.191,
+          "end": 2.645
+        }
+      ]
+    },
+    {
+      "id": "caption-group-3",
+      "frame": 1,
+      "start": 3.402,
+      "end": 4.698,
+      "text": "Bursa menghentikan perdagangan",
+      "words": [
+        {
+          "id": "caption-word-3-0",
+          "text": "Bursa",
+          "start": 3.402,
+          "end": 3.755
+        },
+        {
+          "id": "caption-word-3-1",
+          "text": "menghentikan",
+          "start": 3.755,
+          "end": 4.243
+        },
+        {
+          "id": "caption-word-3-2",
+          "text": "perdagangan",
+          "start": 4.243,
+          "end": 4.698
+        }
+      ]
+    },
+    {
+      "id": "caption-group-4",
+      "frame": 1,
+      "start": 4.698,
+      "end": 5.988,
+      "text": "saham Waskita Karya",
+      "words": [
+        {
+          "id": "caption-word-4-0",
+          "text": "saham",
+          "start": 4.698,
+          "end": 5.016
+        },
+        {
+          "id": "caption-word-4-1",
+          "text": "Waskita",
+          "start": 5.016,
+          "end": 5.38
+        },
+        {
+          "id": "caption-word-4-2",
+          "text": "Karya",
+          "start": 5.38,
+          "end": 5.868
+        }
+      ]
+    },
+    {
+      "id": "caption-group-5",
+      "frame": 2,
+      "start": 7.447,
+      "end": 8.447,
+      "text": "Padahal tandanya sudah",
+      "words": [
+        {
+          "id": "caption-word-5-0",
+          "text": "Padahal",
+          "start": 7.447,
+          "end": 7.845
+        },
+        {
+          "id": "caption-word-5-1",
+          "text": "tandanya",
+          "start": 7.845,
+          "end": 8.231
+        },
+        {
+          "id": "caption-word-5-2",
+          "text": "sudah",
+          "start": 8.231,
+          "end": 8.447
+        }
+      ]
+    },
+    {
+      "id": "caption-group-6",
+      "frame": 2,
+      "start": 8.447,
+      "end": 8.742,
+      "text": "ada di",
+      "words": [
+        {
+          "id": "caption-word-6-0",
+          "text": "ada",
+          "start": 8.447,
+          "end": 8.663
+        },
+        {
+          "id": "caption-word-6-1",
+          "text": "di",
+          "start": 8.663,
+          "end": 8.742
+        }
+      ]
+    },
+    {
+      "id": "caption-group-7",
+      "frame": 2,
+      "start": 8.742,
+      "end": 9.737,
+      "text": "laporan keuangan",
+      "words": [
+        {
+          "id": "caption-word-7-0",
+          "text": "laporan",
+          "start": 8.742,
+          "end": 9.026
+        },
+        {
+          "id": "caption-word-7-1",
+          "text": "keuangan",
+          "start": 9.026,
+          "end": 9.617
+        }
+      ]
+    },
+    {
+      "id": "caption-group-8",
+      "frame": 2,
+      "start": 9.867,
+      "end": 11.237,
+      "text": "bertahun-tahun sebelumnya",
+      "words": [
+        {
+          "id": "caption-word-8-0",
+          "text": "bertahun-tahun",
+          "start": 9.867,
+          "end": 10.481
+        },
+        {
+          "id": "caption-word-8-1",
+          "text": "sebelumnya",
+          "start": 10.481,
+          "end": 11.117
+        }
+      ]
+    },
+    {
+      "id": "caption-group-9",
+      "frame": 2,
+      "start": 11.876,
+      "end": 12.422,
+      "text": "Tapi siapa",
+      "words": [
+        {
+          "id": "caption-word-9-0",
+          "text": "Tapi",
+          "start": 11.876,
+          "end": 12.138
+        },
+        {
+          "id": "caption-word-9-1",
+          "text": "siapa",
+          "start": 12.138,
+          "end": 12.422
+        }
+      ]
+    },
+    {
+      "id": "caption-group-10",
+      "frame": 2,
+      "start": 12.422,
+      "end": 12.785,
+      "text": "yang sempat",
+      "words": [
+        {
+          "id": "caption-word-10-0",
+          "text": "yang",
+          "start": 12.422,
+          "end": 12.535
+        },
+        {
+          "id": "caption-word-10-1",
+          "text": "sempat",
+          "start": 12.535,
+          "end": 12.785
+        }
+      ]
+    },
+    {
+      "id": "caption-group-11",
+      "frame": 2,
+      "start": 12.785,
+      "end": 13.826,
+      "text": "membaca semuanya",
+      "words": [
+        {
+          "id": "caption-word-11-0",
+          "text": "membaca",
+          "start": 12.785,
+          "end": 13.081
+        },
+        {
+          "id": "caption-word-11-1",
+          "text": "semuanya",
+          "start": 13.081,
+          "end": 13.706
+        }
+      ]
+    },
+    {
+      "id": "caption-group-12",
+      "frame": 3,
+      "start": 15.275,
+      "end": 16.713,
+      "text": "Kenalkan AFS Sentinel",
+      "words": [
+        {
+          "id": "caption-word-12-0",
+          "text": "Kenalkan",
+          "start": 15.275,
+          "end": 15.673
+        },
+        {
+          "id": "caption-word-12-1",
+          "text": "AFS",
+          "start": 15.673,
+          "end": 16.002
+        },
+        {
+          "id": "caption-word-12-2",
+          "text": "Sentinel",
+          "start": 16.002,
+          "end": 16.593
+        }
+      ]
+    },
+    {
+      "id": "caption-group-13",
+      "frame": 3,
+      "start": 16.854,
+      "end": 18.048,
+      "text": "pengawas forensik otomatis",
+      "words": [
+        {
+          "id": "caption-word-13-0",
+          "text": "pengawas",
+          "start": 16.854,
+          "end": 17.207
+        },
+        {
+          "id": "caption-word-13-1",
+          "text": "forensik",
+          "start": 17.207,
+          "end": 17.536
+        },
+        {
+          "id": "caption-word-13-2",
+          "text": "otomatis",
+          "start": 17.536,
+          "end": 18.048
+        }
+      ]
+    },
+    {
+      "id": "caption-group-14",
+      "frame": 3,
+      "start": 18.048,
+      "end": 18.616,
+      "text": "untuk emiten",
+      "words": [
+        {
+          "id": "caption-word-14-0",
+          "text": "untuk",
+          "start": 18.048,
+          "end": 18.252
+        },
+        {
+          "id": "caption-word-14-1",
+          "text": "emiten",
+          "start": 18.252,
+          "end": 18.616
+        }
+      ]
+    },
+    {
+      "id": "caption-group-15",
+      "frame": 3,
+      "start": 18.616,
+      "end": 18.957,
+      "text": "di Bursa",
+      "words": [
+        {
+          "id": "caption-word-15-0",
+          "text": "di",
+          "start": 18.616,
+          "end": 18.684
+        },
+        {
+          "id": "caption-word-15-1",
+          "text": "Bursa",
+          "start": 18.684,
+          "end": 18.957
+        }
+      ]
+    },
+    {
+      "id": "caption-group-16",
+      "frame": 3,
+      "start": 18.957,
+      "end": 20.031,
+      "text": "Efek Indonesia",
+      "words": [
+        {
+          "id": "caption-word-16-0",
+          "text": "Efek",
+          "start": 18.957,
+          "end": 19.229
+        },
+        {
+          "id": "caption-word-16-1",
+          "text": "Indonesia",
+          "start": 19.229,
+          "end": 19.911
+        }
+      ]
+    },
+    {
+      "id": "caption-group-17",
+      "frame": 4,
+      "start": 21.495,
+      "end": 22.524,
+      "text": "Setiap tiga hari",
+      "words": [
+        {
+          "id": "caption-word-17-0",
+          "text": "Setiap",
+          "start": 21.495,
+          "end": 21.802
+        },
+        {
+          "id": "caption-word-17-1",
+          "text": "tiga",
+          "start": 21.802,
+          "end": 21.995
+        },
+        {
+          "id": "caption-word-17-2",
+          "text": "hari",
+          "start": 21.995,
+          "end": 22.404
+        }
+      ]
+    },
+    {
+      "id": "caption-group-18",
+      "frame": 4,
+      "start": 22.643,
+      "end": 23.922,
+      "text": "tanpa disentuh manusia",
+      "words": [
+        {
+          "id": "caption-word-18-0",
+          "text": "tanpa",
+          "start": 22.643,
+          "end": 22.904
+        },
+        {
+          "id": "caption-word-18-1",
+          "text": "disentuh",
+          "start": 22.904,
+          "end": 23.199
+        },
+        {
+          "id": "caption-word-18-2",
+          "text": "manusia",
+          "start": 23.199,
+          "end": 23.802
+        }
+      ]
+    },
+    {
+      "id": "caption-group-19",
+      "frame": 4,
+      "start": 24.052,
+      "end": 24.483,
+      "text": "ia menarik",
+      "words": [
+        {
+          "id": "caption-word-19-0",
+          "text": "ia",
+          "start": 24.052,
+          "end": 24.211
+        },
+        {
+          "id": "caption-word-19-1",
+          "text": "menarik",
+          "start": 24.211,
+          "end": 24.483
+        }
+      ]
+    },
+    {
+      "id": "caption-group-20",
+      "frame": 4,
+      "start": 24.483,
+      "end": 25.018,
+      "text": "data Sectors",
+      "words": [
+        {
+          "id": "caption-word-20-0",
+          "text": "data",
+          "start": 24.483,
+          "end": 24.677
+        },
+        {
+          "id": "caption-word-20-1",
+          "text": "Sectors",
+          "start": 24.677,
+          "end": 25.018
+        }
+      ]
+    },
+    {
+      "id": "caption-group-21",
+      "frame": 4,
+      "start": 25.018,
+      "end": 25.495,
+      "text": "API dan",
+      "words": [
+        {
+          "id": "caption-word-21-0",
+          "text": "API",
+          "start": 25.018,
+          "end": 25.347
+        },
+        {
+          "id": "caption-word-21-1",
+          "text": "dan",
+          "start": 25.347,
+          "end": 25.495
+        }
+      ]
+    },
+    {
+      "id": "caption-group-22",
+      "frame": 4,
+      "start": 25.495,
+      "end": 26.097,
+      "text": "memindai tiga",
+      "words": [
+        {
+          "id": "caption-word-22-0",
+          "text": "memindai",
+          "start": 25.495,
+          "end": 25.858
+        },
+        {
+          "id": "caption-word-22-1",
+          "text": "tiga",
+          "start": 25.858,
+          "end": 26.097
+        }
+      ]
+    },
+    {
+      "id": "caption-group-23",
+      "frame": 4,
+      "start": 26.097,
+      "end": 27.16,
+      "text": "puluh tiga emiten",
+      "words": [
+        {
+          "id": "caption-word-23-0",
+          "text": "puluh",
+          "start": 26.097,
+          "end": 26.279
+        },
+        {
+          "id": "caption-word-23-1",
+          "text": "tiga",
+          "start": 26.279,
+          "end": 26.495
+        },
+        {
+          "id": "caption-word-23-2",
+          "text": "emiten",
+          "start": 26.495,
+          "end": 27.04
+        }
+      ]
+    },
+    {
+      "id": "caption-group-24",
+      "frame": 5,
+      "start": 28.527,
+      "end": 28.993,
+      "text": "Enam aturan",
+      "words": [
+        {
+          "id": "caption-word-24-0",
+          "text": "Enam",
+          "start": 28.527,
+          "end": 28.709
+        },
+        {
+          "id": "caption-word-24-1",
+          "text": "aturan",
+          "start": 28.709,
+          "end": 28.993
+        }
+      ]
+    },
+    {
+      "id": "caption-group-25",
+      "frame": 5,
+      "start": 28.993,
+      "end": 29.652,
+      "text": "forensik mencari",
+      "words": [
+        {
+          "id": "caption-word-25-0",
+          "text": "forensik",
+          "start": 28.993,
+          "end": 29.39
+        },
+        {
+          "id": "caption-word-25-1",
+          "text": "mencari",
+          "start": 29.39,
+          "end": 29.652
+        }
+      ]
+    },
+    {
+      "id": "caption-group-26",
+      "frame": 5,
+      "start": 29.652,
+      "end": 30.084,
+      "text": "laba yang",
+      "words": [
+        {
+          "id": "caption-word-26-0",
+          "text": "laba",
+          "start": 29.652,
+          "end": 29.925
+        },
+        {
+          "id": "caption-word-26-1",
+          "text": "yang",
+          "start": 29.925,
+          "end": 30.084
+        }
+      ]
+    },
+    {
+      "id": "caption-group-27",
+      "frame": 5,
+      "start": 30.084,
+      "end": 31.079,
+      "text": "tak berwujud kas",
+      "words": [
+        {
+          "id": "caption-word-27-0",
+          "text": "tak",
+          "start": 30.084,
+          "end": 30.197
+        },
+        {
+          "id": "caption-word-27-1",
+          "text": "berwujud",
+          "start": 30.197,
+          "end": 30.584
+        },
+        {
+          "id": "caption-word-27-2",
+          "text": "kas",
+          "start": 30.584,
+          "end": 30.959
+        }
+      ]
+    },
+    {
+      "id": "caption-group-28",
+      "frame": 5,
+      "start": 31.186,
+      "end": 32.192,
+      "text": "utang yang melonjak",
+      "words": [
+        {
+          "id": "caption-word-28-0",
+          "text": "utang",
+          "start": 31.186,
+          "end": 31.459
+        },
+        {
+          "id": "caption-word-28-1",
+          "text": "yang",
+          "start": 31.459,
+          "end": 31.572
+        },
+        {
+          "id": "caption-word-28-2",
+          "text": "melonjak",
+          "start": 31.572,
+          "end": 32.072
+        }
+      ]
+    },
+    {
+      "id": "caption-group-29",
+      "frame": 5,
+      "start": 32.288,
+      "end": 32.822,
+      "text": "dan risiko",
+      "words": [
+        {
+          "id": "caption-word-29-0",
+          "text": "dan",
+          "start": 32.288,
+          "end": 32.493
+        },
+        {
+          "id": "caption-word-29-1",
+          "text": "risiko",
+          "start": 32.493,
+          "end": 32.822
+        }
+      ]
+    },
+    {
+      "id": "caption-group-30",
+      "frame": 5,
+      "start": 32.822,
+      "end": 33.704,
+      "text": "gagal bayar",
+      "words": [
+        {
+          "id": "caption-word-30-0",
+          "text": "gagal",
+          "start": 32.822,
+          "end": 33.106
+        },
+        {
+          "id": "caption-word-30-1",
+          "text": "bayar",
+          "start": 33.106,
+          "end": 33.584
+        }
+      ]
+    },
+    {
+      "id": "caption-group-31",
+      "frame": 6,
+      "start": 35.055,
+      "end": 35.521,
+      "text": "Begitu ada",
+      "words": [
+        {
+          "id": "caption-word-31-0",
+          "text": "Begitu",
+          "start": 35.055,
+          "end": 35.362
+        },
+        {
+          "id": "caption-word-31-1",
+          "text": "ada",
+          "start": 35.362,
+          "end": 35.521
+        }
+      ]
+    },
+    {
+      "id": "caption-group-32",
+      "frame": 6,
+      "start": 35.521,
+      "end": 36.277,
+      "text": "yang janggal",
+      "words": [
+        {
+          "id": "caption-word-32-0",
+          "text": "yang",
+          "start": 35.521,
+          "end": 35.657
+        },
+        {
+          "id": "caption-word-32-1",
+          "text": "janggal",
+          "start": 35.657,
+          "end": 36.157
+        }
+      ]
+    },
+    {
+      "id": "caption-group-33",
+      "frame": 6,
+      "start": 36.418,
+      "end": 37.089,
+      "text": "peringatan langsung",
+      "words": [
+        {
+          "id": "caption-word-33-0",
+          "text": "peringatan",
+          "start": 36.418,
+          "end": 36.805
+        },
+        {
+          "id": "caption-word-33-1",
+          "text": "langsung",
+          "start": 36.805,
+          "end": 37.089
+        }
+      ]
+    },
+    {
+      "id": "caption-group-34",
+      "frame": 6,
+      "start": 37.089,
+      "end": 37.384,
+      "text": "masuk ke",
+      "words": [
+        {
+          "id": "caption-word-34-0",
+          "text": "masuk",
+          "start": 37.089,
+          "end": 37.339
+        },
+        {
+          "id": "caption-word-34-1",
+          "text": "ke",
+          "start": 37.339,
+          "end": 37.384
+        }
+      ]
+    },
+    {
+      "id": "caption-group-35",
+      "frame": 6,
+      "start": 37.384,
+      "end": 38.3,
+      "text": "Telegram Anda",
+      "words": [
+        {
+          "id": "caption-word-35-0",
+          "text": "Telegram",
+          "start": 37.384,
+          "end": 37.725
+        },
+        {
+          "id": "caption-word-35-1",
+          "text": "Anda",
+          "start": 37.725,
+          "end": 38.18
+        }
+      ]
+    },
+    {
+      "id": "caption-group-36",
+      "frame": 7,
+      "start": 39.663,
+      "end": 40.151,
+      "text": "Lengkap dengan",
+      "words": [
+        {
+          "id": "caption-word-36-0",
+          "text": "Lengkap",
+          "start": 39.663,
+          "end": 39.947
+        },
+        {
+          "id": "caption-word-36-1",
+          "text": "dengan",
+          "start": 39.947,
+          "end": 40.151
+        }
+      ]
+    },
+    {
+      "id": "caption-group-37",
+      "frame": 7,
+      "start": 40.151,
+      "end": 41.044,
+      "text": "ringkasan AI",
+      "words": [
+        {
+          "id": "caption-word-37-0",
+          "text": "ringkasan",
+          "start": 40.151,
+          "end": 40.526
+        },
+        {
+          "id": "caption-word-37-1",
+          "text": "AI",
+          "start": 40.526,
+          "end": 40.924
+        }
+      ]
+    },
+    {
+      "id": "caption-group-38",
+      "frame": 7,
+      "start": 41.197,
+      "end": 41.617,
+      "text": "dan bukti",
+      "words": [
+        {
+          "id": "caption-word-38-0",
+          "text": "dan",
+          "start": 41.197,
+          "end": 41.39
+        },
+        {
+          "id": "caption-word-38-1",
+          "text": "bukti",
+          "start": 41.39,
+          "end": 41.617
+        }
+      ]
+    },
+    {
+      "id": "caption-group-39",
+      "frame": 7,
+      "start": 41.617,
+      "end": 42.208,
+      "text": "perhitungan yang",
+      "words": [
+        {
+          "id": "caption-word-39-0",
+          "text": "perhitungan",
+          "start": 41.617,
+          "end": 42.083
+        },
+        {
+          "id": "caption-word-39-1",
+          "text": "yang",
+          "start": 42.083,
+          "end": 42.208
+        }
+      ]
+    },
+    {
+      "id": "caption-group-40",
+      "frame": 7,
+      "start": 42.208,
+      "end": 42.765,
+      "text": "bisa dilacak",
+      "words": [
+        {
+          "id": "caption-word-40-0",
+          "text": "bisa",
+          "start": 42.208,
+          "end": 42.39
+        },
+        {
+          "id": "caption-word-40-1",
+          "text": "dilacak",
+          "start": 42.39,
+          "end": 42.765
+        }
+      ]
+    },
+    {
+      "id": "caption-group-41",
+      "frame": 7,
+      "start": 42.765,
+      "end": 43.163,
+      "text": "sampai ke",
+      "words": [
+        {
+          "id": "caption-word-41-0",
+          "text": "sampai",
+          "start": 42.765,
+          "end": 43.083
+        },
+        {
+          "id": "caption-word-41-1",
+          "text": "ke",
+          "start": 43.083,
+          "end": 43.163
+        }
+      ]
+    },
+    {
+      "id": "caption-group-42",
+      "frame": 7,
+      "start": 43.163,
+      "end": 44.078,
+      "text": "data sumbernya",
+      "words": [
+        {
+          "id": "caption-word-42-0",
+          "text": "data",
+          "start": 43.163,
+          "end": 43.367
+        },
+        {
+          "id": "caption-word-42-1",
+          "text": "sumbernya",
+          "start": 43.367,
+          "end": 43.958
+        }
+      ]
+    },
+    {
+      "id": "caption-group-43",
+      "frame": 8,
+      "start": 45.447,
+      "end": 45.97,
+      "text": "Diuji pada",
+      "words": [
+        {
+          "id": "caption-word-43-0",
+          "text": "Diuji",
+          "start": 45.447,
+          "end": 45.799
+        },
+        {
+          "id": "caption-word-43-1",
+          "text": "pada",
+          "start": 45.799,
+          "end": 45.97
+        }
+      ]
+    },
+    {
+      "id": "caption-group-44",
+      "frame": 8,
+      "start": 45.97,
+      "end": 46.851,
+      "text": "kasus nyata",
+      "words": [
+        {
+          "id": "caption-word-44-0",
+          "text": "kasus",
+          "start": 45.97,
+          "end": 46.242
+        },
+        {
+          "id": "caption-word-44-1",
+          "text": "nyata",
+          "start": 46.242,
+          "end": 46.731
+        }
+      ]
+    },
+    {
+      "id": "caption-group-45",
+      "frame": 8,
+      "start": 47.015,
+      "end": 47.64,
+      "text": "Sentinel sudah",
+      "words": [
+        {
+          "id": "caption-word-45-0",
+          "text": "Sentinel",
+          "start": 47.015,
+          "end": 47.435
+        },
+        {
+          "id": "caption-word-45-1",
+          "text": "sudah",
+          "start": 47.435,
+          "end": 47.64
+        }
+      ]
+    },
+    {
+      "id": "caption-group-46",
+      "frame": 8,
+      "start": 47.64,
+      "end": 48.424,
+      "text": "menandai Waskita",
+      "words": [
+        {
+          "id": "caption-word-46-0",
+          "text": "menandai",
+          "start": 47.64,
+          "end": 48.004
+        },
+        {
+          "id": "caption-word-46-1",
+          "text": "Waskita",
+          "start": 48.004,
+          "end": 48.424
+        }
+      ]
+    },
+    {
+      "id": "caption-group-47",
+      "frame": 8,
+      "start": 48.424,
+      "end": 48.72,
+      "text": "dua puluh",
+      "words": [
+        {
+          "id": "caption-word-47-0",
+          "text": "dua",
+          "start": 48.424,
+          "end": 48.572
+        },
+        {
+          "id": "caption-word-47-1",
+          "text": "puluh",
+          "start": 48.572,
+          "end": 48.72
+        }
+      ]
+    },
+    {
+      "id": "caption-group-48",
+      "frame": 8,
+      "start": 48.72,
+      "end": 49.174,
+      "text": "lima bulan",
+      "words": [
+        {
+          "id": "caption-word-48-0",
+          "text": "lima",
+          "start": 48.72,
+          "end": 48.879
+        },
+        {
+          "id": "caption-word-48-1",
+          "text": "bulan",
+          "start": 48.879,
+          "end": 49.174
+        }
+      ]
+    },
+    {
+      "id": "caption-group-49",
+      "frame": 8,
+      "start": 49.174,
+      "end": 50.283,
+      "text": "sebelum suspensi",
+      "words": [
+        {
+          "id": "caption-word-49-0",
+          "text": "sebelum",
+          "start": 49.174,
+          "end": 49.458
+        },
+        {
+          "id": "caption-word-49-1",
+          "text": "suspensi",
+          "start": 49.458,
+          "end": 50.163
+        }
+      ]
+    },
+    {
+      "id": "caption-group-50",
+      "frame": 9,
+      "start": 52.531,
+      "end": 53.764,
+      "text": "AFS Sentinel",
+      "words": [
+        {
+          "id": "caption-word-50-0",
+          "text": "AFS",
+          "start": 52.531,
+          "end": 53.008
+        },
+        {
+          "id": "caption-word-50-1",
+          "text": "Sentinel",
+          "start": 53.008,
+          "end": 53.644
+        }
+      ]
+    },
+    {
+      "id": "caption-group-51",
+      "frame": 9,
+      "start": 54.4,
+      "end": 55.384,
+      "text": "Peringatan dini",
+      "words": [
+        {
+          "id": "caption-word-51-0",
+          "text": "Peringatan",
+          "start": 54.4,
+          "end": 54.821
+        },
+        {
+          "id": "caption-word-51-1",
+          "text": "dini",
+          "start": 54.821,
+          "end": 55.264
+        }
+      ]
+    },
+    {
+      "id": "caption-group-52",
+      "frame": 9,
+      "start": 55.502,
+      "end": 56.634,
+      "text": "sebelum terlambat",
+      "words": [
+        {
+          "id": "caption-word-52-0",
+          "text": "sebelum",
+          "start": 55.502,
+          "end": 55.889
+        },
+        {
+          "id": "caption-word-52-1",
+          "text": "terlambat",
+          "start": 55.889,
+          "end": 56.514
+        }
+      ]
+    }
+  ]
+}

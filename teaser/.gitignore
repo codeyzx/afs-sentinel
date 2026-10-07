@@ -1,0 +1,9 @@
+# generated / large artifacts
+renders/
+snapshots/
+capture/
+.media/
+.hyperframes/
+audio_engine_meta.json
+audio_request.json
+node_modules/

@@ -1,0 +1,353 @@
+<template>
+  <script src="assets/vendor/gsap-3.14.2.min.js"></script>
+  <style>
+    @font-face{font-family:"IBM Plex Mono";font-style:normal;font-weight:500;font-display:block;src:url("assets/fonts/IBMPlexMono-500.woff2") format("woff2");}
+    @font-face{font-family:'Instrument Sans';font-style:normal;font-weight:400;font-display:swap;src:url("assets/fonts/captured-pxiTypc9vsFDm051Uf6KVwgkfoSxQ0GsQv8ToedPibnr0She1ZuWi3hKpA.woff2") format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;}
+    @font-face{font-family:'Instrument Sans';font-style:normal;font-weight:400;font-display:swap;src:url("assets/fonts/captured-pxiTypc9vsFDm051Uf6KVwgkfoSxQ0GsQv8ToedPibnr0SZe1ZuWi3g.woff2") format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}
+    @font-face{font-family:'Instrument Sans';font-style:normal;font-weight:500;font-display:swap;src:url("assets/fonts/captured-pxiTypc9vsFDm051Uf6KVwgkfoSxQ0GsQv8ToedPibnr0She1ZuWi3hKpA.woff2") format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;}
+    @font-face{font-family:'Instrument Sans';font-style:normal;font-weight:500;font-display:swap;src:url("assets/fonts/captured-pxiTypc9vsFDm051Uf6KVwgkfoSxQ0GsQv8ToedPibnr0SZe1ZuWi3g.woff2") format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}
+    @font-face{font-family:'Instrument Sans';font-style:normal;font-weight:600;font-display:swap;src:url("assets/fonts/captured-pxiTypc9vsFDm051Uf6KVwgkfoSxQ0GsQv8ToedPibnr0She1ZuWi3hKpA.woff2") format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;}
+    @font-face{font-family:'Instrument Sans';font-style:normal;font-weight:600;font-display:swap;src:url("assets/fonts/captured-pxiTypc9vsFDm051Uf6KVwgkfoSxQ0GsQv8ToedPibnr0SZe1ZuWi3g.woff2") format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}
+    @font-face{font-family:'Instrument Sans';font-style:normal;font-weight:700;font-display:swap;src:url("assets/fonts/captured-pxiTypc9vsFDm051Uf6KVwgkfoSxQ0GsQv8ToedPibnr0She1ZuWi3hKpA.woff2") format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;}
+    @font-face{font-family:'Instrument Sans';font-style:normal;font-weight:700;font-display:swap;src:url("assets/fonts/captured-pxiTypc9vsFDm051Uf6KVwgkfoSxQ0GsQv8ToedPibnr0SZe1ZuWi3g.woff2") format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}
+    /* system color-emoji fallback, scoped to the emoji planes only */
+    @font-face{font-family:'06-alert-emoji';src:local('Noto Color Emoji'),local('Apple Color Emoji'),local('Segoe UI Emoji');unicode-range:U+1F000-1FAFF;}
+
+
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      --ink: #0E1920;
+      --cream: #E7EEF0;
+      --cream-muted: #A7B1B6;
+      --cream-hint: #6F8189;
+      --border: #26404B;
+      --red: #FF7A70;
+      --tg-panel: #17212B;
+      --tg-chat: #0E1621;
+      --tg-bubble: #182533;
+      --tg-btn: #22364A;
+      color: var(--cream);
+      font-family: 'Instrument Sans', '06-alert-emoji', sans-serif;
+    }
+    .f06-ground { position: absolute; inset: 0; background: var(--ink); }
+    .f06-stage { position: absolute; inset: 0; }
+    /* impact shake wrapper (whole frame) and virtual camera (chat panel) */
+    .f06-shake { position: absolute; inset: 0; }
+    .f06-cam { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; }
+
+    /* ---------- chat panel ---------- */
+    .f06-panel {
+      position: absolute;
+      left: 110px;
+      top: 56px;
+      width: 1090px;
+      height: 810px;
+      background: var(--tg-chat);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5);
+    }
+    .f06-head {
+      position: absolute; left: 0; right: 0; top: 0;
+      height: 100px;
+      background: var(--tg-panel);
+      border-bottom: 1px solid #101A23;
+      display: flex; align-items: center;
+      padding: 0 32px;
+      gap: 20px;
+    }
+    .f06-avatar {
+      position: relative;
+      width: 62px; height: 62px;
+      border-radius: 50%;
+      background: var(--red);
+      color: var(--ink);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 24px; letter-spacing: 0.02em;
+      flex: none;
+    }
+    .f06-name { font-weight: 600; font-size: 28px; line-height: 1.2; color: var(--cream); }
+    .f06-sub { font-size: 20px; line-height: 1.3; color: var(--cream-hint); }
+
+    .f06-chat { position: absolute; left: 0; right: 0; top: 100px; bottom: 0; }
+    .f06-typing {
+      position: absolute;
+      left: 32px;
+      bottom: 34px;
+      height: 58px;
+      padding: 0 26px;
+      background: var(--tg-bubble);
+      border-radius: 20px 20px 20px 6px;
+      display: flex; align-items: center; gap: 14px;
+      transform-origin: 0% 100%;
+    }
+    .f06-dots { display: flex; gap: 8px; }
+    .f06-dot { width: 11px; height: 11px; border-radius: 50%; background: var(--cream-muted); opacity: 0.35; }
+    .f06-typing-label { font-size: 21px; color: var(--cream-hint); }
+
+    .f06-msg { position: absolute; left: 32px; bottom: 34px; width: 980px; }
+    .f06-bubble {
+      background: var(--tg-bubble);
+      border-radius: 20px 20px 20px 6px;
+      padding: 26px 32px 16px;
+      font-size: 29px;
+      line-height: 1.4;
+      color: var(--cream);
+      transform-origin: 0% 0%;
+      /* the bubble grows top-down as lines arrive: --h is the revealed height */
+      --h: 0px;
+      clip-path: inset(0 0 calc(100% - var(--h)) 0 round 20px 20px 20px 6px);
+    }
+    .f06-line { display: block; }
+    .f06-b { font-weight: 700; }
+    .f06-i { font-style: italic; color: #D3DCE0; }
+    .f06-gap { display: block; height: 16px; }
+    .f06-time { display: block; text-align: right; font-size: 19px; color: var(--cream-hint); margin-top: 2px; }
+    .f06-kbd { position: relative; margin-top: 10px; height: 70px; }
+    .f06-btn {
+      position: absolute; inset: 0;
+      border-radius: 14px;
+      background: var(--tg-btn);
+      color: var(--cream);
+      font-weight: 600; font-size: 27px;
+      display: flex; align-items: center; justify-content: center; gap: 12px;
+      transform-origin: 50% 50%;
+    }
+    .f06-arrow { font-family: 'IBM Plex Mono', monospace; font-weight: 500; color: var(--cream-muted); }
+    /* click ripple on the inline button */
+    .f06-ripple {
+      position: absolute;
+      left: 460px; top: 5px;
+      width: 60px; height: 60px;
+      border-radius: 50%;
+      border: 3px solid var(--cream);
+      opacity: 0;
+    }
+
+    /* ---------- push notification banner ---------- */
+    .f06-notif {
+      position: absolute;
+      left: 410px;
+      top: 168px;
+      width: 1100px;
+      display: flex;
+      align-items: center;
+      gap: 26px;
+      padding: 26px 34px;
+      background: #1F2D3A;
+      border: 1px solid #33495A;
+      border-radius: 22px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+    }
+    .f06-notif-text { min-width: 0; }
+    .f06-notif .f06-avatar { width: 76px; height: 76px; font-size: 29px; }
+    .f06-notif-title { font-weight: 700; font-size: 32px; line-height: 1.25; color: var(--cream); }
+    .f06-notif-body { font-size: 32px; line-height: 1.35; color: #D3DCE0; white-space: nowrap; }
+    .f06-ping {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 3px solid var(--red);
+      opacity: 0;
+    }
+    /* impact glow along the top edge when the alert lands */
+    .f06-flash {
+      position: absolute;
+      left: 0; top: 0; width: 1920px; height: 520px;
+      background: radial-gradient(ellipse 60% 100% at 34% 0%, rgba(255, 122, 112, 0.30) 0%, rgba(255, 122, 112, 0) 70%);
+      opacity: 0;
+    }
+
+    /* ---------- right column: kicker + h2 ---------- */
+    .f06-copy { position: absolute; left: 1280px; top: 330px; width: 600px; }
+    .f06-rule { width: 36px; height: 2px; background: var(--red); margin-bottom: 22px; transform-origin: 0% 50%; }
+    .f06-kicker {
+      font-family: 'IBM Plex Mono', monospace; font-weight: 500;
+      font-size: 18px; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--red); margin-bottom: 28px;
+    }
+    .f06-h2 {
+      font-weight: 700; font-size: 84px; line-height: 1.1; letter-spacing: -0.02em;
+      text-transform: lowercase; color: var(--cream);
+    }
+    .f06-mask { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: 0.1em; margin-bottom: -0.1em; }
+    .f06-word { display: inline-block; }
+    .f06-hot { color: var(--red); }
+  </style>
+
+  <div id="root" data-composition-id="06-alert" data-width="1920" data-height="1080" data-duration="5.008">
+    <div id="f06-alert-ground" class="clip f06-ground" data-start="0" data-duration="5.008" data-track-index="0"></div>
+
+    <div id="f06-alert-stage" class="clip f06-stage" data-start="0" data-duration="5.008" data-track-index="1">
+      <div id="f06-alert-shake" class="f06-shake">
+        <div id="f06-alert-flash" class="f06-flash"></div>
+        <div id="f06-alert-cam" class="f06-cam">
+          <div id="f06-alert-panel" class="f06-panel">
+            <div class="f06-head">
+              <div class="f06-avatar">AS</div>
+              <div>
+                <div class="f06-name">AFS Sentinel Bot</div>
+                <div class="f06-sub">bot</div>
+              </div>
+            </div>
+            <div class="f06-chat">
+              <div id="f06-alert-typing" class="f06-typing">
+                <div class="f06-dots">
+                  <span class="f06-dot" data-dot></span><span class="f06-dot" data-dot></span><span class="f06-dot" data-dot></span>
+                </div>
+                <span class="f06-typing-label">mengetik…</span>
+              </div>
+
+              <div class="f06-msg">
+                <div id="f06-alert-bubble" class="f06-bubble">
+                  <span id="f06-alert-l1" class="f06-line f06-b">🟡 Sedang · UNVR — Unilever Indonesia Tbk</span>
+                  <span id="f06-alert-l2" class="f06-line">Skor 45/100 · Laporan 2026-Q2</span>
+                  <span class="f06-gap"></span>
+                  <span id="f06-alert-l3" class="f06-line f06-i">🤖 Sebagian besar laba tercatat belum menjadi uang tunai dan skor kesehatan keuangan masuk zona merah.</span>
+                  <span class="f06-gap"></span>
+                  <span id="f06-alert-l4" class="f06-line">• 22,7% dari aset tercatat sebagai laba yang belum menjadi uang tunai (batas wajar 10%).</span>
+                  <span id="f06-alert-l5" class="f06-line">• Skor Altman 0,57 — masuk zona kesulitan keuangan.</span>
+                  <span id="f06-alert-time" class="f06-time">12:15</span>
+                </div>
+                <div id="f06-alert-kbd" class="f06-kbd">
+                  <div id="f06-alert-btn" class="f06-btn">Buka Incident <span class="f06-arrow">↗</span></div>
+                  <div id="f06-alert-ripple" class="f06-ripple"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="f06-alert-notif" class="f06-notif">
+          <div class="f06-avatar">AS<span id="f06-alert-ping" class="f06-ping"></span></div>
+          <div class="f06-notif-text">
+            <div class="f06-notif-title">AFS Sentinel Bot</div>
+            <div class="f06-notif-body">🟡 Sedang · UNVR — Unilever Indonesia Tbk</div>
+          </div>
+        </div>
+
+        <div class="f06-copy">
+          <div id="f06-alert-rule" class="f06-rule"></div>
+          <div id="f06-alert-kicker" class="f06-kicker">Peringatan otomatis</div>
+          <div class="f06-h2">
+            <span class="f06-mask"><span class="f06-word" data-word>anda</span></span>
+            <span class="f06-mask"><span class="f06-word f06-hot" data-word>dikabari,</span></span>
+            <span class="f06-mask"><span class="f06-word" data-word>bukan</span></span>
+            <span class="f06-mask"><span class="f06-word" data-word>mencari.</span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const ID = "06-alert";
+      const root = document.querySelector('[data-composition-id="' + ID + '"]');
+      const $ = (n) => document.getElementById("f" + ID + "-" + n);
+      const all = (attr) => Array.from(root.querySelectorAll("[" + attr + "]"));
+      const tl = gsap.timeline({ paused: true });
+
+      // camera poses: origin 0 0; centring frame point (cx,cy) at (fx,fy) with scale s
+      const pose = (cx, cy, s, fx, fy) => ({ scale: s, x: fx - s * cx, y: fy - s * cy });
+      const WIDE = { scale: 1, x: 0, y: 0 };
+      // bubble sits bottom-left of the chat, roughly centred at (655, 560)
+      const P_MSG = pose(655, 560, 1.3, 860, 440);
+      // opening: the whole chat panel, larger and centred, before the alert arrives
+      const P_OPEN = pose(655, 461, 1.05, 960, 450);
+      const cam = $("cam");
+      tl.fromTo(cam, P_OPEN, { ...P_OPEN, duration: 0.01 }, 0);
+
+      // ---- Scene 1 (0–0.9s): panel rises; typing on "Begitu ada yang" ----
+      tl.fromTo($("panel"), { y: 60, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "power3.out" }, 0);
+      tl.fromTo($("typing"), { scale: 0.6, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.25, ease: "expo.out" }, 0.3);
+      const dots = all("data-dot");
+      const CYCLE = 0.42;
+      dots.forEach((d, i) => {
+        for (let t = 0.4 + i * 0.1; t + CYCLE <= 1.7; t += CYCLE) {
+          tl.fromTo(d, { opacity: 0.35, y: 0 }, { opacity: 1, y: -6, duration: CYCLE / 2, ease: "sine.inOut", immediateRender: false }, t);
+          tl.to(d, { opacity: 0.35, y: 0, duration: CYCLE / 2, ease: "sine.inOut" }, t + CYCLE / 2);
+        }
+      });
+
+      // ---- impact on "janggal" (0.91s): push banner slams down, frame shakes, avatar pings ----
+      const T_HIT = 0.91;
+      tl.fromTo($("notif"), { y: -220, opacity: 0 }, { y: 0, opacity: 1, duration: 0.26, ease: "expo.out" }, T_HIT);
+      tl.fromTo(
+        $("shake"),
+        { x: 0, y: 0 },
+        {
+          keyframes: [
+            { x: -14, y: 6, duration: 0.05 },
+            { x: 11, y: -4, duration: 0.06 },
+            { x: -7, y: 3, duration: 0.06 },
+            { x: 4, y: -1, duration: 0.07 },
+            { x: 0, y: 0, duration: 0.08 },
+          ],
+          ease: "none",
+        },
+        T_HIT + 0.1
+      );
+      tl.fromTo($("flash"), { opacity: 0 }, { opacity: 1, duration: 0.08, ease: "power2.out" }, T_HIT + 0.08);
+      tl.to($("flash"), { opacity: 0, duration: 0.6, ease: "power2.out" }, T_HIT + 0.16);
+      tl.fromTo($("ping"), { opacity: 0.95, scale: 1 }, { opacity: 0, scale: 2.2, duration: 0.6, ease: "power2.out", immediateRender: false }, T_HIT + 0.12);
+      tl.fromTo($("ping"), { opacity: 0 }, { opacity: 0, duration: 0.01 }, 0);
+
+      // ---- Scene 2 (1.67s "peringatan"): banner hands off to the chat; bubble builds on cue words ----
+      const T_MSG = 1.67;
+      tl.to($("notif"), { y: -40, scale: 0.94, opacity: 0, duration: 0.3, ease: "power2.in" }, T_MSG - 0.05);
+      tl.to($("typing"), { opacity: 0, scale: 0.8, duration: 0.12, ease: "power1.in" }, T_MSG - 0.02);
+      tl.to(cam, { ...P_MSG, duration: 0.6, ease: "power3.inOut" }, T_MSG - 0.1);
+      tl.fromTo($("bubble"), { scale: 0.9, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.3, ease: "expo.out" }, T_MSG);
+      // revealed bubble height per cue (px, measured from the laid-out bubble)
+      const grow = [
+        [T_MSG, 70],
+        [2.06, 112],
+        [2.34, 214],
+        [2.59, 312],
+        [2.76, 356],
+        [2.86, 420],
+      ];
+      tl.fromTo($("bubble"), { "--h": "0px" }, { "--h": "0px", duration: 0.01 }, 0);
+      grow.forEach(([t, h]) => {
+        tl.to($("bubble"), { "--h": h + "px", duration: 0.24, ease: "power3.out" }, t);
+      });
+      const cue = [
+        ["l1", T_MSG + 0.02], // "peringatan"
+        ["l2", 2.06],         // "langsung"
+        ["l3", 2.34],         // "masuk"
+        ["l4", 2.59],         // "ke Telegram"
+        ["l5", 2.76],
+      ];
+      cue.forEach(([id, t]) => {
+        tl.fromTo($(id), { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.26, ease: "power3.out" }, t);
+      });
+      tl.fromTo($("time"), { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "none" }, 2.86);
+
+      // ---- Scene 3 ("Anda" 2.98s): camera pulls back, button arrives and gets one press ----
+      tl.to(cam, { ...WIDE, duration: 0.55, ease: "power3.inOut" }, 2.92);
+      tl.fromTo($("kbd"), { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.28, ease: "power3.out" }, 2.98);
+      const PRESS = 3.5;
+      tl.to($("btn"), { scale: 0.95, backgroundColor: "#1A2B3B", duration: 0.1, ease: "power1.in" }, PRESS);
+      tl.to($("btn"), { scale: 1, backgroundColor: "#2A4158", duration: 0.4, ease: "power2.out" }, PRESS + 0.1);
+      tl.fromTo($("ripple"), { opacity: 0.9, scale: 0.4 }, { opacity: 0, scale: 3.2, duration: 0.6, ease: "power2.out", immediateRender: false }, PRESS + 0.05);
+      tl.fromTo($("ripple"), { opacity: 0 }, { opacity: 0, duration: 0.01 }, 0);
+
+      // right column: rule + kicker, then h2 per-word rise from masks
+      tl.fromTo($("rule"), { scaleX: 0 }, { scaleX: 1, duration: 0.3, ease: "power2.out" }, 3.0);
+      tl.fromTo($("kicker"), { opacity: 0, x: -12 }, { opacity: 1, x: 0, duration: 0.3, ease: "power2.out" }, 3.04);
+      all("data-word").forEach((w, i) => {
+        tl.fromTo(w, { yPercent: 110 }, { yPercent: 0, duration: 0.5, ease: "power3.out" }, 3.1 + i * 0.11);
+      });
+
+      // hold to the frame end (no exit — root transition owns it)
+      tl.set({}, {}, 5.0);
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines[ID] = tl;
+    })();
+  </script>
+</template>

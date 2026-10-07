@@ -1,0 +1,6 @@
+node_modules/
+.browser-profile/
+out/
+.media/
+public/recordings/_old/
+public/recordings/_raw/
