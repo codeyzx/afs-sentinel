@@ -1,7 +1,9 @@
 # Video Judging — AFS Sentinel (Remotion)
 
-Video penjurian 3:00 untuk Sectors Hackathon 2026 · Track 2. Tema visual "Case File":
-dossier forensik di atas kertas, produk asli tampil sebagai "exhibit".
+Video penjurian (minimal 3:00, kini ±3:16) untuk Sectors Hackathon 2026 · Track 2. Tema visual "Case File":
+dossier forensik di atas kertas, produk asli tampil sebagai "exhibit". Dibuka intro 8 dtk
+(`src/scenes/Intro.tsx`: Audit Run memindai emiten, map berkas di-stempel lalu terbuka ke hook) dan
+ditutup outro 12 dtk (`src/scenes/Outro.tsx`: map menutup end card, ringkasan temuan, kredit tim).
 
 ```bash
 cd judging
@@ -16,7 +18,8 @@ Rekam wajah + suara lewat **`npm run rekam`** (perekam webcam di browser dengan 
 perlu `npm install`) atau kamera HP + video prompter (`npm run prompter`). Panduan: **[REKAMAN.md](REKAMAN.md)**.
 File bernama sesuai klip di `public/recordings/` ditemukan otomatis oleh `npm run sync` (konversi ke MP4 +
 deteksi awal/akhir bicara); `src/media.ts` hanya untuk nama file yang berbeda. Durasi scene mengikuti rekaman; studio menampilkan
-peringatan merah kalau total lewat 3:00. Link GitHub untuk end card juga di `src/media.ts`.
+peringatan merah kalau total kurang dari 3:00. Kalau panjang scene berubah, sesuaikan `SHIFT` di
+`scripts/bed-long.mjs` lalu jalankan agar ending musik tetap jatuh di akhir outro. Link GitHub untuk end card juga di `src/media.ts`.
 
 Satu jadwal kata (`src/words.ts`) dipakai bersama oleh prompter, subtitle, dan semua efek visual
 (`atWord(scene, line, "kata")`), jadi selama tempo baca mengikuti prompter, efek jatuh tepat di katanya.

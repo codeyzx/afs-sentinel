@@ -12,8 +12,16 @@ export type LineTiming = Line & { from: number; dur: number; words: Word[] };
 export type SceneTiming = { def: SceneDef; from: number; dur: number; lines: LineTiming[] };
 export type Timing = { scenes: SceneTiming[]; total: number; durations: ClipDurations };
 
-const LIMIT_SECONDS = 180;
-export const LIMIT_FRAMES = LIMIT_SECONDS * FPS;
+/** Judging rule: the video must run at least 3:00. */
+const MIN_SECONDS = 180;
+export const MIN_FRAMES = MIN_SECONDS * FPS;
+
+/** Cold open before SC01 and the sign-off after SC10, both outside the scripted scenes. */
+export const INTRO_FRAMES = 8 * FPS;
+export const OUTRO_FRAMES = 12 * FPS;
+
+/** Whole video: intro + scenes + outro. */
+export const videoFrames = (timing: Timing) => INTRO_FRAMES + timing.total + OUTRO_FRAMES;
 
 type SyncEntry = { file: string; start: number; end: number; voice?: string; w?: number; hgt?: number; face?: { x: number; y: number; h: number } };
 const SYNC = sync as Partial<Record<ClipId, SyncEntry>>;

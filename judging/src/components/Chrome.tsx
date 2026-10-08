@@ -1,7 +1,7 @@
 import React from "react";
 import { AbsoluteFill, Audio, interpolate, Sequence, staticFile, useCurrentFrame } from "remotion";
 import { SCENES } from "../script";
-import { clipSrc, trimOf, voiceSrc, type LineTiming, type SceneTiming, type Timing } from "../timeline";
+import { clipSrc, OUTRO_FRAMES, trimOf, voiceSrc, type LineTiming, type SceneTiming, type Timing } from "../timeline";
 import { C, F, FPS } from "../theme";
 import { phraseGroups } from "../words";
 import { Kicker } from "./primitives";
@@ -94,12 +94,14 @@ export const VoiceTrack: React.FC<{ timing: Timing }> = ({ timing }) => (
   </>
 );
 
-/** Music bed, ducked under every spoken line. */
+/** Music bed from the first scene through the outro, ducked under every spoken line. It is the
+ * extended cut (scripts/bed-long.mjs) whose natural ending lands on the last frame of the outro. */
 export const MusicBed: React.FC<{ timing: Timing }> = ({ timing }) => {
   const spans = timing.scenes.flatMap((s) => s.lines.map((l) => [s.from + l.from, s.from + l.from + l.dur] as const));
   const volumeAt = (f: number) => {
     const fadeIn = interpolate(f, [0, 45], [0, 1], { extrapolateRight: "clamp" });
-    const fadeOut = interpolate(f, [timing.total - 75, timing.total], [1, 0], { extrapolateLeft: "clamp" });
+    const end = timing.total + OUTRO_FRAMES;
+    const fadeOut = interpolate(f, [end - 30, end], [1, 0], { extrapolateLeft: "clamp" });
     // distance to nearest speech span, in frames
     let duck = 1;
     for (const [a, b] of spans) {
@@ -112,7 +114,7 @@ export const MusicBed: React.FC<{ timing: Timing }> = ({ timing }) => {
     const under = 0.11;
     return (under + (base - under) * duck) * fadeIn * fadeOut;
   };
-  return <Audio src={staticFile("audio/bgm/bed.mp3")} volume={volumeAt} loop />;
+  return <Audio src={staticFile("audio/bgm/bed-long.mp3")} volume={volumeAt} />;
 };
 
 export type Sfx = { at: number; name: string; volume?: number; dur?: number };

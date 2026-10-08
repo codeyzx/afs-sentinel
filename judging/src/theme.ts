@@ -17,6 +17,9 @@ export const C = {
   redSoft: "rgba(217,58,43,0.12)",
   marker: "#F5D547",
   night: "#0E0D0B",
+  // the case-file folder of the intro and outro
+  manila: "#DCC79E",
+  manilaDeep: "#C4AC7F",
   // AFS Sentinel app palette, only for data marks that echo the product UI
   safe: "#2F9E5B",
   warn: "#D9A514",

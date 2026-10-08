@@ -2,7 +2,7 @@ import React from "react";
 import { Composition, Folder } from "remotion";
 import { Judging, type JudgingProps } from "./Judging";
 import { Prompter, PROMPTER_CLIPS, prompterFrames, prompterId } from "./Prompter";
-import { buildTiming, probeRecordings } from "./timeline";
+import { buildTiming, MIN_FRAMES, probeRecordings, videoFrames } from "./timeline";
 import { FPS, H, W } from "./theme";
 
 const placeholder = buildTiming({});
@@ -15,12 +15,13 @@ export const Root: React.FC = () => (
       width={W}
       height={H}
       fps={FPS}
-      durationInFrames={placeholder.total}
+      durationInFrames={videoFrames(placeholder)}
       defaultProps={{ timing: placeholder } satisfies JudgingProps}
       calculateMetadata={async () => {
         const timing = buildTiming(await probeRecordings());
-        if (timing.total > 180 * FPS) console.warn(`Judging: ${(timing.total / FPS).toFixed(1)}s, lebih dari 3:00`);
-        return { durationInFrames: timing.total, props: { timing } };
+        const total = videoFrames(timing);
+        if (total < MIN_FRAMES) console.warn(`Judging: ${(total / FPS).toFixed(1)}s, kurang dari 3:00`);
+        return { durationInFrames: total, props: { timing } };
       }}
     />
     <Folder name="Prompter">
