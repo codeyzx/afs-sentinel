@@ -1,0 +1,641 @@
+{
+ "voice": "id-ID-ArdiNeural",
+ "lines": [
+  {
+   "id": "date",
+   "text": "Delapan Mei, dua ribu dua puluh tiga.",
+   "file": "voice/date.wav",
+   "duration": 4.0,
+   "speechEnd": 2.753,
+   "words": [
+    {
+     "text": "Delapan",
+     "start": 0.04,
+     "end": 0.509
+    },
+    {
+     "text": "Mei",
+     "start": 0.509,
+     "end": 0.921
+    },
+    {
+     "text": "dua",
+     "start": 1.234,
+     "end": 1.489
+    },
+    {
+     "text": "ribu",
+     "start": 1.489,
+     "end": 1.745
+    },
+    {
+     "text": "dua",
+     "start": 1.745,
+     "end": 1.944
+    },
+    {
+     "text": "puluh",
+     "start": 1.944,
+     "end": 2.185
+    },
+    {
+     "text": "tiga",
+     "start": 2.185,
+     "end": 2.753
+    }
+   ]
+  },
+  {
+   "id": "halt",
+   "text": "Perdagangan saham Waskita Karya dihentikan.",
+   "file": "voice/halt.wav",
+   "duration": 4.0,
+   "speechEnd": 2.566,
+   "words": [
+    {
+     "text": "Perdagangan",
+     "start": 0.04,
+     "end": 0.638
+    },
+    {
+     "text": "saham",
+     "start": 0.638,
+     "end": 0.997
+    },
+    {
+     "text": "Waskita",
+     "start": 0.997,
+     "end": 1.409
+    },
+    {
+     "text": "Karya",
+     "start": 1.409,
+     "end": 1.768
+    },
+    {
+     "text": "dihentikan",
+     "start": 1.768,
+     "end": 2.566
+    }
+   ]
+  },
+  {
+   "id": "signs",
+   "text": "Padahal, tanda bahayanya sudah ada di laporan keuangan. Bertahun-tahun sebelumnya.",
+   "file": "voice/signs.wav",
+   "duration": 6.85,
+   "speechEnd": 5.899,
+   "words": [
+    {
+     "text": "Padahal",
+     "start": 0.04,
+     "end": 0.704
+    },
+    {
+     "text": "tanda",
+     "start": 1.043,
+     "end": 1.303
+    },
+    {
+     "text": "bahayanya",
+     "start": 1.303,
+     "end": 1.798
+    },
+    {
+     "text": "sudah",
+     "start": 1.798,
+     "end": 2.045
+    },
+    {
+     "text": "ada",
+     "start": 2.045,
+     "end": 2.319
+    },
+    {
+     "text": "di",
+     "start": 2.319,
+     "end": 2.41
+    },
+    {
+     "text": "laporan",
+     "start": 2.41,
+     "end": 2.774
+    },
+    {
+     "text": "keuangan",
+     "start": 2.774,
+     "end": 3.452
+    },
+    {
+     "text": "Bertahun-tahun",
+     "start": 4.324,
+     "end": 5.131
+    },
+    {
+     "text": "sebelumnya",
+     "start": 5.131,
+     "end": 5.899
+    }
+   ]
+  },
+  {
+   "id": "who",
+   "text": "Tapi, siapa yang sempat membaca semuanya?",
+   "file": "voice/who.wav",
+   "duration": 4.0,
+   "speechEnd": 2.792,
+   "words": [
+    {
+     "text": "Tapi",
+     "start": 0.04,
+     "end": 0.651
+    },
+    {
+     "text": "siapa",
+     "start": 0.931,
+     "end": 1.29
+    },
+    {
+     "text": "yang",
+     "start": 1.29,
+     "end": 1.409
+    },
+    {
+     "text": "sempat",
+     "start": 1.409,
+     "end": 1.702
+    },
+    {
+     "text": "membaca",
+     "start": 1.702,
+     "end": 2.048
+    },
+    {
+     "text": "semuanya",
+     "start": 2.048,
+     "end": 2.792
+    }
+   ]
+  },
+  {
+   "id": "intro",
+   "text": "Kenalkan. AFS Sentinel.",
+   "file": "voice/intro.wav",
+   "duration": 4.224,
+   "speechEnd": 3.213,
+   "words": [
+    {
+     "text": "Kenalkan",
+     "start": 0.04,
+     "end": 0.929
+    },
+    {
+     "text": "AFS",
+     "start": 1.865,
+     "end": 2.449
+    },
+    {
+     "text": "Sentinel",
+     "start": 2.449,
+     "end": 3.213
+    }
+   ]
+  },
+  {
+   "id": "auto",
+   "text": "Setiap tiga hari, tanpa disentuh manusia, ia menarik data Sectors API, dan memindai tiga puluh tiga emiten.",
+   "file": "voice/auto.wav",
+   "duration": 7.239,
+   "speechEnd": 6.374,
+   "words": [
+    {
+     "text": "Setiap",
+     "start": 0.04,
+     "end": 0.365
+    },
+    {
+     "text": "tiga",
+     "start": 0.365,
+     "end": 0.569
+    },
+    {
+     "text": "hari",
+     "start": 0.569,
+     "end": 1.002
+    },
+    {
+     "text": "tanpa",
+     "start": 1.266,
+     "end": 1.542
+    },
+    {
+     "text": "disentuh",
+     "start": 1.543,
+     "end": 1.855
+    },
+    {
+     "text": "manusia",
+     "start": 1.855,
+     "end": 2.48
+    },
+    {
+     "text": "ia",
+     "start": 2.732,
+     "end": 2.901
+    },
+    {
+     "text": "menarik",
+     "start": 2.901,
+     "end": 3.201
+    },
+    {
+     "text": "data",
+     "start": 3.201,
+     "end": 3.405
+    },
+    {
+     "text": "Sectors",
+     "start": 3.405,
+     "end": 3.778
+    },
+    {
+     "text": "API",
+     "start": 3.778,
+     "end": 4.247
+    },
+    {
+     "text": "dan",
+     "start": 4.523,
+     "end": 4.74
+    },
+    {
+     "text": "memindai",
+     "start": 4.74,
+     "end": 5.112
+    },
+    {
+     "text": "tiga",
+     "start": 5.112,
+     "end": 5.341
+    },
+    {
+     "text": "puluh",
+     "start": 5.341,
+     "end": 5.545
+    },
+    {
+     "text": "tiga",
+     "start": 5.545,
+     "end": 5.797
+    },
+    {
+     "text": "emiten",
+     "start": 5.797,
+     "end": 6.374
+    }
+   ]
+  },
+  {
+   "id": "rules",
+   "text": "Enam aturan forensik memburu laba tanpa kas, utang yang melonjak, dan risiko gagal bayar.",
+   "file": "voice/rules.wav",
+   "duration": 5.728,
+   "speechEnd": 4.863,
+   "words": [
+    {
+     "text": "Enam",
+     "start": 0.04,
+     "end": 0.229
+    },
+    {
+     "text": "aturan",
+     "start": 0.229,
+     "end": 0.523
+    },
+    {
+     "text": "forensik",
+     "start": 0.523,
+     "end": 0.948
+    },
+    {
+     "text": "memburu",
+     "start": 0.948,
+     "end": 1.219
+    },
+    {
+     "text": "laba",
+     "start": 1.219,
+     "end": 1.431
+    },
+    {
+     "text": "tanpa",
+     "start": 1.431,
+     "end": 1.703
+    },
+    {
+     "text": "kas",
+     "start": 1.703,
+     "end": 2.104
+    },
+    {
+     "text": "utang",
+     "start": 2.34,
+     "end": 2.623
+    },
+    {
+     "text": "yang",
+     "start": 2.623,
+     "end": 2.74
+    },
+    {
+     "text": "melonjak",
+     "start": 2.74,
+     "end": 3.271
+    },
+    {
+     "text": "dan",
+     "start": 3.495,
+     "end": 3.719
+    },
+    {
+     "text": "risiko",
+     "start": 3.719,
+     "end": 4.061
+    },
+    {
+     "text": "gagal",
+     "start": 4.061,
+     "end": 4.368
+    },
+    {
+     "text": "bayar",
+     "start": 4.368,
+     "end": 4.863
+    }
+   ]
+  },
+  {
+   "id": "alert",
+   "text": "Begitu ada yang janggal, peringatan langsung masuk ke Telegram.",
+   "file": "voice/alert.wav",
+   "duration": 4.0,
+   "speechEnd": 3.081,
+   "words": [
+    {
+     "text": "Begitu",
+     "start": 0.04,
+     "end": 0.365
+    },
+    {
+     "text": "ada",
+     "start": 0.365,
+     "end": 0.533
+    },
+    {
+     "text": "yang",
+     "start": 0.533,
+     "end": 0.677
+    },
+    {
+     "text": "janggal",
+     "start": 0.677,
+     "end": 1.206
+    },
+    {
+     "text": "peringatan",
+     "start": 1.482,
+     "end": 1.891
+    },
+    {
+     "text": "langsung",
+     "start": 1.891,
+     "end": 2.192
+    },
+    {
+     "text": "masuk",
+     "start": 2.192,
+     "end": 2.42
+    },
+    {
+     "text": "ke",
+     "start": 2.42,
+     "end": 2.468
+    },
+    {
+     "text": "Telegram",
+     "start": 2.468,
+     "end": 3.081
+    }
+   ]
+  },
+  {
+   "id": "proof",
+   "text": "Lengkap dengan ringkasan AI, dan bukti perhitungan yang bisa dilacak.",
+   "file": "voice/proof.wav",
+   "duration": 4.526,
+   "speechEnd": 3.643,
+   "words": [
+    {
+     "text": "Lengkap",
+     "start": 0.04,
+     "end": 0.347
+    },
+    {
+     "text": "dengan",
+     "start": 0.347,
+     "end": 0.579
+    },
+    {
+     "text": "ringkasan",
+     "start": 0.579,
+     "end": 0.984
+    },
+    {
+     "text": "AI",
+     "start": 0.984,
+     "end": 1.401
+    },
+    {
+     "text": "dan",
+     "start": 1.695,
+     "end": 1.903
+    },
+    {
+     "text": "bukti",
+     "start": 1.903,
+     "end": 2.148
+    },
+    {
+     "text": "perhitungan",
+     "start": 2.148,
+     "end": 2.675
+    },
+    {
+     "text": "yang",
+     "start": 2.675,
+     "end": 2.834
+    },
+    {
+     "text": "bisa",
+     "start": 2.834,
+     "end": 3.067
+    },
+    {
+     "text": "dilacak",
+     "start": 3.067,
+     "end": 3.643
+    }
+   ]
+  },
+  {
+   "id": "test",
+   "text": "Kami uji pada kasus nyata.",
+   "file": "voice/test.wav",
+   "duration": 4.0,
+   "speechEnd": 1.768,
+   "words": [
+    {
+     "text": "Kami",
+     "start": 0.04,
+     "end": 0.292
+    },
+    {
+     "text": "uji",
+     "start": 0.292,
+     "end": 0.625
+    },
+    {
+     "text": "pada",
+     "start": 0.625,
+     "end": 0.851
+    },
+    {
+     "text": "kasus",
+     "start": 0.851,
+     "end": 1.21
+    },
+    {
+     "text": "nyata",
+     "start": 1.21,
+     "end": 1.768
+    }
+   ]
+  },
+  {
+   "id": "flag",
+   "text": "Sentinel sudah menandai Waskita,",
+   "file": "voice/flag.wav",
+   "duration": 4.0,
+   "speechEnd": 2.133,
+   "words": [
+    {
+     "text": "Sentinel",
+     "start": 0.04,
+     "end": 0.638
+    },
+    {
+     "text": "sudah",
+     "start": 0.638,
+     "end": 0.91
+    },
+    {
+     "text": "menandai",
+     "start": 0.91,
+     "end": 1.345
+    },
+    {
+     "text": "Waskita",
+     "start": 1.345,
+     "end": 2.133
+    }
+   ]
+  },
+  {
+   "id": "months",
+   "text": "dua puluh lima bulan sebelum suspensi.",
+   "file": "voice/months.wav",
+   "duration": 4.0,
+   "speechEnd": 2.346,
+   "words": [
+    {
+     "text": "dua",
+     "start": 0.04,
+     "end": 0.304
+    },
+    {
+     "text": "puluh",
+     "start": 0.304,
+     "end": 0.513
+    },
+    {
+     "text": "lima",
+     "start": 0.513,
+     "end": 0.721
+    },
+    {
+     "text": "bulan",
+     "start": 0.721,
+     "end": 1.11
+    },
+    {
+     "text": "sebelum",
+     "start": 1.11,
+     "end": 1.485
+    },
+    {
+     "text": "suspensi",
+     "start": 1.485,
+     "end": 2.346
+    }
+   ]
+  },
+  {
+   "id": "name",
+   "text": "AFS Sentinel.",
+   "file": "voice/name.wav",
+   "duration": 4.0,
+   "speechEnd": 1.418,
+   "words": [
+    {
+     "text": "AFS",
+     "start": 0.04,
+     "end": 0.636
+    },
+    {
+     "text": "Sentinel",
+     "start": 0.636,
+     "end": 1.418
+    }
+   ]
+  },
+  {
+   "id": "tag",
+   "text": "Peringatan dini. Sebelum terlambat.",
+   "file": "voice/tag.wav",
+   "duration": 4.441,
+   "speechEnd": 3.448,
+   "words": [
+    {
+     "text": "Peringatan",
+     "start": 0.04,
+     "end": 0.637
+    },
+    {
+     "text": "dini",
+     "start": 0.637,
+     "end": 1.179
+    },
+    {
+     "text": "Sebelum",
+     "start": 2.115,
+     "end": 2.643
+    },
+    {
+     "text": "terlambat",
+     "start": 2.643,
+     "end": 3.448
+    }
+   ]
+  }
+ ]
+}

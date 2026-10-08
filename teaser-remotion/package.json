@@ -4,8 +4,10 @@
   "type": "module",
   "scripts": {
     "dev": "remotion studio",
-    "render": "remotion render Teaser out/teaser-fhd.mp4 --codec=h264 --crf=16 --x264-preset=slow --image-format=png --audio-bitrate=320k --color-space=bt709",
-    "typecheck": "tsc --noEmit"
+    "render": "remotion render Teaser out/teaser.mp4 --codec=h264 --crf=16 --x264-preset=slow --image-format=jpeg --jpeg-quality=95 --audio-bitrate=320k --color-space=bt709 --timeout=120000 --concurrency=4",
+    "typecheck": "tsc --noEmit",
+    "audio": "remotion render Teaser out/audio.wav --codec=wav --timeout=120000",
+    "master": "ffmpeg -y -v error -i out/teaser.mp4 -i out/audio.wav -map 0:v -map 1:a -c:v copy -af loudnorm=I=-14:TP=-1.5:LRA=9,alimiter=limit=0.8:level=0 -c:a aac -b:a 320k -ar 48000 -movflags +faststart out/teaser-final.mp4"
   },
   "devDependencies": {
     "@types/react": "^19.3.0",

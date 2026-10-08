@@ -153,7 +153,7 @@ const WindowChrome: React.FC<{ url: string; exhibit?: string; width: number }> =
     style={{
       width,
       height: 46,
-      background: "#1B1916",
+      background: "#121A1F",
       borderRadius: "14px 14px 0 0",
       display: "flex",
       alignItems: "center",
@@ -172,8 +172,8 @@ const WindowChrome: React.FC<{ url: string; exhibit?: string; width: number }> =
         flex: 1,
         height: 28,
         borderRadius: 7,
-        background: "#2A2723",
-        color: "#BDB4A6",
+        background: "#1C252B",
+        color: "#9AA8B0",
         fontFamily: F.mono,
         fontSize: 15,
         display: "flex",
@@ -187,7 +187,7 @@ const WindowChrome: React.FC<{ url: string; exhibit?: string; width: number }> =
       {url}
     </div>
     {exhibit && (
-      <Kicker size={13} color="#E8A598">
+      <Kicker size={13} color="#FF8A80">
         {exhibit}
       </Kicker>
     )}
@@ -208,7 +208,7 @@ const Cursor: React.FC<{ x: number; y: number; clickAge: number }> = ({ x, y, cl
             width: 60,
             height: 60,
             borderRadius: 30,
-            border: `3px solid ${C.marker}`,
+            border: `3px solid ${C.red}`,
             transform: `scale(${0.3 + ring * 1.1})`,
             opacity: 1 - ring,
           }}

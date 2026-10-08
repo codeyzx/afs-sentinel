@@ -1,69 +1,120 @@
 import React from "react";
-import { AbsoluteFill, Sequence } from "remotion";
-import { Captions, Flash, InkWipe, MusicBed, SfxTrack, VoiceTrack } from "./components/Chrome";
-import { S1ColdOpen, S2Twist, S3Intro } from "./scenes/S1_S3";
-import { S4Autonomous, S5Rules, S6Alert } from "./scenes/S4_S6";
-import { S7Evidence, S8Proof, S9Outro } from "./scenes/S7_S9";
-import { C, FPS } from "./theme";
-import { SCENES, TOTAL, w } from "./vo";
+import { AbsoluteFill, Sequence, useCurrentFrame } from "remotion";
+import { Captions, FilmLook, Flash, Letterbox, Streak } from "./components/Fx";
+import { prog } from "./components/primitives";
+import { Score, SfxTrack, VoiceTrack } from "./components/Sound";
+import { Hook, Reveal, Rewind, Who } from "./scenes/Act1";
+import { Alert, Auto, Rules } from "./scenes/Act2";
+import { Climax, Outro } from "./scenes/Act3";
+import { C } from "./theme";
+import { lineEnd, lineStart, MUSIC, scene, SceneName, w } from "./timeline";
 
-// Music bed: its drop (40.9 s into the track) lands on "dua puluh lima" in the climax.
-const DROP_IN_TRACK = 40.9;
-const s8 = SCENES[7];
-const s9 = SCENES[8];
-const DROP_AT = s8.from + w(8, "dua");
-const MUSIC_FROM = Math.max(0, DROP_AT - Math.round(DROP_IN_TRACK * FPS));
+const S = (name: SceneName, el: React.ReactNode) => {
+  const s = scene(name);
+  return (
+    <Sequence key={name} from={s.from} durationInFrames={s.dur} name={name}>
+      {el}
+    </Sequence>
+  );
+};
 
-const scene = (i: number, el: React.ReactNode) => (
-  <Sequence key={i} from={SCENES[i].from} durationInFrames={i === 8 ? SCENES[i].dur + (TOTAL - SCENES[8].from - SCENES[8].dur) : SCENES[i].dur} name={`Frame ${i + 1}`}>
-    {el}
-  </Sequence>
-);
+const cut = (name: SceneName) => scene(name).from;
+const HIT = MUSIC.hit;
+const SRIL = lineEnd("months") + 10;
+
+// Rules scene cue words, for card hits
+const RULE_HITS = [w("rules", "laba"), w("rules", "kas"), w("rules", "utang"), w("rules", "risiko")];
+
+const SFX = [
+  // hook
+  { at: 6, name: "subdrop", volume: 0.5 },
+  { at: w("date", "delapan"), name: "slam", volume: 0.32 },
+  { at: w("date", "mei"), name: "slam", volume: 0.32 },
+  { at: w("date", "dua"), name: "slam", volume: 0.45 },
+  { at: lineStart("halt"), name: "click", volume: 0.35 },
+  { at: w("halt", "dihentikan") - 1, name: "impact", volume: 0.55, dur: 120 },
+  { at: w("halt", "dihentikan"), name: "stamp", volume: 0.4 },
+  // rewind
+  { at: cut("rewind") - 8, name: "reverse", volume: 0.5 },
+  { at: w("signs", "tanda"), name: "marker", volume: 0.25 },
+  { at: w("signs", "bertahun-tahun") - 1, name: "impact-soft", volume: 0.45 },
+  // who → stop-down → reveal
+  { at: cut("who") - 6, name: "whoosh", volume: 0.35 },
+  { at: cut("reveal") - 2, name: "glitch", volume: 0.4 },
+  { at: lineStart("intro"), name: "tick", volume: 0.35 },
+  { at: MUSIC.revealHit - 3, name: "braam", volume: 0.6 },
+  { at: MUSIC.revealHit - 1, name: "impact", volume: 0.5, dur: 120 },
+  // auto
+  { at: cut("auto") - 8, name: "whoosh", volume: 0.4 },
+  { at: w("auto", "tiga", 0), name: "click", volume: 0.35 },
+  { at: w("auto", "tanpa"), name: "click", volume: 0.35 },
+  { at: w("auto", "ia") - 4, name: "whoosh", volume: 0.28 },
+  { at: w("auto", "sectors"), name: "click", volume: 0.35 },
+  { at: w("auto", "memindai"), name: "count", volume: 0.3, dur: 26 },
+  // rules
+  { at: cut("rules") - 8, name: "whoosh", volume: 0.38 },
+  ...[0, 1, 2, 3, 4, 5].map((i) => ({ at: lineStart("rules") + 2 + i * 3, name: "click", volume: 0.2 })),
+  ...RULE_HITS.map((at) => ({ at, name: "slam", volume: 0.22 })),
+  // alert + proof
+  { at: cut("alert") - 8, name: "whoosh", volume: 0.38 },
+  { at: w("alert", "peringatan"), name: "ping", volume: 0.6 },
+  { at: w("alert", "telegram") + 6, name: "click", volume: 0.3 },
+  { at: lineStart("proof") - 6, name: "whoosh", volume: 0.32 },
+  { at: w("proof", "bukti") - 3, name: "whoosh", volume: 0.25 },
+  // climax
+  { at: cut("climax") - 8, name: "whoosh-big", volume: 0.4 },
+  { at: lineStart("flag") - 10, name: "whoosh", volume: 0.35 },
+  { at: w("flag", "menandai"), name: "marker", volume: 0.35 },
+  { at: HIT - 60, name: "riser-long", volume: 0.5 },
+  { at: w("months", "dua"), name: "count", volume: 0.35, dur: HIT - w("months", "dua") },
+  { at: HIT - 2, name: "braam", volume: 0.6 },
+  { at: HIT - 1, name: "impact", volume: 0.6, dur: 150 },
+  { at: HIT, name: "subdrop", volume: 0.5 },
+  { at: SRIL, name: "slam", volume: 0.45 },
+  // outro
+  { at: cut("outro") - 10, name: "whoosh-big", volume: 0.32 },
+  { at: w("name", "afs") - 1, name: "impact-soft", volume: 0.3 },
+  { at: w("tag", "terlambat") - 1, name: "impact", volume: 0.4, dur: 150 },
+];
 
 export const Teaser: React.FC = () => {
-  const cut = (i: number) => SCENES[i].from;
-  const redFrom = s8.from + w(8, "dua") - 1;
+  const frame = useCurrentFrame();
+  const open = prog(frame, MUSIC.revealHit, 22);
   return (
     <AbsoluteFill style={{ background: C.night }}>
-      {scene(0, <S1ColdOpen />)}
-      {scene(1, <S2Twist dur={SCENES[1].dur} />)}
-      {scene(2, <S3Intro />)}
-      {scene(3, <S4Autonomous />)}
-      {scene(4, <S5Rules dur={SCENES[4].dur} />)}
-      {scene(5, <S6Alert />)}
-      {scene(6, <S7Evidence />)}
-      {scene(7, <S8Proof dur={SCENES[7].dur} />)}
-      {scene(8, <S9Outro />)}
+      {S("hook", <Hook />)}
+      {S("rewind", <Rewind />)}
+      {S("who", <Who />)}
+      {S("reveal", <Reveal />)}
+      {S("auto", <Auto />)}
+      {S("rules", <Rules />)}
+      {S("alert", <Alert />)}
+      {S("climax", <Climax />)}
+      {S("outro", <Outro />)}
 
-      <Flash at={cut(1)} color={C.red} />
-      <InkWipe at={cut(2)} />
-      <InkWipe at={cut(3)} dir={-1} />
-      <Flash at={cut(4)} />
-      <InkWipe at={cut(5)} />
-      <InkWipe at={cut(6)} dir={-1} color={C.red} />
-      <Flash at={cut(7)} />
-      <Flash at={cut(8)} len={14} />
+      <Streak at={w("halt", "dihentikan")} y={640} />
+      <Flash at={MUSIC.revealHit} peak={0.85} len={10} />
+      <Streak at={MUSIC.revealHit} y={560} />
+      <Flash at={cut("auto")} peak={0.12} len={5} />
+      <Flash at={cut("rules")} peak={0.12} len={5} />
+      <Flash at={cut("alert")} peak={0.12} len={5} />
+      <Flash at={HIT} peak={1} len={8} />
+      <Streak at={w("name", "afs")} y={460} />
 
-      <Captions dark={(f) => f < cut(1) || (f >= redFrom && f < cut(8))} />
-      <SfxTrack
-        cues={[
-          { at: cut(1) - 6, name: "whoosh-big", volume: 0.45 },
-          { at: cut(2) - 10, name: "whoosh", volume: 0.4 },
-          { at: cut(3) - 10, name: "whoosh", volume: 0.4 },
-          { at: cut(5) - 10, name: "whoosh", volume: 0.4 },
-          { at: cut(6) - 10, name: "whoosh", volume: 0.4 },
-          { at: cut(7) - 2, name: "impact-soft", volume: 0.4 },
-          { at: cut(8) - 2, name: "impact", volume: 0.45, dur: 120 },
-        ]}
+      <FilmLook />
+      <Letterbox open={open} />
+      <Captions
+        hidden={(f) =>
+          (f >= lineStart("who") && f < scene("reveal").from) ||
+          (f >= MUSIC.revealHit - 2 && f < scene("auto").from) ||
+          (f >= HIT && f < SRIL) ||
+          f >= lineStart("name")
+        }
       />
+
       <VoiceTrack />
-      <MusicBed
-        from={MUSIC_FROM}
-        lift={[
-          [DROP_AT - 2, s8.from + s8.dur],
-          [s9.from + w(9, "terlambat") + 18, TOTAL],
-        ]}
-      />
+      <Score />
+      <SfxTrack cues={SFX} />
     </AbsoluteFill>
   );
 };

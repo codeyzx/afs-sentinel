@@ -1,45 +1,33 @@
-import real from "./data/real.json";
+// Numbers on screen come from the live app (afs-sentinel.herokuapp.com, 8 Okt 2026):
+// dashboard, /logs, /backtest and Incident AFS-2026-Q2-0003.
 
-export const REAL = real;
-
-const DAYS = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
-const MONTHS = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
-
-/** Same wording as afs/telegram.py format_wib: "Minggu 4 Okt 2026, 08:00 WIB". */
-export const formatWib = (iso: string) => {
-  const d = new Date(new Date(iso).getTime() + 7 * 3600 * 1000);
-  const hh = String(d.getUTCHours()).padStart(2, "0");
-  const mm = String(d.getUTCMinutes()).padStart(2, "0");
-  return `${DAYS[d.getUTCDay()]} ${d.getUTCDate()} ${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}, ${hh}:${mm} WIB`;
-};
-
-export const clockWib = (iso: string) => formatWib(iso).split(", ")[1].replace(" WIB", "");
-
-type Run = (typeof real.runs)[number];
-
-/** Same text as afs/telegram.py format_run_summary (these runs had 0 escalations and 0 failures, see /logs). */
-export const runSummary = (r: Run) =>
-  `✅ Audit Run ${formatWib(r.startedAt)} (${r.trigger === "SCHEDULER" ? "Otomatis · sistem" : "Manual · analis"})\n` +
-  `${r.scanned} emiten dipindai · ${r.incidentsNew} Incident baru · 0 Escalation · 0 gagal\n` +
-  `Kredit API terpakai: ${r.credits}`;
-
-export const RULES = [
-  { name: "Sloan Accrual", weight: 25, core: true, plain: "Laba yang bukan uang tunai" },
-  { name: "Divergensi Laba–Kas", weight: 25, core: true, plain: "Laba naik, kas operasi turun" },
-  { name: "Altman Z″", weight: 20, core: true, plain: "Risiko kesulitan keuangan" },
-  { name: "Beneish", weight: 15, core: false, plain: "Tekanan memoles laporan" },
-  { name: "Penjualan Orang Dalam", weight: 10, core: false, plain: "Orang dalam menjual saham" },
-  { name: "Laba tanpa Dividen", weight: 5, core: false, plain: "Untung, tapi tidak membagi kas" },
-];
-
-export const quarter = (iso: string) => {
-  const d = new Date(iso);
-  return `${d.getUTCFullYear()}-Q${Math.floor(d.getUTCMonth() / 3) + 1}`;
-};
-
-/** The 33 non-financial Emiten in the universe (production `emiten` table). */
+/** The 33 non-financial Emiten in the Universe (config/universe.json). */
 export const EMITEN =
   "AADI,ACES,AKRA,AMRT,ANTM,ASII,BRPT,BUMI,CPIN,EMTK,EXCL,GOTO,ICBP,INCO,INDF,INTP,ISAT,ITMG,JPFA,KLBF,MAPI,MDKA,MEDC,MYOR,PGAS,PTBA,SIDO,SMGR,TLKM,TOWR,TPIA,UNTR,UNVR".split(",");
 
-/** Emiten with an open Incident in production. */
+/** Emiten with an open Incident (dashboard: "10 Perlu ditinjau", "23 Aman"). */
 export const FLAGGED = ["UNVR", "BUMI", "ITMG", "CPIN", "ANTM", "PGAS", "EXCL", "ACES", "ISAT", "TOWR"];
+
+/** /backtest, WSKT: Composite Risk Score per Report Period. */
+export const WSKT_BACKTEST: { q: string; date: string; score: number; sev: "Sedang" | "Rendah" }[] = [
+  { q: "2021-Q1", date: "2021-03-31", score: 30.6, sev: "Sedang" },
+  { q: "2021-Q2", date: "2021-06-30", score: 30.8, sev: "Sedang" },
+  { q: "2021-Q3", date: "2021-09-30", score: 30.8, sev: "Sedang" },
+  { q: "2021-Q4", date: "2021-12-31", score: 30.8, sev: "Sedang" },
+  { q: "2022-Q1", date: "2022-03-31", score: 30.8, sev: "Sedang" },
+  { q: "2022-Q2", date: "2022-06-30", score: 19.4, sev: "Rendah" },
+  { q: "2022-Q3", date: "2022-09-30", score: 19.4, sev: "Rendah" },
+  { q: "2022-Q4", date: "2022-12-31", score: 42.3, sev: "Sedang" },
+  { q: "2023-Q1", date: "2023-03-31", score: 30.8, sev: "Sedang" },
+];
+export const WSKT_SUSPENDED = "2023-05-08";
+
+/** Forensic Rules with their weights in the Composite Risk Score. */
+export const RULES = [
+  { name: "Sloan Accrual", weight: 25, plain: "Laba yang bukan uang tunai" },
+  { name: "Divergensi Laba–Kas", weight: 25, plain: "Laba naik, kas operasi turun" },
+  { name: "Altman Z″", weight: 20, plain: "Risiko kesulitan keuangan" },
+  { name: "Beneish", weight: 15, plain: "Tekanan memoles laporan" },
+  { name: "Penjualan Orang Dalam", weight: 10, plain: "Orang dalam menjual saham" },
+  { name: "Laba tanpa Dividen", weight: 5, plain: "Untung, tapi tidak membagi kas" },
+];

@@ -1,38 +1,37 @@
-import { loadFont as loadSerif } from "@remotion/google-fonts/Newsreader";
-import { loadFont as loadSans } from "@remotion/google-fonts/Geist";
-import { loadFont as loadMono } from "@remotion/google-fonts/GeistMono";
+import { loadFont as loadDisplay } from "@remotion/google-fonts/InterTight";
+import { loadFont as loadMono } from "@remotion/google-fonts/JetBrainsMono";
+import { loadFont as loadSerif } from "@remotion/google-fonts/InstrumentSerif";
 
-// "Case File": a forensic dossier. Warm paper, ink, one red-flag accent, one highlighter.
+// "Sinyal": a forensic thriller at night. Near-black ground, one signal red, data colours only as data.
 export const C = {
-  paper: "#F1ECE2",
-  paperDeep: "#E6DFD1",
-  card: "#FBF8F2",
-  ink: "#16130F",
-  inkSoft: "#3A342C",
-  muted: "#6B6358",
-  hint: "#9A9184",
-  line: "rgba(22,19,15,0.14)",
-  lineStrong: "rgba(22,19,15,0.32)",
-  red: "#D93A2B",
-  redSoft: "rgba(217,58,43,0.12)",
-  marker: "#F5D547",
-  night: "#0E0D0B",
-  // AFS Sentinel app palette, only for data marks that echo the product UI
-  safe: "#2F9E5B",
-  warn: "#D9A514",
-  danger: "#D93A2B",
+  night: "#06080A",
+  deep: "#0B1014",
+  panel: "#10171C",
+  line: "rgba(214,228,236,0.10)",
+  lineStrong: "rgba(214,228,236,0.22)",
+  text: "#EEF3F5",
+  dim: "#9AA8B0",
+  hint: "#5D6B73",
+  red: "#FF3B30",
+  redDeep: "#C4231A",
+  redGlow: "rgba(255,59,48,0.45)",
+  // AFS Sentinel product semantics (Rendah / Sedang / Kritis, Aman / Waspada / Bahaya)
+  safe: "#2FBF71",
+  warn: "#F2B33D",
+  danger: "#FF3B30",
   app: "#0e1920",
 };
 
-const serif = loadSerif("normal", { weights: ["400", "500", "600", "700"], subsets: ["latin"] });
-loadSerif("italic", { weights: ["400", "500", "600"], subsets: ["latin"] });
-const sans = loadSans("normal", { weights: ["400", "500", "600", "700"], subsets: ["latin"] });
-const mono = loadMono("normal", { weights: ["400", "500", "600"], subsets: ["latin"] });
+const display = loadDisplay("normal", { weights: ["400", "500", "600", "700", "800", "900"], subsets: ["latin"] });
+const mono = loadMono("normal", { weights: ["400", "500", "700"], subsets: ["latin"] });
+const serif = loadSerif("italic", { weights: ["400"], subsets: ["latin"] });
+loadSerif("normal", { weights: ["400"], subsets: ["latin"] });
 
 export const F = {
-  serif: serif.fontFamily,
-  sans: sans.fontFamily,
+  display: display.fontFamily,
+  sans: display.fontFamily,
   mono: mono.fontFamily,
+  serif: serif.fontFamily,
 };
 
 export const FPS = 30;
